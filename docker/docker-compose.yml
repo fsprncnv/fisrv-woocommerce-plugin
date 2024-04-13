@@ -3,17 +3,17 @@ version: '3.8'
 services:
   paypal:
     image: registry.gitlab.mherrm.de/cgi/fiserv-woocommerce-plugin:latest
-    container_name: woocommerce
+    container_name: fiwoo
     restart: always
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.woocommerce-secure.entrypoints=http,https"
-      - "traefik.http.routers.woocommerce-secure.rule=Host(`fiwoo.mherrm.de`)"
-      - "traefik.http.routers.woocommerce-secure.tls=true"
-      - "traefik.http.routers.woocommerce-secure.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.woocommerce-secure.service=woocommerce"
-      - "traefik.http.services.woocommerce.loadbalancer.server.scheme=http"
-      - "traefik.http.services.woocommerce.loadbalancer.server.port=80"
+      - "traefik.http.routers.fiwoo-secure.entrypoints=http,https"
+      - "traefik.http.routers.fiwoo-secure.rule=Host(`fiwoo.mherrm.de`)"
+      - "traefik.http.routers.fiwoo-secure.tls=true"
+      - "traefik.http.routers.fiwoo-secure.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.fiwoo-secure.service=fiwoo"
+      - "traefik.http.services.fiwoo.loadbalancer.server.scheme=http"
+      - "traefik.http.services.fiwoo.loadbalancer.server.port=80"
       - "traefik.docker.network=traefik"
     logging:
       driver: "json-file"
