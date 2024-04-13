@@ -1,0 +1,18 @@
+include:
+  - project: 'default/base'
+    ref: 'main'
+    file: '.php.gitlab-ci.yml'
+
+variables:
+  IMAGE_TAG: $CI_REGISTRY_IMAGE:latest
+  DOCKERFILE: "docker/Dockerfile"
+  SKIP_PHPUNIT: 'true'
+
+validate:
+  extends: .base_validate
+
+build:
+  extends: .base_build
+
+docker:
+  extends: .base_docker
