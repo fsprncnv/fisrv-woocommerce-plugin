@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  paypal:
+    image: registry.gitlab.mherrm.de/cgi/fiserv-woocommerce-plugin:latest
+    container_name: woocommerce
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.woocommerce-secure.entrypoints=http,https"
+      - "traefik.http.routers.woocommerce-secure.rule=Host(`woocommerce.mherrm.de`)"
+      - "traefik.http.routers.woocommerce-secure.tls=true"
+      - "traefik.http.routers.woocommerce-secure.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.woocommerce-secure.service=woocommerce"
+      - "traefik.http.services.woocommerce.loadbalancer.server.scheme=http"
+      - "traefik.http.services.woocommerce.loadbalancer.server.port=80"
+      - "traefik.docker.network=traefik"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
+    networks:
+      - default
+      - traefik
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 50M
+networks:
+  traefik:
+    external: true
+
