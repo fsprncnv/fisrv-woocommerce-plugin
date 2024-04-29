@@ -1,0 +1,12 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "extension/fiserv-woocommerce-plugin",
+	"version": "0.1.0",
+	"title": "Fiserv Woocommerce Plugin",
+	"category": "widgets",
+	"textdomain": "fiserv-woocommerce-plugin",
+	"editorScript": "file:./build/index.js",
+	"editorStyle": "file:./build/index.css",
+	"style": "file:./build/style-index.css"
+}
