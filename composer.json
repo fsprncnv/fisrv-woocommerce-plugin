@@ -1,10 +1,16 @@
 {
 	"name": "extension/fiserv-woocommerce-plugin",
-	"description": "WooCommerce plugin",
+	"description": "WooCommerce plugin integration with Fiserv",
+	"version": "1.0.0",
+	"minimum-stability": "dev",
+	"license": "MIT",
 	"autoload": {
 		"psr-4": {
 			"FiservWoocommercePlugin\\": "includes/"
 		}
+	},
+	"require": {
+		"fiserv/php-api-wrapper": "*"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "^9.0",
@@ -14,5 +20,14 @@
 		"allow-plugins": {
 			"automattic/jetpack-autoloader": true
 		}
+	},
+	"repositories": {
+		"80": {
+			"type": "composer",
+			"url": "https://gitlab.mherrm.de/api/v4/group/80/-/packages/composer/packages.json"
+		}
+	},
+	"archive": {
+		"exclude": [ ".gitlab-ci.yml", ".gitignore", "/*.*", ".idea", "docker"]
 	}
 }

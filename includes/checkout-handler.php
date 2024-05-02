@@ -2,24 +2,44 @@
 
 namespace FiservWoocommercePlugin;
 
-class checkout_handler
+use Fiserv\CheckoutSolution;
+use PaymentLinkRequestBody;
+
+class CheckoutHandler
 {
+    public const paymentLinksRequestContent = [
+        'transactionOrigin' => 'ECOM',
+        'transactionType' => 'SALE',
+        'transactionAmount' => ['total' => 130, 'currency' => 'EUR'],
+        'checkoutSettings' => ['locale' => 'en_GB'],
+        'paymentMethodDetails' => [
+            'cards' => [
+                'authenticationPreferences' => [
+                    'challengeIndicator' => '01',
+                    'skipTra' => false,
+                ],
+                'createToken' => [
+                    'declineDuplicateToken' => false,
+                    'reusable' => true,
+                    'toBeUsedFor' => 'UNSCHEDULED',
+                ],
+                'tokenBasedTransaction' => ['transactionSequence' => 'FIRST']
+            ],
+            'sepaDirectDebit' => ['transactionSequenceType' => 'SINGLE']
+        ],
+        'merchantTransactionId' => 'AB-1234',
+        'storeId' => '72305408',
+    ];
+
+
     /**
      * Get cart data from WC stub to be served to Checkout Solution.
      */
-    public function init_state(): array
+    public function createCheckoutLink(): string
     {
-        $cart = WC()->cart->get_cart();
-        $data = [];
+        $req = new PaymentLinkRequestBody(self::paymentLinksRequestContent);
+        $res = CheckoutSolution::postCheckouts($req);
 
-        foreach ($cart as $cart_item) {
-            $data['item_name'] = $cart_item['data']->get_title();
-            $data['quantity'] = $cart_item['quantity'];
-            $data['price'] = $cart_item['data']->get_price();
-        }
-
-        print_r($data);
-
-        return $data;
+        return $res->checkout->redirectionUrl;
     }
 }
