@@ -60,3 +60,5 @@ bin/composer/**/vendor/
 lib/vendor/
 contributors.md
 contributors.html
+
+auth.json

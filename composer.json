@@ -5,9 +5,9 @@
 	"minimum-stability": "dev",
 	"license": "MIT",
 	"autoload": {
-		"psr-4": {
-			"FiservWoocommercePlugin\\": "includes/"
-		}
+		"classmap": [
+			"includes/"
+		]
 	},
 	"require": {
 		"fiserv/php-api-wrapper": "*"
