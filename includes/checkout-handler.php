@@ -2,8 +2,10 @@
 
 namespace FiservWoocommercePlugin;
 
-// use Fiserv\CheckoutSolution;
-// use PaymentLinkRequestBody;
+use SebastianBergmann\Type\VoidType;
+
+use Fiserv\CheckoutSolution;
+use PaymentLinkRequestBody;
 
 class CheckoutHandler
 {
@@ -35,32 +37,55 @@ class CheckoutHandler
     {
         remove_action('woocommerce_proceed_to_checkout', [$this, 'woocommerce_button_proceed_to_checkout'], 20);
         add_action('woocommerce_proceed_to_checkout', [$this, 'inject_fiserv_checkout_button'], 1);
+        add_action('init', [$this, 'output_buffer']);
+
+        self::log("ON MOUNT");
+    }
+
+    function output_buffer()
+    {
+        ob_start();
     }
 
     function inject_fiserv_checkout_button()
     {
-        global $woocommerce;
-        $cart_subtotal = $woocommerce->cart->get_cart_subtotal();
 
-        // $checkout_link = createCheckoutLink();
-        $checkout_link = "#";
+        if (isset($_POST['action'])) {
+            $checkout_link = self::create_checkout_link();
+            wp_redirect($checkout_link, 301);
+            exit();
+        }
 
-        // wp_redirect(home_url("/sample-page/"));
+        $refer = esc_url(admin_url('admin-post.php'));
+        $nonce = wp_create_nonce('fiserv_plugin_some_action_nonce');
+        $target = '#';
 
-        echo '
-    	<a href="' . $checkout_link . '" class="checkout-button button" style="background-color: #ff6600;"> Checkout with fiserv </a>
-        ';
+        echo '<form action="' . $target . '" method="post">';
+        echo '<input type="hidden" name="action" value="some_action" />';
+        echo '<button type="submit" class="checkout-button button alt" style="background-color: #ff6600; font-weight: 700; padding: 1em; font-size: 1.25em; text-align: center; width: 100%;">Checkout with fiserv</button>';
+        echo '</form>';
     }
 
     /**
      * Get cart data from WC stub to be served to Checkout Solution.
      */
-    private function createCheckoutLink(): string
+    private function create_checkout_link(): string
     {
-        // $req = new PaymentLinkRequestBody(self::paymentLinksRequestContent);
-        // $res = CheckoutSolution::postCheckouts($req);
+        $cart_subtotal = intval(WC()->cart->get_total('data') * 100);
 
-        // return $res->checkout->redirectionUrl;
-        return 'pass';
+        $req = new PaymentLinkRequestBody(self::paymentLinksRequestContent);
+        $req->transactionAmount->total = $cart_subtotal;
+
+        $res = CheckoutSolution::postCheckouts($req);
+
+        return $res->checkout->redirectionUrl;
+    }
+
+    /**
+     * Short hand to make a log to
+     */
+    private function log(string $msg): void
+    {
+        echo '<script>console.log("' . $msg . '")</script>';
     }
 }
