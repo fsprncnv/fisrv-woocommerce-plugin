@@ -6,6 +6,7 @@ use Exception;
 use Fiserv\CheckoutSolution;
 use PaymentLinkRequestBody;
 use PostCheckoutsResponse;
+use SebastianBergmann\Type\VoidType;
 
 class CheckoutHandler
 {
@@ -97,12 +98,125 @@ class CheckoutHandler
 
         $refer = esc_url(admin_url('admin-post.php'));
         $nonce = wp_create_nonce('fiserv_plugin_some_action_nonce');
-        $form_post_target = '#';
 
-        echo '<form action="' . $form_post_target . '" method="post">';
-        echo '<input type="hidden" name="action" value="some_action" />';
-        echo '<button type="submit" class="checkout-button button alt" style="background-color: #ff6600; font-weight: 700; padding: 1em; font-size: 1.25em; text-align: center; width: 100%;">Checkout with fiserv</button>';
-        echo '</form>';
+        self::render_checkout_button();
+    }
+
+    /**
+     * This block instantiates the HTML markup for the button component.
+     */
+    private function render_checkout_button(): void
+    {
+        $form_post_target = '#';
+        $button_container = 'document.getElementById(\'checkout-btn-target\')';
+
+        $loader_css = '
+        .lds-ellipsis,
+        .lds-ellipsis div {
+          box-sizing: border-box;
+        }
+        .lds-ellipsis {
+          position: relative;
+          width: 20px;
+          height: 20px;
+        }
+        .hidden {
+            display: none;
+        }
+        .show {
+            display: inline-block;
+        }
+        .lds-ellipsis div {
+          position: absolute;
+          top: 20%;
+          width: 50%;
+          height: 50%;
+          border-radius: 50%;
+          background: currentColor;
+          animation-timing-function: cubic-bezier(0, 1, 1, 0);
+        }
+        .lds-ellipsis div:nth-child(1) {
+          left: 8px;
+          animation: lds-ellipsis1 0.6s infinite;
+        }
+        .lds-ellipsis div:nth-child(2) {
+          left: 8px;
+          animation: lds-ellipsis2 0.6s infinite;
+        }
+        .lds-ellipsis div:nth-child(3) {
+          left: 32px;
+          animation: lds-ellipsis2 0.6s infinite;
+        }
+        .lds-ellipsis div:nth-child(4) {
+          left: 56px;
+          animation: lds-ellipsis3 0.6s infinite;
+        }
+        @keyframes lds-ellipsis1 {
+          0% {
+            transform: scale(0);
+          }
+          100% {
+            transform: scale(1);
+          }
+        }
+        @keyframes lds-ellipsis3 {
+          0% {
+            transform: scale(1);
+          }
+          100% {
+            transform: scale(0);
+          }
+        }
+        @keyframes lds-ellipsis2 {
+          0% {
+            transform: translate(0, 0);
+          }
+          100% {
+            transform: translate(24px, 0);
+          }
+        }
+        ';
+
+        $loader_html = '
+        <div id="loader-spinner" class="lds-ellipsis hidden"><div></div><div></div><div></div><div></div></div>
+        ';
+
+        $button_text = $this->requestFailed ? 'Something went wrong. Try again.' : 'Checkout with Fiserv';
+
+        $component =
+            '
+            <style>' . $loader_css . '</style>
+            <script>
+                function load() { 
+                    document.getElementById(\'loader-spinner\').classList.add(\'show\');
+                }
+            </script>
+            <form action="' . $form_post_target . '" method="post" class="checkout-button button alt" style="margin-bottom: 1rem">
+                <input type="hidden" name="action" value="some_action" />
+                <button 
+                    id="checkout-btn-target"
+                    onclick="load()"
+                    type="submit"
+                    style="background-color: #ff6600; font-weight: 700; padding: 1em; font-size: 1.25em; text-align: center; width: 100%;  display: flex; justify-content: center; align-items: center;">
+                    ' . $button_text . '
+                    ' . $loader_html . '
+                </button>
+            </form>
+        ';
+
+        echo $component;
+    }
+
+    /**
+     * Renders an HTML component into document from a given string list.
+     * 
+     * @todo Move this into separate class which handles UI/markup
+     */
+    private function render_component(array $component): void
+    {
+        foreach ($component as $line) {
+            echo $line;
+        }
     }
 
     /**
@@ -121,7 +235,7 @@ class CheckoutHandler
             self::$checkout_link = self::create_checkout_link();
         }
 
-        // wp_redirect(self::$checkout_link, 301);
+        wp_redirect(self::$checkout_link, 301);
         // exit();
     }
 
@@ -145,6 +259,8 @@ class CheckoutHandler
         return $res->checkout->redirectionUrl;
     }
 
+    private bool $requestFailed = false;
+
     /**
      * Block handling requests via SDK. Possible SDK exceptions are caught
      * so that fail and loading state can be shown on view.
@@ -160,6 +276,7 @@ class CheckoutHandler
             return $res;
         } catch (Exception $th) {
             self::log("Fiserv SDK Error: " . $th->getMessage(), 1);
+            $this->requestFailed = true;
         }
 
         return false;
@@ -181,12 +298,8 @@ class CheckoutHandler
         $failureUrl = self::$domain . '/checkout/order-failed';
 
         $req->checkoutSettings->redirectBackUrls->successUrl = $successUrl;
-        // $req->checkoutSettings->redirectBackUrls->failureUrl = $failureUrl;
-        $req->checkoutSettings->redirectBackUrls->failureUrl = "invalid url";
+        $req->checkoutSettings->redirectBackUrls->failureUrl = $failureUrl;
         $req->transactionAmount->total = intval(self::$reference_total);
-        // $req->transactionAmount->total = intval(self::$reference_total);
-        // $req->transactionAmount->total = floatval(91);
-
 
         return $req;
     }
