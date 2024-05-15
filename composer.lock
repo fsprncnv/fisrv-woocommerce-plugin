@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "git@gitlab.mherrm.de:cgi/fiserv-php-client.git",
-                "reference": "c3e7c93d07d31bc34db1c9ed21c9705637b15099"
+                "reference": "5b4a4b59822e5fc4a7cad6d05b61e2b5e16fc497"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.mherrm.de/api/v4/projects/64/packages/composer/archives/fiserv/php-api-wrapper.zip?sha=c3e7c93d07d31bc34db1c9ed21c9705637b15099",
-                "reference": "c3e7c93d07d31bc34db1c9ed21c9705637b15099",
+                "url": "https://gitlab.mherrm.de/api/v4/projects/64/packages/composer/archives/fiserv/php-api-wrapper.zip?sha=5b4a4b59822e5fc4a7cad6d05b61e2b5e16fc497",
+                "reference": "5b4a4b59822e5fc4a7cad6d05b61e2b5e16fc497",
                 "shasum": ""
             },
             "require": {
@@ -111,12 +111,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/instantiator.git",
-                "reference": "6c0ee619435c5d4f3bc515ab1514cf4cf1006c6e"
+                "reference": "9955122a490d18ce723cf9014b196c126222c180"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/instantiator/zipball/6c0ee619435c5d4f3bc515ab1514cf4cf1006c6e",
-                "reference": "6c0ee619435c5d4f3bc515ab1514cf4cf1006c6e",
+                "url": "https://api.github.com/repos/doctrine/instantiator/zipball/9955122a490d18ce723cf9014b196c126222c180",
+                "reference": "9955122a490d18ce723cf9014b196c126222c180",
                 "shasum": ""
             },
             "require": {
@@ -174,7 +174,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-12-09T14:19:21+00:00"
+            "time": "2024-05-05T15:09:38+00:00"
         },
         {
             "name": "myclabs/deep-copy",
@@ -740,12 +740,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "bbcbb0823b0e06be56e6b180faa0df1f3b3e2733"
+                "reference": "2a9828526fa4a3631e5a99012ef78f32a21804c8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/bbcbb0823b0e06be56e6b180faa0df1f3b3e2733",
-                "reference": "bbcbb0823b0e06be56e6b180faa0df1f3b3e2733",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/2a9828526fa4a3631e5a99012ef78f32a21804c8",
+                "reference": "2a9828526fa4a3631e5a99012ef78f32a21804c8",
                 "shasum": ""
             },
             "require": {
@@ -835,7 +835,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-04-30T05:22:06+00:00"
+            "time": "2024-05-11T05:25:28+00:00"
         },
         {
             "name": "sebastian/cli-parser",
