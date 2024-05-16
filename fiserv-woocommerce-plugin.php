@@ -1,5 +1,6 @@
 <?php
 
+
 /**
  * Plugin Name: Fiserv Woocommerce Plugin
  * Version: 0.1.0
@@ -78,6 +79,8 @@ if (!class_exists('fiserv_woocommerce_plugin')) :
 			}
 
 			new CheckoutHandler();
+			new CheckoutViewRenderer();
+			new WebhookHandler();
 		}
 
 		/**
@@ -132,4 +135,12 @@ function fiserv_woocommerce_plugin_init()
 	}
 
 	fiserv_woocommerce_plugin::instance();
+}
+
+add_filter('woocommerce_get_settings_pages',  'get_checkout_settings');
+
+function get_checkout_settings($woocommerce_settings)
+{
+	$woocommerce_settings[] = new PluginSettings();
+	return $woocommerce_settings;
 }
