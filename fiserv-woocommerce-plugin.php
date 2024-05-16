@@ -27,7 +27,6 @@ require_once plugin_dir_path(__FILE__) . '/vendor/autoload_packages.php';
 use FiservWoocommercePlugin\Admin\Dashboard;
 use FiservWoocommercePlugin\CheckoutHandler;
 
-
 // phpcs:disable WordPress.Files.FileName
 
 /**
@@ -79,7 +78,6 @@ if (!class_exists('fiserv_woocommerce_plugin')) :
 			}
 
 			new CheckoutHandler();
-			new CheckoutViewRenderer();
 			new WebhookHandler();
 		}
 

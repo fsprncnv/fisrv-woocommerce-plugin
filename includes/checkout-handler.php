@@ -2,11 +2,12 @@
 
 namespace FiservWoocommercePlugin;
 
+use CheckoutViewRenderer;
 use Exception;
 use Fiserv\CheckoutSolution;
 use PaymentLinkRequestBody;
 use PostCheckoutsResponse;
-use SebastianBergmann\Type\VoidType;
+use Util;
 
 class CheckoutHandler
 {
@@ -17,14 +18,15 @@ class CheckoutHandler
         'transactionOrigin' => 'ECOM',
         'transactionType' => 'SALE',
         'transactionAmount' => [
-            'total' => 130,
+            'total' => 0,
             'currency' => 'EUR'
         ],
         'checkoutSettings' => [
             'locale' => 'en_GB',
+            'webHooksUrl' => 'http://example.com/',
             'redirectBackUrls' => [
-                'successUrl' => "http://fiserv-wp-dev.local/checkout/order-received/",
-                'failureUrl' => "http://fiserv-wp-dev.local/checkout/order-received/"
+                'successUrl' => 'http://example.com/',
+                'failureUrl' => 'http://example.com/'
             ]
         ],
         'paymentMethodDetails' => [
@@ -71,10 +73,16 @@ class CheckoutHandler
     {
         self::$domain = get_site_url();
 
-        remove_action('woocommerce_proceed_to_checkout', [$this, 'woocommerce_button_proceed_to_checkout'], 20);
-        add_action('woocommerce_proceed_to_checkout', [$this, 'inject_fiserv_checkout_button'], 1);
+        remove_action('woocommerce_order_button_html', [$this, 'woocommerce_order_button_html']);
+        add_filter('woocommerce_cart_needs_payment', '__return_false');
+
+        add_action('woocommerce_checkout_after_customer_details', [$this, 'inject_fiserv_checkout_button'], 1);
         add_action('init', [$this, 'output_buffer']);
+
+        add_filter('woocommerce_checkout_fields', [CheckoutViewRenderer::class, 'set_input_placeholders']);
+        add_action('woocommerce_review_order_before_payment', [CheckoutViewRenderer::class, 'inject_payment_options'], 1);
     }
+
 
     /**
      * This method turns on output buffering. See references for more info on output buffering.
@@ -99,125 +107,9 @@ class CheckoutHandler
         $refer = esc_url(admin_url('admin-post.php'));
         $nonce = wp_create_nonce('fiserv_plugin_some_action_nonce');
 
-        self::render_checkout_button();
+        CheckoutViewRenderer::render_checkout_button();
     }
 
-    /**
-     * This block instantiates the HTML markup for the button component.
-     */
-    private function render_checkout_button(): void
-    {
-        $form_post_target = '#';
-        $button_container = 'document.getElementById(\'checkout-btn-target\')';
-
-        $loader_css = '
-        .lds-ellipsis,
-        .lds-ellipsis div {
-          box-sizing: border-box;
-        }
-        .lds-ellipsis {
-          position: relative;
-          width: 20px;
-          height: 20px;
-        }
-        .hidden {
-            display: none;
-        }
-        .show {
-            display: inline-block;
-        }
-        .lds-ellipsis div {
-          position: absolute;
-          top: 20%;
-          width: 50%;
-          height: 50%;
-          border-radius: 50%;
-          background: currentColor;
-          animation-timing-function: cubic-bezier(0, 1, 1, 0);
-        }
-        .lds-ellipsis div:nth-child(1) {
-          left: 8px;
-          animation: lds-ellipsis1 0.6s infinite;
-        }
-        .lds-ellipsis div:nth-child(2) {
-          left: 8px;
-          animation: lds-ellipsis2 0.6s infinite;
-        }
-        .lds-ellipsis div:nth-child(3) {
-          left: 32px;
-          animation: lds-ellipsis2 0.6s infinite;
-        }
-        .lds-ellipsis div:nth-child(4) {
-          left: 56px;
-          animation: lds-ellipsis3 0.6s infinite;
-        }
-        @keyframes lds-ellipsis1 {
-          0% {
-            transform: scale(0);
-          }
-          100% {
-            transform: scale(1);
-          }
-        }
-        @keyframes lds-ellipsis3 {
-          0% {
-            transform: scale(1);
-          }
-          100% {
-            transform: scale(0);
-          }
-        }
-        @keyframes lds-ellipsis2 {
-          0% {
-            transform: translate(0, 0);
-          }
-          100% {
-            transform: translate(24px, 0);
-          }
-        }
-        ';
-
-        $loader_html = '
-        <div id="loader-spinner" class="lds-ellipsis hidden"><div></div><div></div><div></div><div></div></div>
-        ';
-
-        $button_text = $this->requestFailed ? 'Something went wrong. Try again.' : 'Checkout with Fiserv';
-
-        $component =
-            '
-            <style>' . $loader_css . '</style>
-            <script>
-                function load() { 
-                    document.getElementById(\'loader-spinner\').classList.add(\'show\');
-                }
-            </script>
-            <form action="' . $form_post_target . '" method="post" class="checkout-button button alt" style="margin-bottom: 1rem">
-                <input type="hidden" name="action" value="some_action" />
-                <button 
-                    id="checkout-btn-target"
-                    onclick="load()"
-                    type="submit"
-                    style="background-color: #ff6600; font-weight: 700; padding: 1em; font-size: 1.25em; text-align: center; width: 100%;  display: flex; justify-content: center; align-items: center;">
-                    ' . $button_text . '
-                    ' . $loader_html . '
-                </button>
-            </form>
-        ';
-
-        echo $component;
-    }
-
-    /**
-     * Renders an HTML component into document from a given string list.
-     * 
-     * @todo Move this into separate class which handles UI/markup
-     */
-    private function render_component(array $component): void
-    {
-        foreach ($component as $line) {
-            echo $line;
-        }
-    }
 
     /**
      * Generate checkout link (if it does not exist already)
@@ -248,8 +140,6 @@ class CheckoutHandler
     {
         $req = new PaymentLinkRequestBody(self::paymentLinksRequestContent);
         $req = self::configure_checkout_request($req);
-
-
         $res = self::invoke_request($req);
 
         if (!$res) {
@@ -259,7 +149,12 @@ class CheckoutHandler
         return $res->checkout->redirectionUrl;
     }
 
-    private bool $requestFailed = false;
+    private static bool $requestFailed = false;
+
+    public static function hasRequestFailed(): bool
+    {
+        return self::$requestFailed;
+    }
 
     /**
      * Block handling requests via SDK. Possible SDK exceptions are caught
@@ -275,7 +170,7 @@ class CheckoutHandler
             $res = CheckoutSolution::postCheckouts($req);
             return $res;
         } catch (Exception $th) {
-            self::log("Fiserv SDK Error: " . $th->getMessage(), 1);
+            Util::log("Fiserv SDK Error: " . $th->getMessage(), 1);
             $this->requestFailed = true;
         }
 
@@ -299,47 +194,10 @@ class CheckoutHandler
 
         $req->checkoutSettings->redirectBackUrls->successUrl = $successUrl;
         $req->checkoutSettings->redirectBackUrls->failureUrl = $failureUrl;
+        // $req->checkoutSettings->webHooksUrl = WebhookHandler::$webhook_endpoint;
+
         $req->transactionAmount->total = intval(self::$reference_total);
 
         return $req;
-    }
-
-    /**
-     * Short hand to make a JS log to browser developer console.
-     * 
-     * @param string $msg Message to be passed to console
-     * @param bool $error Optional, if true console will log as JS error
-     */
-    private static function log(string $msg, bool $error = false): void
-    {
-        $type = $error ? 'error' : 'log';
-
-        echo '<script>console.' . $type . '("' . $msg . '")</script>';
-    }
-
-    /**
-     * Save data into browser local storage (leveraging javascript).
-     * This serves as cache for generated checkout URLs.
-     */
-    private function cache_to_storage(string $value): void
-    {
-        echo '<script>localStorage.setItem("checkout-url-cache", "' . $value . '");</script>';
-    }
-
-    /**
-     * Check whether local storage has an entry of a given key
-     * @return bool True if key exists in local storage
-     * @todo Need to find workaround for the fact that checking local storage
-     * occurs in Javascript. However the response from Javascript has to be passed back to PHP somehow.
-     */
-    private function is_cached(): bool
-    {
-        echo '<script>
-        if (localStorage.getItem("checkout-url-cache") === null) {
-            //
-        }
-        </script>';
-
-        return false;
     }
 }
