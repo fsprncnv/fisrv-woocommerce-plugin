@@ -59,8 +59,14 @@ class CheckoutViewRenderer
 
     /**
      * This block instantiates the HTML markup for the button component.
+     * There are two version of the button renderer. One as form (this) and the other as HTML button.
+     * 
+     * @todo Decide on better component type. Form is needed when workaround is used where button onclick is handled via form POST.
+     * If the workaround is removed, this method is obsolete.
+     * @see CheckoutHandler::inject_fiserv_checkout_button
+     * @see render_checkout_button_as_button
      */
-    public static function render_checkout_button(): void
+    public static function render_checkout_button_as_form(): void
     {
         $form_post_target = '#';
 
@@ -72,35 +78,58 @@ class CheckoutViewRenderer
 
         $component =
             '
+            <form action="' . $form_post_target . '" method="post">
+                <input type="hidden" name="action" value="some_action" />
+                ' . self::button_html($button_text, $loader_html) . '
+            </form>
+        ';
+
+        echo $component;
+    }
+
+    /**
+     * This block instantiates the HTML markup for the button component.
+     * This renders the checkout button as HTML button.
+     * 
+     * @see render_checkout_button_as_form
+     */
+    public static function render_checkout_button_as_button(): void
+    {
+        $loader_html = '
+        <div id="loader-spinner" class="lds-ellipsis hidden"><div></div><div></div><div></div><div></div></div>
+        ';
+
+        $button_text = CheckoutHandler::hasRequestFailed() ? 'Something went wrong. Try again.' : self::$default_button_text;
+        echo self::button_html($button_text, $loader_html);
+    }
+
+    public static function button_html($button_text, $loader_html)
+    {
+        return '
             <style>' . Assets::$loader_css . '</style>
             <script>
                 function load() { 
                     document.getElementById(\'loader-spinner\').classList.add(\'show\');
                 }
             </script>
-            <form action="' . $form_post_target . '" method="post">
-                <input type="hidden" name="action" value="some_action" />
-                <button 
-                    id="checkout-btn-target"
-                    onclick="load()"
-                    type="submit"
-                    class="checkout-button button alt"
-                    style="
-                        margin: 2rem 2rem 0 0;
-                        background-color: #ff6600;
-                        font-weight: 700;
-                        padding: 1em;
-                        font-size: 1.25em;
-                        text-align: center; width: 100%;
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;">
-                    ' . $button_text . '
-                    ' . $loader_html . '
-                </button>
-            </form>
+            <button 
+                id="checkout-btn-target"
+                onclick="load()"
+                type="submit"
+                class="checkout-button button alt"
+                style="
+                    margin: 2rem 2rem 0 0;
+                    background-color: #ff6600;
+                    font-weight: 700;
+                    padding: 1em;
+                    font-size: 1.25em;
+                    text-align: center; width: 100%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;">
+                ' . $button_text . '
+                ' . $loader_html . '
+            </button>
         ';
-
-        echo $component;
     }
 }

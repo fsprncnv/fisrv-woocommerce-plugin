@@ -73,6 +73,8 @@ class CheckoutHandler
     {
         self::$domain = get_site_url();
 
+        remove_action('woocommerce_checkout_process', [$this, 'woocommerce_checkout_process']);
+
         remove_action('woocommerce_order_button_html', [$this, 'woocommerce_order_button_html']);
         add_filter('woocommerce_cart_needs_payment', '__return_false');
 
@@ -107,7 +109,7 @@ class CheckoutHandler
         $refer = esc_url(admin_url('admin-post.php'));
         $nonce = wp_create_nonce('fiserv_plugin_some_action_nonce');
 
-        CheckoutViewRenderer::render_checkout_button();
+        CheckoutViewRenderer::render_checkout_button_as_button();
     }
 
 
