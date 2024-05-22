@@ -2,6 +2,9 @@
 
 if (!defined('ABSPATH')) exit;
 
+/**
+ * This class handles the settings page for plugin configuration and SDK/API parameters.
+ */
 class PluginSettings extends WC_Settings_Page
 {
     /**
@@ -18,7 +21,9 @@ class PluginSettings extends WC_Settings_Page
         parent::__construct();
     }
 
-
+    /**
+     * Output to WC admin settings instance
+     */
     public function output()
     {
         $settings = $this->get_settings();
@@ -26,6 +31,11 @@ class PluginSettings extends WC_Settings_Page
     }
 
 
+    /**
+     * On save button press, parameters become available via Wordpress hook
+     * 
+     * @see get_option
+     */
     public function save()
     {
         $settings = $this->get_settings();
@@ -33,6 +43,9 @@ class PluginSettings extends WC_Settings_Page
     }
 
 
+    /**
+     * Initialize setting fields
+     */
     public function get_settings()
     {
         $settings = [
@@ -40,7 +53,7 @@ class PluginSettings extends WC_Settings_Page
             self::render_textfield('API Key', '7V26q9EbRO2hCmpWARdFtOyrJ0A4cHEP', 'password'),
             self::render_textfield('API Secret', '7V26q9EbRO2hCmpWARdFtOyrJ0A4cHEP', 'password'),
             self::render_textfield('Store ID', '72305408'),
-            self::render_textfield('Merchant Transaction ID', 'AB-1234'),
+            self::render_textfield('Button Content', 'AB-1234'),
             self::render_textfield('Preferred Methods', 'Credit Card'),
             array('type' => 'sectionend', 'id' => 'api_options'),
         ];
@@ -48,6 +61,15 @@ class PluginSettings extends WC_Settings_Page
         return $settings;
     }
 
+    /**
+     * Render a text field into settings page.
+     * 
+     * @param string $title Option title
+     * @param string $default Default value
+     * @param string $type 'text' for plain text and 'password' for password string
+     * @param bool $required If true, field has to have some value
+     * @return array List containing text field data
+     */
     private function render_textfield(string $title, string $default = '', string $type = 'text', bool $required = false): array
     {
         return [
@@ -60,9 +82,16 @@ class PluginSettings extends WC_Settings_Page
         ];
     }
 
+    /**
+     * Utility method to create ID string from given text field title.
+     * Example: 'API Key' -> 'api_key';
+     * 
+     * @param string $str String to strip
+     * @return string Resulting string that is transformed
+     */
     private static function strp(string $str): string
     {
-        $str = str_replace(' ', '', $str);
+        $str = str_replace(' ', '_', $str);
         return strtolower($str);
     }
 }
