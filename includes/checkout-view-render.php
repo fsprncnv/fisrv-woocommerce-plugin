@@ -10,7 +10,7 @@ class CheckoutViewRenderer
      * Fill out text fields on billing section on checkout
      * with default values.
      */
-    public static function set_input_placeholders($fields)
+    public static function fill_out_fields($fields)
     {
         $fields['billing']['billing_first_name']['default'] = 'Eartha';
         $fields['billing']['billing_last_name']['default'] = 'Kitt';
@@ -18,6 +18,7 @@ class CheckoutViewRenderer
         $fields['billing']['billing_postcode']['default'] = '60359';
         $fields['billing']['billing_city']['default'] = 'Frankfurt';
         $fields['billing']['billing_phone']['default'] = '0162345678';
+        $fields['billing']['billing_email']['default'] = 'earth.kitt@dev.com';
         return $fields;
     }
 

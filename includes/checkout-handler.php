@@ -3,12 +3,18 @@
 namespace FiservWoocommercePlugin;
 
 use CheckoutViewRenderer;
+use Config;
 use Exception;
 use Fiserv\CheckoutSolution;
+use JSUtil;
 use PaymentLinkRequestBody;
 use PostCheckoutsResponse;
 use Util;
+use WebhookHandler;
 
+/**
+ * This class handles logic involving the checkout
+ */
 class CheckoutHandler
 {
     /**
@@ -68,21 +74,37 @@ class CheckoutHandler
 
     /**
      * Constuctor mounting the checkout logic and button UI injection.
+     * Set origin as plugin in request header (useeg agent).
      */
     public function __construct()
     {
+        Config::$ORIGIN = 'Fiserv Woocommerce Plugin';
+
         self::$domain = get_site_url();
+        add_action('init', [$this, 'output_buffer']);
 
         remove_action('woocommerce_checkout_process', [$this, 'woocommerce_checkout_process']);
 
-        remove_action('woocommerce_order_button_html', [$this, 'woocommerce_order_button_html']);
+        add_filter('woocommerce_order_button_html', '__return_false', 1);
         add_filter('woocommerce_cart_needs_payment', '__return_false');
+        // remove_action('woocommerce_checkout_order_review', 'woocommerce_checkout_payment', 20);
 
-        add_action('woocommerce_checkout_after_customer_details', [$this, 'inject_fiserv_checkout_button'], 1);
-        add_action('init', [$this, 'output_buffer']);
+        add_action('woocommerce_after_order_notes', [CheckoutViewRenderer::class, 'render_checkout_button_as_button']);
+        add_filter('woocommerce_checkout_fields', [CheckoutViewRenderer::class, 'fill_out_fields']);
 
-        add_filter('woocommerce_checkout_fields', [CheckoutViewRenderer::class, 'set_input_placeholders']);
-        add_action('woocommerce_review_order_before_payment', [CheckoutViewRenderer::class, 'inject_payment_options'], 1);
+        // add_action('woocommerce_thankyou', [$this, 'woocommerce_thankyou_redirect'], 1);
+        // add_action('woocommerce_checkout_order_review', [$this, 'after_submit']);
+        add_action('woocommerce_checkout_process', [$this, 'after_submit'], 1);
+    }
+
+    public function after_submit($order_id)
+    {
+        self::$order_id  = $order_id;
+        $order = wc_get_order($order_id);
+        self::$order_key = $order->get_order_key();
+
+        // wp_redirect('https://stackoverflow.com/');
+        self::redirect_to_checkout();
     }
 
 
@@ -102,12 +124,17 @@ class CheckoutHandler
     function inject_fiserv_checkout_button()
     {
 
-        if (isset($_POST['action'])) {
-            self::redirect_to_checkout();
-        }
+        // if (isset($_POST['action'])) {
+        //     self::redirect_to_checkout();
+        // }
 
-        $refer = esc_url(admin_url('admin-post.php'));
-        $nonce = wp_create_nonce('fiserv_plugin_some_action_nonce');
+        // $refer = esc_url(admin_url('admin-post.php'));
+        // $nonce = wp_create_nonce('fiserv_plugin_some_action_nonce');
+
+        // 5579346132831154
+        // Japheth Massaro
+        // 372
+        // 04/29
 
         CheckoutViewRenderer::render_checkout_button_as_button();
     }
@@ -127,10 +154,11 @@ class CheckoutHandler
         ) {
             self::$reference_total = $cart_total;
             self::$checkout_link = self::create_checkout_link();
+            // self::$checkout_link = "https://stackoverflow.com/";
         }
 
+        JSUtil::log("REDIRECT OUTPUT: " . self::$checkout_link . " END");
         wp_redirect(self::$checkout_link, 301);
-        // exit();
     }
 
     /**
@@ -163,7 +191,7 @@ class CheckoutHandler
      * so that fail and loading state can be shown on view.
      * 
      * @param PaymentLinkRequestBody $req Request to be sent to SDK
-     * @return PostCheckoutsRepsonse $res Response from SDK
+     * @return PostCheckoutsResponse $res Response from SDK
      * @return bool false if request has failed
      */
     private function invoke_request(PaymentLinkRequestBody $req): PostCheckoutsResponse | false
@@ -191,15 +219,25 @@ class CheckoutHandler
      */
     private static function configure_checkout_request(PaymentLinkRequestBody $req): PaymentLinkRequestBody
     {
-        $successUrl = self::$domain . '/checkout/order-received';
-        $failureUrl = self::$domain . '/checkout/order-failed';
+        $successUrl = self::$domain . '/checkout/order-received/' . self::$order_id . '/?key=' . self::$order_key;
+        $failureUrl = self::$domain . '/checkout/order-received/' . self::$order_id . '/?key=' . self::$order_key;
 
         $req->checkoutSettings->redirectBackUrls->successUrl = $successUrl;
         $req->checkoutSettings->redirectBackUrls->failureUrl = $failureUrl;
-        // $req->checkoutSettings->webHooksUrl = WebhookHandler::$webhook_endpoint;
+        $req->checkoutSettings->webHooksUrl = WebhookHandler::$webhook_endpoint;
 
         $req->transactionAmount->total = intval(self::$reference_total);
 
         return $req;
+    }
+
+    public static string $order_id = "";
+    public static string $order_key = "";
+
+    public function woocommerce_thankyou_redirect($order_id)
+    {
+        $order = wc_get_order($order_id);
+        $order->update_meta_data('_thankyou_action_done', true);
+        $order->save();
     }
 }
