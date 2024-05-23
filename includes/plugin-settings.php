@@ -13,11 +13,11 @@ class PluginSettings extends WC_Settings_Page
     public function __construct()
     {
         $this->id = 'checkout_settings';
-        $this->label = 'Checkout Solution';
+        $this->label = 'Fiserv Plugin';
 
-        add_filter('woocommerce_settings_tabs_array', array($this, 'add_settings_page'));
-        add_action('woocommerce_settings_' . $this->id, array($this, 'output'));
-        add_action('woocommerce_settings_save_' . $this->id, array($this, 'save'));
+        add_action('woocommerce_settings_' . $this->id, [$this, 'output']);
+        add_action('woocommerce_settings_save_' . $this->id, [$this, 'save']);
+
         parent::__construct();
     }
 
@@ -78,7 +78,7 @@ class PluginSettings extends WC_Settings_Page
             'css' => 'min-width:300px;',
             'default' => $default,
             'type' => $type,
-            'custom_attributes' => array('required' => 'required')
+            'custom_attributes' => ['required' => 'required']
         ];
     }
 
