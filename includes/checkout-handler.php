@@ -78,23 +78,48 @@ class CheckoutHandler
      */
     public function __construct()
     {
-        Config::$ORIGIN = 'Fiserv Woocommerce Plugin';
-
+        self::init_fiserv_sdk();
         self::$domain = get_site_url();
+
+        /** On init, active output buffer (to enable redirects) */
         add_action('init', [$this, 'output_buffer']);
 
-        remove_action('woocommerce_checkout_process', [$this, 'woocommerce_checkout_process']);
+        /** Remove default action after pressing place order (not working)*/
+        remove_all_actions('woocommerce_checkout_process');
+        remove_all_actions('woocommerce_review_order_after_submit');
+        remove_all_actions('woocommerce_review_order_before_submit');
 
-        add_filter('woocommerce_order_button_html', '__return_false', 1);
-        add_filter('woocommerce_cart_needs_payment', '__return_false');
-        // remove_action('woocommerce_checkout_order_review', 'woocommerce_checkout_payment', 20);
+        /** Remove payment original Place Order button */
+        // add_filter('woocommerce_order_button_html', '__return_false', 1);
 
+        /** Remove payment method selection section */
+        // add_filter('woocommerce_cart_needs_payment', '__return_false');
+
+        /** Use CheckoutViewRenderer. Render Place Order button and fill out form fields */
         add_action('woocommerce_after_order_notes', [CheckoutViewRenderer::class, 'render_checkout_button_as_button']);
         add_filter('woocommerce_checkout_fields', [CheckoutViewRenderer::class, 'fill_out_fields']);
 
+        /** Intercept woocommerce action after pressing Place Order button (checkout process) */
+        add_action('woocommerce_checkout_process', [$this, 'after_submit'], 1);
+
+        add_action('woocommerce_checkout_update_order_review', [$this, 'after_submit'], 1);
+
+        // remove_action('woocommerce_checkout_order_review', 'woocommerce_checkout_payment', 20);
         // add_action('woocommerce_thankyou', [$this, 'woocommerce_thankyou_redirect'], 1);
         // add_action('woocommerce_checkout_order_review', [$this, 'after_submit']);
-        add_action('woocommerce_checkout_process', [$this, 'after_submit'], 1);
+    }
+
+
+    /**
+     * Inititalize configuraiton parameters of Fiserv SDK.
+     * @todo This is subject to change, since Config API will change in coming
+     * versions. 
+     */
+    private static function init_fiserv_sdk(): void
+    {
+        Config::$ORIGIN = 'Fiserv Woocommerce Plugin';
+        Config::$API_KEY = get_option('api_key_id');
+        Config::$API_SECRET = get_option('api_secret_id');
     }
 
     public function after_submit($order_id)
@@ -158,21 +183,28 @@ class CheckoutHandler
         }
 
         JSUtil::log("REDIRECT OUTPUT: " . self::$checkout_link . " END");
-        wp_redirect(self::$checkout_link, 301);
+        // wp_redirect(self::$checkout_link, 301);
     }
 
     /**
      * Get cart data from WC stub to be served to Checkout Solution.
+     * Block handling requests via SDK. Possible SDK exceptions are caught
+     * so that fail and loading state can be shown on view.
      * 
+     * @throws Exception Error thrown from Fiserv SDK (Request Errors). Error is caught by setting 
+     * returned checkout link to '#' (no redirect)
      * @return string URL of hosted payment page
      */
     private function create_checkout_link(): string
     {
         $req = new PaymentLinkRequestBody(self::paymentLinksRequestContent);
         $req = self::configure_checkout_request($req);
-        $res = self::invoke_request($req);
 
-        if (!$res) {
+        try {
+            $res = CheckoutSolution::postCheckouts($req);
+        } catch (Exception $th) {
+            Util::log("Fiserv SDK Error: " . $th->getMessage(), 1);
+            self::$requestFailed = true;
             return "#";
         }
 
@@ -181,30 +213,14 @@ class CheckoutHandler
 
     private static bool $requestFailed = false;
 
-    public static function hasRequestFailed(): bool
+    /**
+     * Getter for requestFailed flag
+     * 
+     * @return bool True if request has failed
+     */
+    public static function get_request_failed(): bool
     {
         return self::$requestFailed;
-    }
-
-    /**
-     * Block handling requests via SDK. Possible SDK exceptions are caught
-     * so that fail and loading state can be shown on view.
-     * 
-     * @param PaymentLinkRequestBody $req Request to be sent to SDK
-     * @return PostCheckoutsResponse $res Response from SDK
-     * @return bool false if request has failed
-     */
-    private function invoke_request(PaymentLinkRequestBody $req): PostCheckoutsResponse | false
-    {
-        try {
-            $res = CheckoutSolution::postCheckouts($req);
-            return $res;
-        } catch (Exception $th) {
-            Util::log("Fiserv SDK Error: " . $th->getMessage(), 1);
-            $this->requestFailed = true;
-        }
-
-        return false;
     }
 
     /**
@@ -231,8 +247,8 @@ class CheckoutHandler
         return $req;
     }
 
-    public static string $order_id = "";
-    public static string $order_key = "";
+    public static string $order_id;
+    public static string $order_key;
 
     public function woocommerce_thankyou_redirect($order_id)
     {
