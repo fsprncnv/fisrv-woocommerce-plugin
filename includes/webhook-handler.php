@@ -3,10 +3,10 @@
 class WebhookHandler
 {
     public static string $webhook_endpoint = '/fiserv_woocommerce_plugin/v1';
-
     private static array $event_log = [];
-
     public static $instance;
+    public static int $log_size = 0;
+    public static $self_hash_reference;
 
     public static function get()
     {
@@ -21,6 +21,9 @@ class WebhookHandler
         self::$instance = $this;
         add_action('rest_api_init', [$this, 'register_post_route']);
         add_action('rest_api_init', [$this, 'register_get_route']);
+
+        self::$self_hash_reference = spl_object_hash($this);
+        self::$log_size = count(self::$event_log);
     }
 
     /**
@@ -39,14 +42,12 @@ class WebhookHandler
         try {
             array_push(self::$event_log, "Message at " . time());
             $json = json_decode($request_body);
-            $current_instance = spl_object_hash($this);
-            $log_size = count(self::$event_log);
 
+            $order_id = intval($json->orderId);
             $response = new WP_REST_Response($json);
             $response->set_status(200);
 
-            $order_id = intval($json['orderId']);
-            self::store_data_into_orders_meta($order_id, $request_body);
+            self::store_data_into_orders_meta($order_id, json_encode($json));
 
             return $response;
         } catch (Exception $e) {
@@ -92,6 +93,9 @@ class WebhookHandler
     /**
      * Store event log data into Wordpress table as order
      * meta data.
+     * 
+     * @param int $order_id Identifier of corresponding order
+     * @param string $event_data Webhook event sent from checkout solution
      */
     private static function store_data_into_orders_meta(int $order_id, string $event_data): void
     {
