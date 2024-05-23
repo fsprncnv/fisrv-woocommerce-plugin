@@ -75,7 +75,7 @@ class CheckoutViewRenderer
         <div id="loader-spinner" class="lds-ellipsis hidden"><div></div><div></div><div></div><div></div></div>
         ';
 
-        $button_text = CheckoutHandler::hasRequestFailed() ? 'Something went wrong. Try again.' : self::$default_button_text;
+        $button_text = CheckoutHandler::get_request_failed() ? 'Something went wrong. Try again.' : get_option('button_content_id', self::$default_button_text);
 
         $component =
             '
@@ -100,7 +100,7 @@ class CheckoutViewRenderer
         <div id="loader-spinner" class="lds-ellipsis hidden"><div></div><div></div><div></div><div></div></div>
         ';
 
-        $button_text = CheckoutHandler::hasRequestFailed() ? 'Something went wrong. Try again.' : self::$default_button_text;
+        $button_text = CheckoutHandler::get_request_failed() ? 'Something went wrong. Try again.' : get_option('button_content_id', self::$default_button_text);
         echo self::button_html($button_text, $loader_html);
     }
 
