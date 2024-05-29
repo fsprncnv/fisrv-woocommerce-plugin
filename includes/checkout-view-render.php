@@ -64,7 +64,6 @@ class CheckoutViewRenderer
      * 
      * @todo Decide on better component type. Form is needed when workaround is used where button onclick is handled via form POST.
      * If the workaround is removed, this method is obsolete.
-     * @see CheckoutHandler::inject_fiserv_checkout_button
      * @see render_checkout_button_as_button
      */
     public static function render_checkout_button_as_form(): void
@@ -104,19 +103,47 @@ class CheckoutViewRenderer
         echo self::button_html($button_text, $loader_html);
     }
 
-    public static function button_html($button_text, $loader_html)
+    /**
+     * Javascript function that serves as dispatcher to let PHP know when to trigger some logic.
+     * @return string Javascript code as escaped string
+     */
+    private static function js_post_dispatch(): string
     {
-        return '
+        return esc_js('
+            function dispatch() { 
+                const msg = {"fiserv-checkout-nonce": "24"};
+                const res = fetch("#", {
+                    method: "POST",
+                    headers: {"Content-Type: application/json"},
+                    body: {JSON.stringify(msg)},
+                });
+            }
+        ');
+    }
+
+    /**
+     * Markup for button render component. 
+     * 
+     * @param string $button_text Variable text on button
+     * @oaram string $loader_html HTML content for loader animation
+     * @return string Escaped string serving button as markup
+     */
+    public static function button_html($button_text, $loader_html): string
+    {
+        $refer = "https://excalidraw.com/";
+
+        return ('
             <style>' . Assets::$loader_css . '</style>
             <script>
-                function load() { 
+                async function load() { 
                     document.getElementById(\'loader-spinner\').classList.add(\'show\');
+                    const msg = {"fiserv-checkout-nonce": "24"};
                 }
             </script>
-            <button 
+            <button
+                type="submit"
                 id="checkout-btn-target"
                 onclick="load()"
-                type="submit"
                 class="checkout-button button alt"
                 style="
                     margin: 2rem 2rem 0 0;
@@ -131,6 +158,6 @@ class CheckoutViewRenderer
                 ' . $button_text . '
                 ' . $loader_html . '
             </button>
-        ';
+        ');
     }
 }

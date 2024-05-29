@@ -79,6 +79,9 @@ if (!class_exists('fiserv_woocommerce_plugin')) :
 
 			new CheckoutHandler();
 			new WebhookHandler();
+
+			add_filter('woocommerce_payment_gateways', [$this, 'payment_gateways_callback']);
+			add_filter('woocommerce_get_settings_pages',  [$this, 'get_checkout_settings']);
 		}
 
 		/**
@@ -106,12 +109,25 @@ if (!class_exists('fiserv_woocommerce_plugin')) :
 		 */
 		public static function instance()
 		{
-
 			if (null === self::$instance) {
 				self::$instance = new self();
 			}
 
 			return self::$instance;
+		}
+
+		public function payment_gateways_callback($methods)
+		{
+			new CheckoutGateway();
+			$methods[] = 'CheckoutGateway';
+			return $methods;
+		}
+
+
+		function get_checkout_settings($woocommerce_settings)
+		{
+			$woocommerce_settings[] = new PluginSettings();
+			return $woocommerce_settings;
 		}
 	}
 endif;
@@ -133,12 +149,4 @@ function fiserv_woocommerce_plugin_init()
 	}
 
 	fiserv_woocommerce_plugin::instance();
-}
-
-add_filter('woocommerce_get_settings_pages',  'get_checkout_settings');
-
-function get_checkout_settings($woocommerce_settings)
-{
-	$woocommerce_settings[] = new PluginSettings();
-	return $woocommerce_settings;
 }

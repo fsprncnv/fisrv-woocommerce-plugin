@@ -19,8 +19,8 @@ class WebhookHandler
     public function __construct()
     {
         self::$instance = $this;
-        add_action('rest_api_init', [$this, 'register_post_route']);
-        add_action('rest_api_init', [$this, 'register_get_route']);
+        add_action('rest_api_init', [$this, 'register_consume_events']);
+        add_action('rest_api_init', [$this, 'register_get_events']);
 
         self::$self_hash_reference = spl_object_hash($this);
         self::$log_size = count(self::$event_log);
@@ -35,7 +35,7 @@ class WebhookHandler
      * 
      * @todo Error handling when handling response object !!
      */
-    public function consume_event(WP_REST_Request $request)
+    public function consume_events(WP_REST_Request $request)
     {
         $request_body = $request->get_body();
 
@@ -59,11 +59,11 @@ class WebhookHandler
      * Register POST route at /wp-json/fiserv_woocommerce_plugin/v1/api.
      * Receive from events from Fiserv checkout solution
      */
-    public function register_post_route()
+    public function register_consume_events()
     {
         register_rest_route(self::$webhook_endpoint, '/events', [
             'methods' => 'POST',
-            'callback' => [$this, 'consume_event']
+            'callback' => [$this, 'consume_events']
         ]);
     }
 
@@ -73,20 +73,28 @@ class WebhookHandler
      * 
      * @return WP_REST_Response Response data
      */
-    public static function serve_event_logs()
+    public static function get_events_callback(): WP_REST_Response
     {
-        return new WP_REST_Response(self::$cur);
+        global $wpdb;
+        $res = $wpdb->get_results("select meta_value from wp_wc_orders_meta where meta_key = '_fiserv_plugin_webhook_event'");
+        $out = [];
+
+        foreach ($res as $entry) {
+            array_push($out, json_decode($entry->meta_value));
+        }
+
+        return new WP_REST_Response($out);
     }
 
     /**
      * Register GET route at /wp-json/fiserv_woocommerce_plugin/v1/api.
      * Display all entries of event log.
      */
-    public function register_get_route()
+    public function register_get_events()
     {
         register_rest_route(self::$webhook_endpoint, '/events', [
             'methods' => 'GET',
-            'callback' => [$this, 'serve_event_logs']
+            'callback' => [$this, 'get_events_callback']
         ]);
     }
 
@@ -109,5 +117,17 @@ class WebhookHandler
 
         $format = ['%d', '%s', '%s'];
         $insert = $wpdb->insert('wp_wc_orders_meta', $data, $format);
+    }
+
+    public function register_button_dispatcher()
+    {
+        register_rest_route(self::$webhook_endpoint, '/fetch-checkout', [
+            'methods' => 'GET',
+            'callback' => 'button_dispatcher_callback',
+        ]);
+    }
+
+    public function button_dispatcher_callback(): void
+    {
     }
 }

@@ -8,8 +8,7 @@ use Exception;
 use Fiserv\CheckoutSolution;
 use JSUtil;
 use PaymentLinkRequestBody;
-use PostCheckoutsResponse;
-use Util;
+use Throwable;
 use WebhookHandler;
 
 /**
@@ -29,42 +28,22 @@ class CheckoutHandler
         ],
         'checkoutSettings' => [
             'locale' => 'en_GB',
-            'webHooksUrl' => 'http://example.com/',
+            'webHooksUrl' => 'https://nonce.com',
             'redirectBackUrls' => [
-                'successUrl' => 'http://example.com/',
-                'failureUrl' => 'http://example.com/'
+                'successUrl' => 'https://nonce.com',
+                'failureUrl' => 'https://nonce.com'
             ]
         ],
         'paymentMethodDetails' => [
             'cards' => [
-                'authenticationPreferences' => [
-                    'challengeIndicator' => '01',
-                    'skipTra' => false,
-                ],
                 'createToken' => [
-                    'declineDuplicateToken' => false,
-                    'reusable' => true,
                     'toBeUsedFor' => 'UNSCHEDULED',
                 ],
-                'tokenBasedTransaction' => ['transactionSequence' => 'FIRST']
             ],
-            'sepaDirectDebit' => ['transactionSequenceType' => 'SINGLE']
         ],
-        'merchantTransactionId' => 'AB-1234',
-        'storeId' => '72305408',
+        'storeId' => 'NULL',
+        'order' => ['orderId' => 'NULL'],
     ];
-
-    /**
-     * URL of hosted payment page. 
-     * Number sign if not yet set (loading state).
-     */
-    private static string $checkout_link = '#';
-
-    /**
-     * Reference to current sum total of cart. 
-     * This is used to compare to newer values and detect changes of cart.
-     */
-    private static float $reference_total = 0;
 
     /**
      * Hostname of Wordpress page.
@@ -84,13 +63,8 @@ class CheckoutHandler
         /** On init, active output buffer (to enable redirects) */
         add_action('init', [$this, 'output_buffer']);
 
-        /** Remove default action after pressing place order (not working)*/
-        remove_all_actions('woocommerce_checkout_process');
-        remove_all_actions('woocommerce_review_order_after_submit');
-        remove_all_actions('woocommerce_review_order_before_submit');
-
         /** Remove payment original Place Order button */
-        // add_filter('woocommerce_order_button_html', '__return_false', 1);
+        add_filter('woocommerce_order_button_html', '__return_false', 1);
 
         /** Remove payment method selection section */
         // add_filter('woocommerce_cart_needs_payment', '__return_false');
@@ -98,15 +72,6 @@ class CheckoutHandler
         /** Use CheckoutViewRenderer. Render Place Order button and fill out form fields */
         add_action('woocommerce_after_order_notes', [CheckoutViewRenderer::class, 'render_checkout_button_as_button']);
         add_filter('woocommerce_checkout_fields', [CheckoutViewRenderer::class, 'fill_out_fields']);
-
-        /** Intercept woocommerce action after pressing Place Order button (checkout process) */
-        add_action('woocommerce_checkout_process', [$this, 'after_submit'], 1);
-
-        add_action('woocommerce_checkout_update_order_review', [$this, 'after_submit'], 1);
-
-        // remove_action('woocommerce_checkout_order_review', 'woocommerce_checkout_payment', 20);
-        // add_action('woocommerce_thankyou', [$this, 'woocommerce_thankyou_redirect'], 1);
-        // add_action('woocommerce_checkout_order_review', [$this, 'after_submit']);
     }
 
 
@@ -115,23 +80,13 @@ class CheckoutHandler
      * @todo This is subject to change, since Config API will change in coming
      * versions. 
      */
-    private static function init_fiserv_sdk(): void
+    public static function init_fiserv_sdk(): void
     {
-        Config::$ORIGIN = 'Fiserv Woocommerce Plugin';
+        Config::$ORIGIN = 'Woocommerce Plugin';
         Config::$API_KEY = get_option('api_key_id');
         Config::$API_SECRET = get_option('api_secret_id');
+        Config::$STORE_ID = get_option('store_id_id');
     }
-
-    public function after_submit($order_id)
-    {
-        self::$order_id  = $order_id;
-        $order = wc_get_order($order_id);
-        self::$order_key = $order->get_order_key();
-
-        // wp_redirect('https://stackoverflow.com/');
-        self::redirect_to_checkout();
-    }
-
 
     /**
      * This method turns on output buffering. See references for more info on output buffering.
@@ -144,47 +99,12 @@ class CheckoutHandler
     }
 
     /**
-     * Inject the HTML button element onto the cart view. Also bind action method to that button.
+     * CC Sample Data
+     * 5579346132831154
+     * Japheth Massaro
+     * 372
+     * 04/29
      */
-    function inject_fiserv_checkout_button()
-    {
-
-        // if (isset($_POST['action'])) {
-        //     self::redirect_to_checkout();
-        // }
-
-        // $refer = esc_url(admin_url('admin-post.php'));
-        // $nonce = wp_create_nonce('fiserv_plugin_some_action_nonce');
-
-        // 5579346132831154
-        // Japheth Massaro
-        // 372
-        // 04/29
-
-        CheckoutViewRenderer::render_checkout_button_as_button();
-    }
-
-
-    /**
-     * Generate checkout link (if it does not exist already)
-     * and redirect to it.
-     */
-    private function redirect_to_checkout()
-    {
-        $cart_total = floatval(WC()->cart->get_total('non_view'));
-
-        if (
-            self::$checkout_link === '#' ||
-            $cart_total !== self::$reference_total
-        ) {
-            self::$reference_total = $cart_total;
-            self::$checkout_link = self::create_checkout_link();
-            // self::$checkout_link = "https://stackoverflow.com/";
-        }
-
-        JSUtil::log("REDIRECT OUTPUT: " . self::$checkout_link . " END");
-        // wp_redirect(self::$checkout_link, 301);
-    }
 
     /**
      * Get cart data from WC stub to be served to Checkout Solution.
@@ -194,21 +114,50 @@ class CheckoutHandler
      * @throws Exception Error thrown from Fiserv SDK (Request Errors). Error is caught by setting 
      * returned checkout link to '#' (no redirect)
      * @return string URL of hosted payment page
+     * 
+     * @todo Currently, passing floats (to transaction amount) causes unexpected behaviour.
+     * Until float parameters are fixed, the total is cast to integers (amount is floored).
      */
-    private function create_checkout_link(): string
+    public static function create_checkout_link(string $order_id): string
     {
+        $order = wc_get_order($order_id);
+
         $req = new PaymentLinkRequestBody(self::paymentLinksRequestContent);
-        $req = self::configure_checkout_request($req);
+        $total = intval($order->get_total());
+
+        $order_uuid = $order_id . '#' . wp_generate_uuid4();
+        $order_key = $order->get_order_key();
+
+        $req->order->orderId = $order_uuid;
+        $req->transactionAmount->total = $total;
+
+        $successUrl = self::$domain . '/checkout/order-received/' . $order_id . '/?key=' . $order_key;
+        $failureUrl = self::$domain . '/checkout/order-received/' . $order_id . '/?key=' . $order_key;
+
+        $req->checkoutSettings->redirectBackUrls->successUrl = $successUrl;
+        $req->checkoutSettings->redirectBackUrls->failureUrl = $failureUrl;
+        $req->checkoutSettings->webHooksUrl = WebhookHandler::$webhook_endpoint . '/events';
 
         try {
             $res = CheckoutSolution::postCheckouts($req);
-        } catch (Exception $th) {
-            Util::log("Fiserv SDK Error: " . $th->getMessage(), 1);
+            return $res->checkout->redirectionUrl;
+        } catch (Throwable $th) {
+            echo $th;
             self::$requestFailed = true;
-            return "#";
+            return '#';
         }
+    }
 
-        return $res->checkout->redirectionUrl;
+    /**
+     * Parse concatenated order ID used by checkout solution (which is WC order ID + # + random UUID)
+     * to just WC order id. (String before #). 
+     * 
+     * @param string $order_uuid Concatenated WC order ID and random UUIDv4 -> 114#ca375f32-f4ff-4ec7-a92a-15f594e1bf58
+     * @return string Parsed WC order ID -> 114
+     */
+    private static function parse_order_uuid(string $order_uuid): string
+    {
+        return strtok($order_uuid, '#');
     }
 
     private static bool $requestFailed = false;
@@ -221,39 +170,5 @@ class CheckoutHandler
     public static function get_request_failed(): bool
     {
         return self::$requestFailed;
-    }
-
-    /**
-     * After default request params are set, some other
-     * params have to be set during run time (e.g. current cart total, success URL according to domain)
-     * 
-     * @todo Currently, passing floats (to transaction amount) causes unexpected behaviour.
-     * Until float parameters are fixed, the total is cast to integers (amount is floored).
-     * 
-     * @param PaymentLinkRequestBody $req Request to be modified
-     * @return PaymentLinkRequestBody Copy of request with changes applied
-     */
-    private static function configure_checkout_request(PaymentLinkRequestBody $req): PaymentLinkRequestBody
-    {
-        $successUrl = self::$domain . '/checkout/order-received/' . self::$order_id . '/?key=' . self::$order_key;
-        $failureUrl = self::$domain . '/checkout/order-received/' . self::$order_id . '/?key=' . self::$order_key;
-
-        $req->checkoutSettings->redirectBackUrls->successUrl = $successUrl;
-        $req->checkoutSettings->redirectBackUrls->failureUrl = $failureUrl;
-        $req->checkoutSettings->webHooksUrl = WebhookHandler::$webhook_endpoint;
-
-        $req->transactionAmount->total = intval(self::$reference_total);
-
-        return $req;
-    }
-
-    public static string $order_id;
-    public static string $order_key;
-
-    public function woocommerce_thankyou_redirect($order_id)
-    {
-        $order = wc_get_order($order_id);
-        $order->update_meta_data('_thankyou_action_done', true);
-        $order->save();
     }
 }

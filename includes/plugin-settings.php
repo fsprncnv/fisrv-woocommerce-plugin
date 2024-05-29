@@ -51,7 +51,7 @@ class PluginSettings extends WC_Settings_Page
         $settings = [
             array('title' => 'Fiserv Plugin Settings', 'type' => 'title', 'desc' => 'Configure Checkout Solution settings. Retrieve the API key and secret from the developer portal.', 'id' => 'api_options'),
             self::render_textfield('API Key', '7V26q9EbRO2hCmpWARdFtOyrJ0A4cHEP', 'password'),
-            self::render_textfield('API Secret', '7V26q9EbRO2hCmpWARdFtOyrJ0A4cHEP', 'password'),
+            self::render_textfield('API Secret', 'KCFGSj3JHY8CLOLzszFGHmlYQ1qI9OSqNEOUj24xTa0', 'password'),
             self::render_textfield('Store ID', '72305408'),
             self::render_textfield('Button Content', 'AB-1234'),
             self::render_textfield('Preferred Methods', 'Credit Card'),

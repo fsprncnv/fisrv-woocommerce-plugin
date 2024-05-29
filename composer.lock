@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "git@gitlab.mherrm.de:cgi/fiserv-php-client.git",
-                "reference": "5b4a4b59822e5fc4a7cad6d05b61e2b5e16fc497"
+                "reference": "a026c0bc7cb39ba23e37d06c7ecfd64cd19e064a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.mherrm.de/api/v4/projects/64/packages/composer/archives/fiserv/php-api-wrapper.zip?sha=5b4a4b59822e5fc4a7cad6d05b61e2b5e16fc497",
-                "reference": "5b4a4b59822e5fc4a7cad6d05b61e2b5e16fc497",
+                "url": "https://gitlab.mherrm.de/api/v4/projects/64/packages/composer/archives/fiserv/php-api-wrapper.zip?sha=a026c0bc7cb39ba23e37d06c7ecfd64cd19e064a",
+                "reference": "a026c0bc7cb39ba23e37d06c7ecfd64cd19e064a",
                 "shasum": ""
             },
             "require": {
@@ -243,12 +243,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "c5ee33df86c06b3278c670f64273b1ba768a0744"
+                "reference": "d327cf2acf22ad3d1fac5a382b7420bb6fd73bb8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/c5ee33df86c06b3278c670f64273b1ba768a0744",
-                "reference": "c5ee33df86c06b3278c670f64273b1ba768a0744",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/d327cf2acf22ad3d1fac5a382b7420bb6fd73bb8",
+                "reference": "d327cf2acf22ad3d1fac5a382b7420bb6fd73bb8",
                 "shasum": ""
             },
             "require": {
@@ -294,7 +294,7 @@
                 "issues": "https://github.com/nikic/PHP-Parser/issues",
                 "source": "https://github.com/nikic/PHP-Parser/tree/master"
             },
-            "time": "2024-04-19T12:04:10+00:00"
+            "time": "2024-05-21T16:12:19+00:00"
         },
         {
             "name": "phar-io/manifest",
@@ -740,12 +740,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "2a9828526fa4a3631e5a99012ef78f32a21804c8"
+                "reference": "0826901219afd2970f0ec8b7a5bce8f0e3000efc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/2a9828526fa4a3631e5a99012ef78f32a21804c8",
-                "reference": "2a9828526fa4a3631e5a99012ef78f32a21804c8",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/0826901219afd2970f0ec8b7a5bce8f0e3000efc",
+                "reference": "0826901219afd2970f0ec8b7a5bce8f0e3000efc",
                 "shasum": ""
             },
             "require": {
@@ -835,7 +835,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-05-11T05:25:28+00:00"
+            "time": "2024-05-16T09:07:01+00:00"
         },
         {
             "name": "sebastian/cli-parser",
