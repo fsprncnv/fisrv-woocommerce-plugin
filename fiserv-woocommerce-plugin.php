@@ -24,7 +24,6 @@ if (!defined('MAIN_PLUGIN_FILE')) {
 
 require_once plugin_dir_path(__FILE__) . '/vendor/autoload_packages.php';
 
-use FiservWoocommercePlugin\Admin\Dashboard;
 use FiservWoocommercePlugin\CheckoutHandler;
 
 // phpcs:disable WordPress.Files.FileName
@@ -74,7 +73,6 @@ if (!class_exists('fiserv_woocommerce_plugin')) :
 		public function __construct()
 		{
 			if (is_admin()) {
-				new Dashboard();
 			}
 
 			new CheckoutHandler();
@@ -126,7 +124,7 @@ if (!class_exists('fiserv_woocommerce_plugin')) :
 
 		function get_checkout_settings($woocommerce_settings)
 		{
-			$woocommerce_settings[] = new PluginSettings();
+			// $woocommerce_settings[] = new PluginSettings();
 			return $woocommerce_settings;
 		}
 	}

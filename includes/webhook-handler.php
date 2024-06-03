@@ -107,16 +107,8 @@ class WebhookHandler
      */
     private static function store_data_into_orders_meta(int $order_id, string $event_data): void
     {
-        global $wpdb;
-
-        $data = [
-            'order_id' => $order_id,
-            'meta_key' => '_fiserv_plugin_webhook_event',
-            'meta_value' => $event_data,
-        ];
-
-        $format = ['%d', '%s', '%s'];
-        $insert = $wpdb->insert('wp_wc_orders_meta', $data, $format);
+        $order = new WC_Order($order_id);
+        $order->update_meta_data('_fiserv_plugin_webhook_event', $event_data);
     }
 
     public function register_button_dispatcher()

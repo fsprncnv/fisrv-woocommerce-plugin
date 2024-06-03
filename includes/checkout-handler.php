@@ -2,11 +2,9 @@
 
 namespace FiservWoocommercePlugin;
 
-use CheckoutViewRenderer;
 use Config;
 use Exception;
 use Fiserv\CheckoutSolution;
-use JSUtil;
 use PaymentLinkRequestBody;
 use Throwable;
 use WebhookHandler;
@@ -57,21 +55,20 @@ class CheckoutHandler
      */
     public function __construct()
     {
-        self::init_fiserv_sdk();
         self::$domain = get_site_url();
 
         /** On init, active output buffer (to enable redirects) */
         add_action('init', [$this, 'output_buffer']);
 
         /** Remove payment original Place Order button */
-        add_filter('woocommerce_order_button_html', '__return_false', 1);
+        //add_filter('woocommerce_order_button_html', '__return_false', 1);
 
         /** Remove payment method selection section */
         // add_filter('woocommerce_cart_needs_payment', '__return_false');
 
         /** Use CheckoutViewRenderer. Render Place Order button and fill out form fields */
-        add_action('woocommerce_after_order_notes', [CheckoutViewRenderer::class, 'render_checkout_button_as_button']);
-        add_filter('woocommerce_checkout_fields', [CheckoutViewRenderer::class, 'fill_out_fields']);
+        // add_action('woocommerce_after_order_notes', [CheckoutViewRenderer::class, 'render_checkout_button_as_button']);
+        // add_filter('woocommerce_checkout_fields', [CheckoutViewRenderer::class, 'fill_out_fields']);
     }
 
 
@@ -80,12 +77,12 @@ class CheckoutHandler
      * @todo This is subject to change, since Config API will change in coming
      * versions. 
      */
-    public static function init_fiserv_sdk(): void
+    public static function init_fiserv_sdk($api_key, $api_secret, $store_id): void
     {
         Config::$ORIGIN = 'Woocommerce Plugin';
-        Config::$API_KEY = get_option('api_key_id');
-        Config::$API_SECRET = get_option('api_secret_id');
-        Config::$STORE_ID = get_option('store_id_id');
+        Config::$API_KEY = $api_key;
+        Config::$API_SECRET = $api_secret;
+        Config::$STORE_ID = $store_id;
     }
 
     /**
@@ -118,12 +115,12 @@ class CheckoutHandler
      * @todo Currently, passing floats (to transaction amount) causes unexpected behaviour.
      * Until float parameters are fixed, the total is cast to integers (amount is floored).
      */
-    public static function create_checkout_link(string $order_id): string
+    public static function create_checkout_link(string $order_id): array
     {
         $order = wc_get_order($order_id);
 
         $req = new PaymentLinkRequestBody(self::paymentLinksRequestContent);
-        $total = intval($order->get_total());
+        $total = ($order->get_total());
 
         $order_uuid = $order_id . '#' . wp_generate_uuid4();
         $order_key = $order->get_order_key();
@@ -131,20 +128,45 @@ class CheckoutHandler
         $req->order->orderId = $order_uuid;
         $req->transactionAmount->total = $total;
 
-        $successUrl = self::$domain . '/checkout/order-received/' . $order_id . '/?key=' . $order_key;
-        $failureUrl = self::$domain . '/checkout/order-received/' . $order_id . '/?key=' . $order_key;
+        $successUrl = $order->get_checkout_order_received_url();
+        $failureUrl = $order->get_checkout_payment_url();
 
         $req->checkoutSettings->redirectBackUrls->successUrl = $successUrl;
         $req->checkoutSettings->redirectBackUrls->failureUrl = $failureUrl;
-        $req->checkoutSettings->webHooksUrl = WebhookHandler::$webhook_endpoint . '/events';
+        $req->checkoutSettings->webHooksUrl = WebhookHandler::$webhook_endpoint . '/events?wc-order-id=' . $order_id;
 
         try {
-            $res = CheckoutSolution::postCheckouts($req);
-            return $res->checkout->redirectionUrl;
+            // $res = CheckoutSolution::postCheckouts($req);
+            $res = CheckoutSolution::createSEPACheckout(
+                intval($total),
+                $successUrl,
+                $failureUrl
+            );
+
+            $checkout_id = $res->checkout->checkoutId;
+
+            try {
+                $order = new WC_Order($order_id);
+                $order->update_meta_data('_fiserv_plugin_checkout_id', $checkout_id);
+                $order->update_meta_data('_fiserv_plugin_trace_id', $checkout_id);
+            } catch (Throwable $th) {
+                wc_add_notice('Order not found: ' . $th->getMessage(), 'error');
+            }
+
+
+            return [
+                'result' => 'success',
+                'redirect' => $res->checkout->redirectionUrl,
+            ];
         } catch (Throwable $th) {
-            echo $th;
+            // wc_add_notice('Checkout failed: ' . $th->getMessage(), 'error');
+            echo $th->getMessage();
             self::$requestFailed = true;
-            return '#';
+
+            return [
+                'result' => 'failure',
+                'redirect' => '/',
+            ];
         }
     }
 

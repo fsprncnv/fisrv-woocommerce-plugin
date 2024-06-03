@@ -1,7 +1,8 @@
 <?php
 
-use Fiserv\CheckoutSolution;
 use FiservWoocommercePlugin\CheckoutHandler;
+
+if (!defined('ABSPATH')) exit;
 
 class CheckoutGateway extends WC_Payment_Gateway
 {
@@ -11,10 +12,14 @@ class CheckoutGateway extends WC_Payment_Gateway
         $this->has_fields = false;
         $this->method_title = 'Fiserv Gateway';
         $this->method_description = 'Description for Fiserv Gateway';
+        $this->description = 'Custom Gateway';
+        $this->title = 'Fiserv Checkout';
+
         $this->init_form_fields();
-        $this->init();
-        $this->supports = array('subscriptions');
-        // $this->init_settings();
+        $this->init_settings();
+        $this->enabled = $this->get_option('enabled');
+
+        add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
     }
 
     public function init()
@@ -23,39 +28,56 @@ class CheckoutGateway extends WC_Payment_Gateway
         $this->description = get_option('description');
     }
 
+    public function get_settings()
+    {
+        return $this->plugin_settings;
+    }
+
+    private array $plugin_settings = [
+        'enabled' => [
+            'title'         => 'Enable/Disable',
+            'type'          => 'checkbox',
+            'label'         => 'Enable Custom Payment Gateway',
+            'default'       => 'yes'
+        ],
+        'api_key' => [
+            'title'         => 'API Key',
+            'type'          => 'text',
+            'description'   => 'Aquire API Key from Developer Portal',
+            'desc_tip'      => true,
+        ],
+        'api_secret' => [
+            'title'         => 'API Secret',
+            'type'          => 'password',
+            'description'   => 'Aquire API Secret from Developer Portal',
+            'desc_tip'      => true,
+        ],
+        'store_id' => [
+            'title'         => 'Store ID',
+            'type'          => 'text',
+            'description'   => 'Your Store ID for Checkout',
+            'desc_tip'      => true,
+        ],
+    ];
+
     public function init_form_fields()
     {
-        $this->form_fields = array(
-            'enabled' => array(
-                'title' => 'Toggle',
-                'type' => 'Enable/Disable',
-                'label' => 'Enable Fiserv Checkout',
-                'default' => 'yes'
-            ),
-            'title' => array(
-                'title' => 'Title',
-                'type' => 'text',
-                'description' => __('This controls the title which the user sees during checkout.', 'woocommerce'),
-                'default' => 'Checkout with Fiserv',
-                'desc_tip' => true,
-            ),
-            'description' => array(
-                'title' => __('Customer Message', 'firstdata'),
-                'type' => 'textarea',
-                'default' => ''
-            )
-        );
+        $this->form_fields = $this->plugin_settings;
     }
+
 
     function process_payment($order_id)
     {
-        $checkout_link = CheckoutHandler::create_checkout_link($order_id);
-        // $res = CheckoutSolution::createSEPACheckout('255', 'http://google.com', 'http://google.com');
-        // $checkout_link = $res->checkout->redirectionUrl;
+        $api_key = $this->get_option('api_key');
+        $api_secret = $this->get_option('api_secret');
+        $store_id = $this->get_option('store_id');
 
-        return array(
-            'result' => 'success',
-            'redirect' => $checkout_link,
-        );
+        CheckoutHandler::init_fiserv_sdk($api_key, $api_secret, $store_id);
+
+        // checkoutlink als meta data ablegen
+        // checkoutId traceID
+        // wc logging
+
+        return CheckoutHandler::create_checkout_link($order_id);
     }
 }
