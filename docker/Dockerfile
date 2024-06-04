@@ -3,6 +3,6 @@
 # ---------------------------------------------------
 FROM wordpress:cli-php8.3
 
-RUN wp-cli install-wp
+RUN wp --info
 
 EXPOSE 80
