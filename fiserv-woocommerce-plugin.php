@@ -24,8 +24,6 @@ if (!defined('MAIN_PLUGIN_FILE')) {
 
 require_once plugin_dir_path(__FILE__) . '/vendor/autoload_packages.php';
 
-use FiservWoocommercePlugin\CheckoutHandler;
-
 // phpcs:disable WordPress.Files.FileName
 
 /**
@@ -75,7 +73,6 @@ if (!class_exists('fiserv_woocommerce_plugin')) :
 			if (is_admin()) {
 			}
 
-			new CheckoutHandler();
 			new WebhookHandler();
 
 			add_filter('woocommerce_payment_gateways', [$this, 'payment_gateways_callback']);

@@ -19,6 +19,12 @@ class CheckoutGateway extends WC_Payment_Gateway
         $this->init_settings();
         $this->enabled = $this->get_option('enabled');
 
+        new CheckoutHandler(
+            $this->get_option('api_key'),
+            $this->get_option('api_secret'),
+            $this->get_option('store_id')
+        );
+
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
     }
 
@@ -66,18 +72,33 @@ class CheckoutGateway extends WC_Payment_Gateway
     }
 
 
-    function process_payment($order_id)
+    public function process_payment($order_id): array
     {
-        $api_key = $this->get_option('api_key');
-        $api_secret = $this->get_option('api_secret');
-        $store_id = $this->get_option('store_id');
-
-        CheckoutHandler::init_fiserv_sdk($api_key, $api_secret, $store_id);
-
         // checkoutlink als meta data ablegen
         // checkoutId traceID
-        // wc logging
+        $order = wc_get_order($order_id);
 
-        return CheckoutHandler::create_checkout_link($order_id);
+        try {
+            $order->update_status('on-hold', 'Awaiting Fiserv Checkout');
+            $checkout_link = CheckoutHandler::create_checkout_link($order);
+            $order->update_status('processing', 'Processing Fiserv Checkout');
+
+            // empty cart ?
+
+            return [
+                'result' => 'success',
+                'redirect' => $checkout_link,
+            ];
+        } catch (Throwable $th) {
+            echo $th->getMessage();
+            WC_Logger::error($th->getMessage());
+
+            $order->update_status('failed', 'Failed processing Fiserv Checkout');
+
+            return [
+                'result' => 'failure',
+                'redirect' => wc_get_checkout_url(),
+            ];
+        }
     }
 }

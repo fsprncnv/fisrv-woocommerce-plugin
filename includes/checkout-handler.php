@@ -3,9 +3,9 @@
 namespace FiservWoocommercePlugin;
 
 use Config;
+use CreateCheckoutRequest;
 use Exception;
 use Fiserv\CheckoutSolution;
-use PaymentLinkRequestBody;
 use Throwable;
 use WebhookHandler;
 
@@ -17,7 +17,7 @@ class CheckoutHandler
     /**
      * Default params to be passed as request body of post checkout
      */
-    public const paymentLinksRequestContent = [
+    public const createCheckoutRequestParams = [
         'transactionOrigin' => 'ECOM',
         'transactionType' => 'SALE',
         'transactionAmount' => [
@@ -40,25 +40,26 @@ class CheckoutHandler
             ],
         ],
         'storeId' => 'NULL',
-        'order' => ['orderId' => 'NULL'],
+        'order' => [
+            'orderDetails' => [
+                'purchaseOrderNumber' => 0,
+            ]
+        ]
     ];
 
-    /**
-     * Hostname of Wordpress page.
-     * Reference used to navigate from external sources.
-     */
     private static string $domain;
 
     /**
      * Constuctor mounting the checkout logic and button UI injection.
      * Set origin as plugin in request header (useeg agent).
      */
-    public function __construct()
+    public function __construct($api_key, $api_secret, $store_id)
     {
         self::$domain = get_site_url();
+        self::init_fiserv_sdk($api_key, $api_secret, $store_id);
 
         /** On init, active output buffer (to enable redirects) */
-        add_action('init', [$this, 'output_buffer']);
+        // add_action('init', [$this, 'output_buffer']);
 
         /** Remove payment original Place Order button */
         //add_filter('woocommerce_order_button_html', '__return_false', 1);
@@ -77,7 +78,7 @@ class CheckoutHandler
      * @todo This is subject to change, since Config API will change in coming
      * versions. 
      */
-    public static function init_fiserv_sdk($api_key, $api_secret, $store_id): void
+    private function init_fiserv_sdk($api_key, $api_secret, $store_id): void
     {
         Config::$ORIGIN = 'Woocommerce Plugin';
         Config::$API_KEY = $api_key;
@@ -101,6 +102,9 @@ class CheckoutHandler
      * Japheth Massaro
      * 372
      * 04/29
+     * 
+     * INVALID
+     * 4182917993774394
      */
 
     /**
@@ -115,58 +119,35 @@ class CheckoutHandler
      * @todo Currently, passing floats (to transaction amount) causes unexpected behaviour.
      * Until float parameters are fixed, the total is cast to integers (amount is floored).
      */
-    public static function create_checkout_link(string $order_id): array
+    public static function create_checkout_link(object $order): string
     {
-        $order = wc_get_order($order_id);
-
-        $req = new PaymentLinkRequestBody(self::paymentLinksRequestContent);
-        $total = ($order->get_total());
-
-        $order_uuid = $order_id . '#' . wp_generate_uuid4();
-        $order_key = $order->get_order_key();
-
-        $req->order->orderId = $order_uuid;
-        $req->transactionAmount->total = $total;
-
+        $total = intval($order->get_total());
         $successUrl = $order->get_checkout_order_received_url();
         $failureUrl = $order->get_checkout_payment_url();
 
-        $req->checkoutSettings->redirectBackUrls->successUrl = $successUrl;
-        $req->checkoutSettings->redirectBackUrls->failureUrl = $failureUrl;
-        $req->checkoutSettings->webHooksUrl = WebhookHandler::$webhook_endpoint . '/events?wc-order-id=' . $order_id;
-
         try {
-            // $res = CheckoutSolution::postCheckouts($req);
-            $res = CheckoutSolution::createSEPACheckout(
-                intval($total),
-                $successUrl,
-                $failureUrl
-            );
+            $req = new CreateCheckoutRequest(self::createCheckoutRequestParams);
+            $req->merchantTransactionId = $order->get_id();
+            $req->transactionAmount->total = $total;
+
+            $req->checkoutSettings->redirectBackUrls->successUrl = $successUrl;
+            $req->checkoutSettings->redirectBackUrls->failureUrl = $failureUrl . '&';
+            $req->checkoutSettings->webHooksUrl = self::$domain . WebhookHandler::$webhook_endpoint . '/events?wc-order-id=' . $order->get_id();;
+
+            $res = CheckoutSolution::postCheckouts($req);
 
             $checkout_id = $res->checkout->checkoutId;
+            $checkout_link = $res->checkout->redirectionUrl;
 
-            try {
-                $order = new WC_Order($order_id);
-                $order->update_meta_data('_fiserv_plugin_checkout_id', $checkout_id);
-                $order->update_meta_data('_fiserv_plugin_trace_id', $checkout_id);
-            } catch (Throwable $th) {
-                wc_add_notice('Order not found: ' . $th->getMessage(), 'error');
-            }
+            $order->update_meta_data('_fiserv_plugin_checkout_link', $checkout_link);
+            $order->update_meta_data('_fiserv_plugin_checkout_id', $checkout_id);
+            $order->update_meta_data('_fiserv_plugin_trace_id', $checkout_id);
 
-
-            return [
-                'result' => 'success',
-                'redirect' => $res->checkout->redirectionUrl,
-            ];
+            return $checkout_link;
         } catch (Throwable $th) {
-            // wc_add_notice('Checkout failed: ' . $th->getMessage(), 'error');
-            echo $th->getMessage();
             self::$requestFailed = true;
 
-            return [
-                'result' => 'failure',
-                'redirect' => '/',
-            ];
+            throw $th;
         }
     }
 
@@ -189,7 +170,7 @@ class CheckoutHandler
      * 
      * @return bool True if request has failed
      */
-    public static function get_request_failed(): bool
+    public function get_request_failed(): bool
     {
         return self::$requestFailed;
     }

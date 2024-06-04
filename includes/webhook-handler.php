@@ -38,16 +38,19 @@ class WebhookHandler
     public function consume_events(WP_REST_Request $request)
     {
         $request_body = $request->get_body();
+        $order_id = $request->get_param('wc-order-id');
 
         try {
-            array_push(self::$event_log, "Message at " . time());
+            array_push(self::$event_log, "Event at " . time());
             $json = json_decode($request_body);
 
-            $order_id = intval($json->orderId);
-            $response = new WP_REST_Response($json);
+            $response = new WP_REST_Response([
+                'wc-order-id' => $order_id,
+                'event' => $json,
+            ]);
             $response->set_status(200);
 
-            self::store_data_into_orders_meta($order_id, json_encode($json));
+            self::update_order($order_id, json_encode($json));
 
             return $response;
         } catch (Exception $e) {
@@ -105,21 +108,11 @@ class WebhookHandler
      * @param int $order_id Identifier of corresponding order
      * @param string $event_data Webhook event sent from checkout solution
      */
-    private static function store_data_into_orders_meta(int $order_id, string $event_data): void
+    private static function update_order(int $order_id, string $event_data): void
     {
-        $order = new WC_Order($order_id);
+        $order = wc_get_order($order_id);
         $order->update_meta_data('_fiserv_plugin_webhook_event', $event_data);
-    }
-
-    public function register_button_dispatcher()
-    {
-        register_rest_route(self::$webhook_endpoint, '/fetch-checkout', [
-            'methods' => 'GET',
-            'callback' => 'button_dispatcher_callback',
-        ]);
-    }
-
-    public function button_dispatcher_callback(): void
-    {
+        $order->update_status('STATUS');
+        $order->save_meta_data();
     }
 }

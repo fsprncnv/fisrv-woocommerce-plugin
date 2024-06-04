@@ -16,7 +16,7 @@ final class SDKTest extends TestCase
 		Config::$STORE_ID = '72305408';
 	}
 
-	public const paymentLinksRequestContentDefault = [
+	public const createCheckoutRequestContentDefault = [
 		"transactionOrigin" => "ECOM",
 		"transactionType" => "SALE",
 		"transactionAmount" => [
@@ -48,7 +48,7 @@ final class SDKTest extends TestCase
 		"storeId" => "72305408"
 	];
 
-	public const paymentLinksRequestContentAdjusted = [
+	public const createCheckoutRequestContentAdjusted = [
 		'transactionOrigin' => 'ECOM',
 		'transactionType' => 'SALE',
 		'transactionAmount' => [
@@ -71,11 +71,16 @@ final class SDKTest extends TestCase
 			],
 		],
 		'storeId' => 'NULL',
+		'order' => [
+			'orderDetails' => [
+				'purchaseOrderNumber' => 0,
+			]
+		]
 	];
 
 	public function testPaymentLinkRequestBody(): void
 	{
-		$req = new PaymentLinkRequestBody(self::paymentLinksRequestContentDefault);
+		$req = new CreateCheckoutRequest(self::createCheckoutRequestContentDefault);
 		$this->assertIsObject($req);
 	}
 
@@ -92,7 +97,8 @@ final class SDKTest extends TestCase
 
 	public function testCreateManualCheckout(): void
 	{
-		$req = new PaymentLinkRequestBody(self::paymentLinksRequestContentAdjusted);
+		$req = new CreateCheckoutRequest(self::createCheckoutRequestContentAdjusted);
+		$req->order->orderDetails->purchaseOrderNumber = '99';
 		$res = CheckoutSolution::postCheckouts($req);
 		$this->assertInstanceOf(PostCheckoutsResponse::class, $res);
 	}
