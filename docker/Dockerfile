@@ -10,8 +10,10 @@ ADD https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar wp
 RUN chmod +x wp-cli.phar
 RUN mv wp-cli.phar /usr/local/bin/wp
 RUN chmod o+x /usr/local/bin/wp
+RUN ls -al /usr/local/bin/
 
 USER www-data
+RUN ls -al /usr/local/bin/
 WORKDIR /var/www/html/
 
 RUN wp --info
