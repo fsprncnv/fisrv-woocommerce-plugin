@@ -5,8 +5,6 @@ services:
     image: mariadb:11
     container_name: fiwoodb
     command: '--default-authentication-plugin=mysql_native_password'
-    volumes:
-      - db_data:/var/lib/mysql
     restart: always
     environment:
       - MYSQL_ROOT_PASSWORD=somewordpress
