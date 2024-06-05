@@ -44,8 +44,6 @@ RUN sed -i 's/;zend_extension=opcache/zend_extension=opcache/g' php.ini
 RUN sed -i 's/;opcache.enable=1/opcache.enable=1/g' php.ini
 RUN sed -i 's/expose_php = On/expose_php = Off/g' php.ini
 
-RUN cat php.ini
-
 USER www-data
 
-EXPOSE 443
+EXPOSE 80
