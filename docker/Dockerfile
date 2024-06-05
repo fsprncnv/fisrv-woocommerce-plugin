@@ -21,5 +21,6 @@ ADD *.tar.gz ./wp-content/plugins/custom-plugin/
 RUN ls ./wp-content/plugins/custom-plugin/
 
 RUN ls /var/www/html
+RUN ls /usr/src/wordpress
 
 EXPOSE 80
