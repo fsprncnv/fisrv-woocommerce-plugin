@@ -48,4 +48,4 @@ RUN cat php.ini
 
 USER www-data
 
-EXPOSE 80
+EXPOSE 443
