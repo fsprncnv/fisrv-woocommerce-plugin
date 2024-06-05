@@ -16,5 +16,6 @@ RUN wp --info
 # ---------------------------------------------------
 WORKDIR /usr/src/wordpress
 COPY *.tar.gz ./wp-content/plugins/custom-plugin/
+RUN ls ./wp-content/plugins/custom-plugin/
 
 EXPOSE 80
