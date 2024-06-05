@@ -31,6 +31,9 @@ RUN chown -R www-data:www-data /var/www
 RUN ls -al /var/www
 RUN ls -al .
 
+RUN docker-php-ext-install mysqli pdo pdo_mysql
+RUN docker-php-ext-enable mysqli
+
 # ---------------------------------------------------
 # PHP Configurations
 # ---------------------------------------------------
