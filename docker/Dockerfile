@@ -20,4 +20,6 @@ ADD *.tar.gz ./wp-content/plugins/custom-plugin/
 #RUN rm *.tar.gz
 RUN ls ./wp-content/plugins/custom-plugin/
 
+RUN ls /var/www/html
+
 EXPOSE 80
