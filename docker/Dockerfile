@@ -13,14 +13,9 @@ RUN mv wp-cli.phar /usr/local/bin/wp
 WORKDIR /var/www/html/
 RUN wp --info
 RUN wp core download --allow-root --path=. --locale=en_US
-
-
-# Copy default index.php file
-#COPY default/index.php /var/www/html/
-
-# Copy static content from WordPress build stage
-#COPY --from=build --chown=www-data:www-data /var/www/html/wp-content /var/www/html/wp-content
-
+RUN wp config create --dbname=database --dbuser=wordpress --prompt=wordpress
+RUN wp db create
+RUN wp core install --url=wpclidemo.dev --title="WP-CLI" --admin_user=wpcli --admin_password=wpcli --admin_email=info@wp-cli.org
 
 # ---------------------------------------------------
 # Copy Plugins
@@ -30,8 +25,5 @@ ADD *.tar.gz ./wp-content/plugins/custom-plugin/
 #RUN tar -xzf *.tar.gz
 #RUN rm *.tar.gz
 RUN ls ./wp-content/plugins/custom-plugin/
-
-RUN ls /var/www/html
-RUN ls /usr/src/wordpress
 
 EXPOSE 80
