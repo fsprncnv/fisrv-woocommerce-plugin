@@ -40,7 +40,6 @@ RUN docker-php-ext-enable mysqli
 WORKDIR /usr/local/etc/php
 RUN cp php.ini-production php.ini
 RUN sed -i 's/;extension=mysqli/extension=mysqli/g' php.ini
-RUN sed -i 's/;extension=pdo_mysql/extension=pdo_mysql/g' php.ini
 RUN sed -i 's/;zend_extension=opcache/zend_extension=opcache/g' php.ini
 RUN sed -i 's/;opcache.enable=1/opcache.enable=1/g' php.ini
 RUN sed -i 's/expose_php = On/expose_php = Off/g' php.ini
