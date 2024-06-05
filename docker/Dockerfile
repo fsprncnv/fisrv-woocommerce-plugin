@@ -16,8 +16,8 @@ RUN wp --info
 # ---------------------------------------------------
 WORKDIR /usr/src/wordpress
 ADD *.tar.gz ./wp-content/plugins/custom-plugin/
-RUN tar -xzf *.tar.gz
-RUN rm *.tar.gz
+#RUN tar -xzf *.tar.gz
+#RUN rm *.tar.gz
 RUN ls ./wp-content/plugins/custom-plugin/
 
 EXPOSE 80
