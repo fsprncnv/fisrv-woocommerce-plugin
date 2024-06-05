@@ -9,7 +9,6 @@ FROM wordpress:php8.2-apache
 ADD https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar wp-cli.phar
 RUN chmod +x wp-cli.phar
 RUN mv wp-cli.phar /usr/local/bin/wp
-RUN chmod o+x /usr/local/bin/wp
 RUN ls -al /usr/local/bin/
 
 #USER www-data
@@ -22,16 +21,13 @@ RUN wp core download --allow-root --path=. --locale=en_US
 #RUN wp db create --allow-root
 #RUN wp core install --allow-root --url=wpclidemo.dev --title="WP-CLI" --admin_user=wpcli --admin_password=wpcli --admin_email=info@wp-cli.org
 
-RUN chown -R www-data:www-data /var/www/html
-RUN ls -al .
-
 # ---------------------------------------------------
 # Copy Plugins
 # ---------------------------------------------------
-WORKDIR /usr/src/wordpress
 ADD *.tar.gz ./wp-content/plugins/custom-plugin/
-#RUN tar -xzf *.tar.gz
-#RUN rm *.tar.gz
 RUN ls ./wp-content/plugins/custom-plugin/
+
+RUN chown -R www-data:www-data /var/www/html
+RUN ls -al .
 
 EXPOSE 80
