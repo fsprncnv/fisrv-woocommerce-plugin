@@ -12,7 +12,7 @@ RUN mv wp-cli.phar /usr/local/bin/wp
 RUN chmod o+x /usr/local/bin/wp
 RUN ls -al /usr/local/bin/
 
-USER www-data
+#USER www-data
 RUN ls -al /usr/local/bin/
 WORKDIR /var/www/html/
 
@@ -22,6 +22,7 @@ RUN wp core download --path=. --locale=en_US
 #RUN wp db create --allow-root
 #RUN wp core install --allow-root --url=wpclidemo.dev --title="WP-CLI" --admin_user=wpcli --admin_password=wpcli --admin_email=info@wp-cli.org
 
+RUN chown -R www-data:www-data /var/www/html
 RUN ls -al .
 
 # ---------------------------------------------------
