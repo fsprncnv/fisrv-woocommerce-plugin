@@ -34,6 +34,7 @@ RUN ls -al .
 RUN docker-php-ext-install mysqli pdo pdo_mysql
 RUN docker-php-ext-enable mysqli
 RUN a2enmod rewrite && a2enmod ssl
+COPY ./apache/000-default.conf /etc/apache2/sites-available/000-default.conf
 
 # ---------------------------------------------------
 # PHP Configurations
