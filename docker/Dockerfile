@@ -15,6 +15,6 @@ RUN wp --info
 # Copy Plugins
 # ---------------------------------------------------
 WORKDIR /usr/src/wordpress
-COPY custom-plugin/ ./wp-content/plugins/custom-plugin/
+COPY *.tar.gz ./wp-content/plugins/custom-plugin/
 
 EXPOSE 80
