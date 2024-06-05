@@ -10,8 +10,10 @@ ADD https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar wp
 RUN chmod +x wp-cli.phar
 RUN mv wp-cli.phar /usr/local/bin/wp
 
+WORKDIR /var/www/html/
 RUN wp --info
-RUN wp core download --path=/var/www/html/ --locale=en_EN
+RUN wp core download --allow-root --path=. --locale=en_US
+
 
 # Copy default index.php file
 #COPY default/index.php /var/www/html/
