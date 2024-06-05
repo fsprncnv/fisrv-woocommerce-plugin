@@ -27,8 +27,8 @@ services:
       - "traefik.http.routers.fiwoo-secure.tls=true"
       - "traefik.http.routers.fiwoo-secure.tls.certresolver=letsencrypt"
       - "traefik.http.routers.fiwoo-secure.service=fiwoo"
-      - "traefik.http.services.fiwoo.loadbalancer.server.scheme=http"
-      - "traefik.http.services.fiwoo.loadbalancer.server.port=80"
+      - "traefik.http.services.fiwoo.loadbalancer.server.scheme=https"
+      - "traefik.http.services.fiwoo.loadbalancer.server.port=443"
       - "traefik.docker.network=traefik"
     logging:
       driver: "json-file"
