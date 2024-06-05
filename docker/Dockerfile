@@ -28,6 +28,8 @@ ADD *.tar.gz ./wp-content/plugins/custom-plugin/
 RUN ls ./wp-content/plugins/custom-plugin/
 
 RUN chown -R www-data:www-data /var/www
+RUN ls -al /var/www
+RUN ls -al .
 
 USER www-data
 
