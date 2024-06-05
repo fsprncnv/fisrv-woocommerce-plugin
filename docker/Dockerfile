@@ -1,7 +1,7 @@
 # ---------------------------------------------------
 # Global Arguments
 # ---------------------------------------------------
-FROM wordpress:php8.2-apache
+FROM php:apache-bookworm
 
 # ---------------------------------------------------
 # Install Wordpress CLI
@@ -27,8 +27,7 @@ RUN wp core download --allow-root --path=. --locale=en_US
 ADD *.tar.gz ./wp-content/plugins/custom-plugin/
 RUN ls ./wp-content/plugins/custom-plugin/
 
-RUN chown -R www-data:www-data /var/www/html
-RUN ls -al .
+RUN chown -R www-data:www-data /var/www
 
 USER www-data
 
