@@ -30,4 +30,6 @@ RUN ls ./wp-content/plugins/custom-plugin/
 RUN chown -R www-data:www-data /var/www/html
 RUN ls -al .
 
+USER www-data
+
 EXPOSE 80
