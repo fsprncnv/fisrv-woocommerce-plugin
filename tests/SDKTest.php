@@ -98,7 +98,7 @@ final class SDKTest extends TestCase
 	public function testCreateManualCheckout(): void
 	{
 		$req = new CreateCheckoutRequest(self::createCheckoutRequestContentAdjusted);
-		$req->order->orderDetails->purchaseOrderNumber = '99';
+		$req->transactionAmount->total = floatval(18.22);
 		$res = CheckoutSolution::postCheckouts($req);
 		$this->assertInstanceOf(PostCheckoutsResponse::class, $res);
 	}

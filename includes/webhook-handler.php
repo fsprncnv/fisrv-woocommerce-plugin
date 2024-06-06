@@ -1,5 +1,7 @@
 <?php
 
+use FiservWoocommercePlugin\CheckoutHandler;
+
 class WebhookHandler
 {
     public static string $webhook_endpoint = '/fiserv_woocommerce_plugin/v1';
@@ -38,23 +40,23 @@ class WebhookHandler
     public function consume_events(WP_REST_Request $request)
     {
         $request_body = $request->get_body();
-        $order_id = $request->get_param('wc-order-id');
+        $order_id = $request->get_param('wc_order_id');
 
         try {
             array_push(self::$event_log, "Event at " . time());
-            $json = json_decode($request_body);
+            $json = json_decode($request_body, true);
 
             $response = new WP_REST_Response([
-                'wc-order-id' => $order_id,
+                'wc_order_id' => $order_id,
                 'event' => $json,
             ]);
             $response->set_status(200);
 
-            self::update_order($order_id, json_encode($json));
+            self::update_order($order_id, $json);
 
             return $response;
         } catch (Exception $e) {
-            return new WP_Error('Something went wrong', $e->getMessage(), array('status' => 403));
+            return new WP_Error('Webhook handling has failed', $e->getMessage(), array('status' => 403));
         }
     }
 
@@ -106,13 +108,47 @@ class WebhookHandler
      * meta data.
      * 
      * @param int $order_id Identifier of corresponding order
-     * @param string $event_data Webhook event sent from checkout solution
+     * @param array $event_data Webhook event sent from checkout solution
      */
-    private static function update_order(int $order_id, string $event_data): void
+    private static function update_order(int $order_id, array $event_data): void
     {
         $order = wc_get_order($order_id);
+        if (!$order) {
+            throw new Exception('Order with ID ' . $order_id . ' has not been found.');
+        }
+
         $order->update_meta_data('_fiserv_plugin_webhook_event', $event_data);
-        $order->update_status('STATUS');
+
+        $ipgTransactionStatus = $event_data['transactionStatus'];
+        $wc_status = self::$wc_fiserv_status_map[$ipgTransactionStatus];
+
+        if ($order->has_status('wc-completed') || $order->has_status('wc-cancelled')) {
+            CheckoutHandler::log('Attempted to change status of order' . $order->get_id() . 'that has been processed already. Prior status: ' . $order->get_status() . 'Attempted status change: ' . $wc_status);
+            return;
+        }
+
+        if ($ipgTransactionStatus === 'APPROVED') {
+            CheckoutHandler::log('Order' . $order->get_id() . 'completed');
+            $order->payment_complete();
+        }
+
+        $order->update_status($wc_status, 'Transaction status changed');
+        CheckoutHandler::log('Order' . $order->get_id() . 'changed to status ' . $order->get_status());
+
         $order->save_meta_data();
     }
+
+    /**
+     * Map mapping ipg checkout solution transactionStatus values 
+     * to WC status
+     * @todo Subject to change
+     */
+    public static array $wc_fiserv_status_map = [
+        'WAITING' =>            'wc-on-hold',
+        'PARTIAL' =>            'wc-processing',
+        'APPROVED' =>           'wc-completed',
+        'PROCESSING_FAILED' =>  'wc-failed',
+        'VALIDATION_FAILED' =>  'wc-failed',
+        'DECLINED' =>           'wc-cancelled',
+    ];
 }

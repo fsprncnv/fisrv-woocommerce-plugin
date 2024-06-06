@@ -15,6 +15,7 @@
  * @package extension
  */
 
+use FiservWoocommercePlugin\CheckoutHandler;
 
 defined('ABSPATH') || exit;
 
@@ -74,6 +75,7 @@ if (!class_exists('fiserv_woocommerce_plugin')) :
 			}
 
 			new WebhookHandler();
+			new CheckoutHandler();
 
 			add_filter('woocommerce_payment_gateways', [$this, 'payment_gateways_callback']);
 			add_filter('woocommerce_get_settings_pages',  [$this, 'get_checkout_settings']);
