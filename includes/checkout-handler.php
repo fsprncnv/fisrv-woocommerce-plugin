@@ -43,6 +43,11 @@ class CheckoutHandler
         'order' => [
             'orderDetails' => [
                 'purchaseOrderNumber' => 0,
+            ],
+            'billing' => [
+                'person' => [],
+                'contact' => [],
+                'address' => [],
             ]
         ]
     ];
@@ -58,11 +63,14 @@ class CheckoutHandler
     {
         self::$domain = get_site_url();
 
+        // add_action('woocommerce_before_checkout_process', [$this, 'something']);
+        add_action('before_woocommerce_pay_form', [$this, 'retry_payment'], 1, 3);
+
         /** On init, active output buffer (to enable redirects) */
         add_action('init', [$this, 'output_buffer']);
 
         /** Show transaction error message */
-        add_action('woocommerce_before_checkout_form', [$this, 'maybe_failed_transaction'], 1);
+        // add_action('woocommerce_before_checkout_form', [$this, 'maybe_failed_transaction'], 1);
 
         /** Remove payment original Place Order button */
         //add_filter('woocommerce_order_button_html', '__return_false', 1);
@@ -75,9 +83,29 @@ class CheckoutHandler
         add_action('woocommerce_thankyou', [$this, 'order_complete_callback']);
     }
 
-    public static function remove_fields(): array
+    /**
+     * Triggered right before the Pay for Order form, after validation of the order and customer.
+     *
+     * @param WC_Order $order              The order that is being paid for.
+     * @param string   $order_button_text  The text for the submit button.
+     * @param array    $available_gateways All available gateways.
+     *
+     * @return array    Passed (and modified) function params
+     */
+    public static function retry_payment($order, $order_button_text, $available_gateways)
     {
-        return [];
+        $order_button_text = 'Retry payment';
+        $order->update_status('wc-pending', 'Retrying payment');
+
+        wc_add_notice('Payment has failed: ' . $_GET['message'], 'error');
+        self::log('Payment failed, retrying on checkout page: ' . $_GET['message'] . ' -- ' . $_GET['code']);
+        wc_print_notices();
+
+        return [
+            'order'              => $order,
+            'available_gateways' => $available_gateways,
+            'order_button_text'  => $order_button_text,
+        ];
     }
 
     /**
@@ -100,9 +128,13 @@ class CheckoutHandler
             return;
         }
 
-        add_action('woocommerce_checkout_fields', [self::class, 'remove_fields']);
+        /** Remove billing section when on retry payment page */
+        add_action('woocommerce_checkout_fields', function () {
+            return [];
+        });
+
         wc_add_notice('Payment has failed: ' . $_GET['message'], 'error');
-        self::log('Payment has failed: ' . $_GET['message'] . ' -- ' . $_GET['code']);
+        self::log('Payment failed, retrying on checkout page: ' . $_GET['message'] . ' -- ' . $_GET['code']);
     }
 
     private static function retrieve_order_from_page(): object | false
@@ -118,6 +150,10 @@ class CheckoutHandler
         return $order;
     }
 
+    /**
+     * This is called when order is complete on thank you page.
+     * Set order status and payment to completed
+     */
     public function order_complete_callback(): void
     {
         $is_transaction_approved = $_GET['transaction_approved'];
@@ -181,6 +217,7 @@ class CheckoutHandler
      * 
      * INVALID
      * 4182917993774394
+     * fiserv-checkout
      */
 
     /**
@@ -197,19 +234,10 @@ class CheckoutHandler
      */
     public static function create_checkout_link(object $order): string
     {
-        $total = intval($order->get_total());
-        $successUrl = $order->get_checkout_order_received_url();
-        $failureUrl = wc_get_page_permalink('checkout');
-        $paymentUrl = $order->get_checkout_payment_url();
-
         try {
             $req = new CreateCheckoutRequest(self::createCheckoutRequestParams);
-            $req->merchantTransactionId = $order->get_id();
-            $req->transactionAmount->total = $total;
-
-            $req->checkoutSettings->redirectBackUrls->successUrl = $successUrl . '&transaction_approved=true';
-            $req->checkoutSettings->redirectBackUrls->failureUrl = $failureUrl . '?wc_order_id=' . $order->get_id() . '&';
-            $req->checkoutSettings->webHooksUrl = self::$domain . WebhookHandler::$webhook_endpoint . '/events?wc_order_id=' . $order->get_id();;
+            $req = self::pass_checkout_data($req, $order);
+            $req = self::pass_billing_data($req, $order);
 
             $res = CheckoutSolution::postCheckouts($req);
 
@@ -225,6 +253,66 @@ class CheckoutHandler
             self::$requestFailed = true;
             throw $th;
         }
+    }
+
+    /**
+     * Pass checkout data (totals, redirects, language etc.) to request object of checkout
+     * 
+     * @param CreateCheckoutRequest $req    Request object to modify
+     * @param object $order                 Woocommerce order object
+     * @return CreateCheckoutRequest        Modified request object
+     */
+    private static function pass_checkout_data(CreateCheckoutRequest $req, object $order): CreateCheckoutRequest
+    {
+        $wp_language = get_bloginfo('language');
+        $locale = 'en_GB';
+
+        $supported_locales = [
+            'en_GB', 'en_US', 'de_DE', 'nl_NL'
+        ];
+
+        if (in_array($wp_language, $supported_locales, true)) {
+            $locale = $wp_language;
+        }
+
+        $req->checkoutSettings->locale = $locale;
+
+        $total = intval($order->get_total());
+        $successUrl = $order->get_checkout_order_received_url();
+
+        // $failureUrl = wc_get_page_permalink('checkout');
+        $failureUrl = $order->get_checkout_payment_url();
+
+        $req->merchantTransactionId = $order->get_id();
+        $req->transactionAmount->total = $total;
+
+        $req->checkoutSettings->redirectBackUrls->successUrl = $successUrl . '&transaction_approved=true';
+        $req->checkoutSettings->redirectBackUrls->failureUrl = $failureUrl . '&wc_order_id=' . $order->get_id() . '&';
+        $req->checkoutSettings->webHooksUrl = self::$domain . WebhookHandler::$webhook_endpoint . '/events?wc_order_id=' . $order->get_id();;
+
+        // $req->checkoutSettings->preSelectedPaymentMethod = 'cards';
+        return $req;
+    }
+
+    /**
+     * Pass billing data from WC billing form to request object of checkout
+     * 
+     * @param CreateCheckoutRequest $req    Request object to modify
+     * @param object $order                 Woocommerce order object
+     * @return CreateCheckoutRequest        Modified request object
+     */
+    private static function pass_billing_data(CreateCheckoutRequest $req, object $order): CreateCheckoutRequest
+    {
+        $req->order->billing->person->firstName     = $order->get_billing_first_name();
+        $req->order->billing->person->lastName      = $order->get_billing_last_name();
+        $req->order->billing->contact->email        = $order->get_billing_email();
+        $req->order->billing->address->address1     = $order->get_billing_address_1();
+        $req->order->billing->address->address2     = $order->get_billing_address_2();
+        $req->order->billing->address->city         = $order->get_billing_city();
+        $req->order->billing->address->country      = $order->get_billing_country();
+        $req->order->billing->address->postalCode   = $order->get_billing_postcode();
+
+        return $req;
     }
 
 

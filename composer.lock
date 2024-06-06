@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "git@gitlab.mherrm.de:cgi/fiserv-php-client.git",
-                "reference": "dc1123e5543d302aa57d74316b3da25a0d013bd8"
+                "reference": "f2deb90154e150f1a908436307a74d4798825ca1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.mherrm.de/api/v4/projects/64/packages/composer/archives/fiserv/php-api-wrapper.zip?sha=dc1123e5543d302aa57d74316b3da25a0d013bd8",
-                "reference": "dc1123e5543d302aa57d74316b3da25a0d013bd8",
+                "url": "https://gitlab.mherrm.de/api/v4/projects/64/packages/composer/archives/fiserv/php-api-wrapper.zip?sha=f2deb90154e150f1a908436307a74d4798825ca1",
+                "reference": "f2deb90154e150f1a908436307a74d4798825ca1",
                 "shasum": ""
             },
             "require": {

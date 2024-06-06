@@ -1,6 +1,7 @@
 <?php
 
 use FiservWoocommercePlugin\CheckoutHandler;
+use SebastianBergmann\Type\VoidType;
 
 if (!defined('ABSPATH')) exit;
 
@@ -70,7 +71,6 @@ class CheckoutGateway extends WC_Payment_Gateway
     {
         $this->form_fields = $this->plugin_settings;
     }
-
 
     public function process_payment($order_id): array
     {
