@@ -1,7 +1,6 @@
 <?php
 
 use FiservWoocommercePlugin\CheckoutHandler;
-use SebastianBergmann\Type\VoidType;
 
 if (!defined('ABSPATH')) exit;
 
@@ -86,10 +85,14 @@ class CheckoutGateway extends WC_Payment_Gateway
                 'redirect' => $checkout_link,
             ];
         } catch (Throwable $th) {
-            echo $th->getMessage();
-            CheckoutHandler::log($th->getMessage());
+            $message = 'Failed creating Fiserv Checkout - ' . $th->getMessage();
+            echo esc_html($th->getMessage());
 
-            $order->update_status('wc-failed', 'Failed creating Fiserv Checkout');
+            wc_add_notice($message, 'error');
+            wc_print_notices();
+
+            WCLogger::error($order, $message);
+            $order->update_status('wc-failed', $message);
 
             return [
                 'result' => 'failure',

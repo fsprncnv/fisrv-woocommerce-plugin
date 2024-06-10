@@ -7,7 +7,16 @@ use CreateCheckoutRequest;
 use Exception;
 use Fiserv\CheckoutSolution;
 use Throwable;
+use WCLogger;
 use WebhookHandler;
+
+/**
+ * Valid
+ * 5579346132831154
+ * 
+ * Invalid
+ * 4182917993774394
+ */
 
 /**
  * This class handles logic involving the checkout
@@ -53,7 +62,8 @@ class CheckoutHandler
     ];
 
     private static string $domain;
-    private static bool $requestFailed = false;
+    private static bool $REQUEST_FAILED = false;
+    private static string $IPG_NONCE = 'ipg-nonce';
 
     /**
      * Constuctor mounting the checkout logic and button UI injection.
@@ -80,7 +90,7 @@ class CheckoutHandler
 
         // add_action('woocommerce_after_order_notes', [CheckoutViewRenderer::class, 'render_checkout_button_as_button']);
         add_filter('woocommerce_checkout_fields', [$this, 'fill_out_fields']);
-        add_action('woocommerce_thankyou', [$this, 'order_complete_callback']);
+        add_action('woocommerce_thankyou', [$this, 'order_complete_callback'], 1, 1);
     }
 
     /**
@@ -92,14 +102,22 @@ class CheckoutHandler
      *
      * @return array    Passed (and modified) function params
      */
-    public static function retry_payment($order, $order_button_text, $available_gateways)
+    public static function retry_payment($order, $order_button_text, $available_gateways): array
     {
+        if (!isset($_REQUEST['_wpnonce']) || !wp_verify_nonce($_REQUEST['_wpnonce'], self::$IPG_NONCE)) {
+            WCLogger::error($order, 'Security check: Nonce was invalid when checkout redirected back to failure URL.');
+            die();
+        }
+
         $order_button_text = 'Retry payment';
         $order->update_status('wc-pending', 'Retrying payment');
 
-        wc_add_notice('Payment has failed: ' . $_GET['message'], 'error');
-        self::log('Payment failed, retrying on checkout page: ' . $_GET['message'] . ' -- ' . $_GET['code']);
+        $ipg_message = $_GET['message'] ?? "Internal error";
+        $ipg_code = $_GET['code'] ?? "No code provided";
+
+        wc_add_notice('Payment has failed: ' . $ipg_message, 'error');
         wc_print_notices();
+        WCLogger::error($order, 'Payment validation failed, retrying on checkout page: ' . $ipg_message . ' -- ' . $ipg_code);
 
         return [
             'order'              => $order,
@@ -116,13 +134,18 @@ class CheckoutHandler
      */
     public static function maybe_failed_transaction(): void
     {
-        if (!isset($_GET['wc_order_id'])) {
-            return;
-        }
-
         $order_id = $_GET['wc_order_id'];
         $order = wc_get_order($order_id);
         $order->update_status('wc-pending', 'Retrying payment');
+
+        if (!isset($_REQUEST['_wpnonce']) || !wp_verify_nonce($_REQUEST['_wpnonce'], self::$IPG_NONCE)) {
+            WCLogger::error($order, 'Security check: Nonce was invalid when checkout redirected back to failure URL.');
+            die();
+        }
+
+        if (!isset($_GET['wc_order_id'])) {
+            return;
+        }
 
         if (!isset($_GET['code']) || !isset($_GET['message'])) {
             return;
@@ -134,36 +157,62 @@ class CheckoutHandler
         });
 
         wc_add_notice('Payment has failed: ' . $_GET['message'], 'error');
-        self::log('Payment failed, retrying on checkout page: ' . $_GET['message'] . ' -- ' . $_GET['code']);
+        WCLogger::error($order, 'Payment validation failed, retrying on checkout page: ' . $_GET['message'] . ' -- ' . $_GET['code']);
     }
 
-    private static function retrieve_order_from_page(): object | false
+    /**
+     * Retrieve a WC order from a given order key. The order key may be passed as
+     * query parameters.
+     * 
+     * @param string $order_key WP order key to retrieve order object from
+     * @return object Order from order key
+     * @return false If corresponding order does not exist 
+     */
+    public static function retrieve_order_from_key(string $order_key): object | false
     {
-        $order_key = $_GET['key'];
         $order_id = wc_get_order_id_by_order_key($order_key);
         $order = wc_get_order($order_id);
 
         if (!$order) {
-            throw new Exception('Order ID ' . $order_id . ' not found');
+            throw new Exception(esc_html('Order ID ' . $order_id . ' not found'));
         }
 
         return $order;
     }
 
     /**
+     * Verify that origin of incoming requests (such as passed query parameters)
+     * are from trusted source (from plugin itself). This is done by checking WP nonces which is set
+     * before checkout creation.
+     * 
+     * @param object $order WC order object
+     */
+    private static function verify_nonce(object $order): void
+    {
+        if (!isset($_REQUEST['_wpnonce']) || !wp_verify_nonce($_REQUEST['_wpnonce'], self::$IPG_NONCE)) {
+            WCLogger::error($order, 'Security check: Nonce was invalid when checkout redirected back to failure URL.');
+            die();
+        }
+    }
+
+    /**
      * This is called when order is complete on thank you page.
      * Set order status and payment to completed
+     * 
+     * @param string $order_id WC order ID
      */
-    public function order_complete_callback(): void
+    public function order_complete_callback(string $order_id): void
     {
+        $order = wc_get_order($order_id);
+        self::verify_nonce($order);
+
         $is_transaction_approved = $_GET['transaction_approved'];
 
         if ($is_transaction_approved) {
-            $order = self::retrieve_order_from_page();
             $has_completed = $order->payment_complete();
             if ($has_completed) {
                 $order->update_status('wc-completed', 'Order has completed');
-                CheckoutHandler::log('Order ' . $order->get_id() . ' completed');
+                WCLogger::log($order, 'Order completed with card payment.');
             }
         }
     }
@@ -183,7 +232,6 @@ class CheckoutHandler
         $fields['billing']['billing_email']['default'] = 'earth.kitt@dev.com';
         return $fields;
     }
-
 
     /**
      * Inititalize configuraiton parameters of Fiserv SDK.
@@ -207,18 +255,6 @@ class CheckoutHandler
     {
         ob_start();
     }
-
-    /**
-     * CC Sample Data
-     * 5579346132831154
-     * Japheth Massaro
-     * 372
-     * 04/29
-     * 
-     * INVALID
-     * 4182917993774394
-     * fiserv-checkout
-     */
 
     /**
      * Get cart data from WC stub to be served to Checkout Solution.
@@ -247,10 +283,11 @@ class CheckoutHandler
             $order->update_meta_data('_fiserv_plugin_checkout_link', $checkout_link);
             $order->update_meta_data('_fiserv_plugin_checkout_id', $checkout_id);
             $order->update_meta_data('_fiserv_plugin_trace_id', $checkout_id);
+            $order->save_meta_data();
 
             return $checkout_link;
         } catch (Throwable $th) {
-            self::$requestFailed = true;
+            self::$REQUEST_FAILED = true;
             throw $th;
         }
     }
@@ -264,14 +301,18 @@ class CheckoutHandler
      */
     private static function pass_checkout_data(CreateCheckoutRequest $req, object $order): CreateCheckoutRequest
     {
-        $wp_language = get_bloginfo('language');
+        $wp_language = str_replace('-', '_', get_bloginfo('language'));
         $locale = 'en_GB';
 
         $supported_locales = [
             'en_GB', 'en_US', 'de_DE', 'nl_NL'
         ];
 
-        if (in_array($wp_language, $supported_locales, true)) {
+        if (substr($wp_language, 0, 2) == 'de') {
+            $locale = 'de_DE';
+        }
+
+        if (in_array($wp_language, $supported_locales)) {
             $locale = $wp_language;
         }
 
@@ -280,15 +321,31 @@ class CheckoutHandler
         $total = intval($order->get_total());
         $successUrl = $order->get_checkout_order_received_url();
 
-        // $failureUrl = wc_get_page_permalink('checkout');
+        $wc_checkout_link = wc_get_page_permalink('checkout');
         $failureUrl = $order->get_checkout_payment_url();
 
         $req->merchantTransactionId = $order->get_id();
         $req->transactionAmount->total = $total;
 
-        $req->checkoutSettings->redirectBackUrls->successUrl = $successUrl . '&transaction_approved=true';
-        $req->checkoutSettings->redirectBackUrls->failureUrl = $failureUrl . '&wc_order_id=' . $order->get_id() . '&';
-        $req->checkoutSettings->webHooksUrl = self::$domain . WebhookHandler::$webhook_endpoint . '/events?wc_order_id=' . $order->get_id();;
+        $nonce = wp_create_nonce(self::$IPG_NONCE);
+
+        $req->checkoutSettings->redirectBackUrls->successUrl = add_query_arg([
+            '_wpnonce' => $nonce,
+            'transaction_approved' => true,
+        ], $successUrl);
+
+        $req->checkoutSettings->redirectBackUrls->failureUrl = add_query_arg([
+            '_wpnonce' => $nonce,
+            'wc_order_id' => $order->get_id(),
+        ], $failureUrl);
+
+        /** Append ampersand to allow checkout solution to append query params */
+        $req->checkoutSettings->redirectBackUrls->failureUrl .= '&';
+
+        $req->checkoutSettings->webHooksUrl = add_query_arg([
+            '_wpnonce' => $nonce,
+            'wc_order_id' => $order->get_id(),
+        ], WebhookHandler::$webhook_endpoint . '/events');
 
         // $req->checkoutSettings->preSelectedPaymentMethod = 'cards';
         return $req;
@@ -323,18 +380,6 @@ class CheckoutHandler
      */
     public function get_request_failed(): bool
     {
-        return self::$requestFailed;
-    }
-
-    const WC_LOG_SOURCE = 'woocommerce-gateway-stripe';
-
-    /**
-     * Log some message to WC admin page
-     * 
-     * @param string $message Message to log
-     */
-    public static function log(string $message): void
-    {
-        wc_get_logger()->notice($message, ['source' => self::WC_LOG_SOURCE]);
+        return self::$REQUEST_FAILED;
     }
 }

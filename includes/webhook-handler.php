@@ -1,7 +1,5 @@
 <?php
 
-use FiservWoocommercePlugin\CheckoutHandler;
-
 class WebhookHandler
 {
     public static string $webhook_endpoint = '/fiserv_woocommerce_plugin/v1';
@@ -81,7 +79,15 @@ class WebhookHandler
     public static function get_events_callback(): WP_REST_Response
     {
         global $wpdb;
-        $res = $wpdb->get_results("select meta_value from wp_wc_orders_meta where meta_key = '_fiserv_plugin_webhook_event'");
+        $table_name = $wpdb->prefix . 'wc_orders_meta';
+
+        $res = wp_cache_get('_meta_data_query_cache');
+        if (!$res || count($res) === 0) {
+            $query = ("select meta_value from " . $table_name . " where meta_key = '_fiserv_plugin_webhook_event'");
+            $res = $wpdb->get_results($query); // db ok
+            wp_cache_set('_meta_data_query_cache', $res);
+        }
+
         $out = [];
 
         foreach ($res as $entry) {
@@ -114,7 +120,7 @@ class WebhookHandler
     {
         $order = wc_get_order($order_id);
         if (!$order) {
-            throw new Exception('Order with ID ' . $order_id . ' has not been found.');
+            throw new Exception(esc_html('Order with ID ' . $order_id . ' has not been found.'));
         }
 
         $order->update_meta_data('_fiserv_plugin_webhook_event', $event_data);
@@ -123,17 +129,17 @@ class WebhookHandler
         $wc_status = self::$wc_fiserv_status_map[$ipgTransactionStatus];
 
         if ($order->has_status('wc-completed') || $order->has_status('wc-cancelled')) {
-            CheckoutHandler::log('Attempted to change status of order' . $order->get_id() . 'that has been processed already. Prior status: ' . $order->get_status() . 'Attempted status change: ' . $wc_status);
+            WCLogger::log($order, 'Attempted to change status of order that has been processed already. Prior status: ' . $order->get_status() . 'Attempted status change: ' . $wc_status);
             return;
         }
 
         if ($ipgTransactionStatus === 'APPROVED') {
-            CheckoutHandler::log('Order' . $order->get_id() . 'completed');
+            WCLogger::log($order, 'Order completed');
             $order->payment_complete();
         }
 
         $order->update_status($wc_status, 'Transaction status changed');
-        CheckoutHandler::log('Order' . $order->get_id() . 'changed to status ' . $order->get_status());
+        WCLogger::log($order, 'Order' . $order->get_id() . 'changed to status ' . $order->get_status());
 
         $order->save_meta_data();
     }
