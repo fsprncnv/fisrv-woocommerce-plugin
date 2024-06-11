@@ -7,6 +7,11 @@ variables:
   IMAGE_TAG: $CI_REGISTRY_IMAGE:latest
   DOCKERFILE: "docker/Dockerfile"
   SKIP_PHPUNIT: 'true'
+  MYSQL_DATABASE: "wordpress"
+  MYSQL_ROOT_PASSWORD: "wordpress"
+  MYSQL_USER: "wordpress"
+  MYSQL_PASSWORD: "wordpress"
+  MYSQL_HOST: mysql
 
 validate:
   extends: .base_validate
@@ -16,3 +21,5 @@ build:
 
 docker:
   extends: .base_docker
+  services:
+    - mysql:5.7
