@@ -68,5 +68,8 @@ RUN sed -i 's/expose_php = On/expose_php = Off/g' php.ini
 
 USER www-data
 
+RUN cat /etc/ssl/certs/ssl-cert-snakeoil.pem
+RUN cat /etc/ssl/private/ssl-cert-snakeoil.key
+
 EXPOSE 80
 EXPOSE 443
