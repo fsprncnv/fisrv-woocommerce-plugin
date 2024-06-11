@@ -17,7 +17,7 @@ services:
       - fisrv-woocommerce-data:/var/lib/mysql
   paypal:
     image: registry.gitlab.mherrm.de/cgi/fiserv-woocommerce-plugin:latest
-    container_name: fisrv-woocommerce
+    container_name: fisrv-woocommerce-apache
     restart: always
     labels:
       - "traefik.enable=true"
