@@ -33,8 +33,6 @@ RUN ls -al /usr/local/bin/
 RUN ls -al /usr/local/bin/
 WORKDIR /var/www/html/
 
-RUN ping fisrv_mysql
-
 RUN wp --info
 RUN wp core download --allow-root --path=. --locale=en_US
 #RUN wp config create --allow-root --dbhost=fisrv_mysql --dbname=wordpress --dbuser=wordpress --dbpass=wordpress
