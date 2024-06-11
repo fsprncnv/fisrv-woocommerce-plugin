@@ -11,7 +11,7 @@ variables:
   MYSQL_ROOT_PASSWORD: "wordpress"
   MYSQL_USER: "wordpress"
   MYSQL_PASSWORD: "wordpress"
-  MYSQL_HOST: mysql
+  MYSQL_HOST: fisrv_mysql
 
 validate:
   extends: .base_validate
