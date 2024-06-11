@@ -41,7 +41,7 @@ services:
       resources:
         limits:
           cpus: "1.5"
-          memory: 200M
+          memory: 256M
 networks:
   traefik:
     external: true
