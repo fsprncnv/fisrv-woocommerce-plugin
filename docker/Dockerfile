@@ -7,6 +7,8 @@ FROM php:apache-bookworm
 # Self-signed Certificate Generation
 # ---------------------------------------------------
 RUN openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 -subj "/C=GB/ST=London/L=London/O=Global Security/OU=IT Department/CN=example.com" -keyout ./ssl.key -out ./ssl.crt
+RUN ls -al
+RUN ls -al /etc/apache2/ssl/
 RUN mv ./ssl.crt /etc/apache2/ssl/ssl.crt
 RUN mv ./ssl.key /etc/apache2/ssl/ssl.key
 RUN ls -al /etc/apache2/ssl/
