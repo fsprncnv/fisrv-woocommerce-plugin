@@ -27,28 +27,18 @@ RUN a2ensite default-ssl
 ADD https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar wp-cli.phar
 RUN chmod +x wp-cli.phar
 RUN mv wp-cli.phar /usr/local/bin/wp
-RUN ls -al /usr/local/bin/
 
-#USER www-data
-RUN ls -al /usr/local/bin/
 WORKDIR /var/www/html/
-
 RUN wp core download --allow-root --path=. --locale=en_US
 RUN wp config create --allow-root --skip-check --dbhost=fisrv-woocommerce-db --dbname=wordpress --dbuser=wordpress --dbpass=wordpress
-
-#RUN wp config set --allow-root --raw WP_DEBUG true
-#RUN wp config set --allow-root --raw WP_DEBUG_LOG true
-#RUN wp config set --allow-root --raw WP_DEBUG_DISPLAY false
-
 
 # ---------------------------------------------------
 # Copy Plugins
 # ---------------------------------------------------
 WORKDIR /var/www/html/wp-content/plugins/
 ADD https://downloads.wordpress.org/plugin/woocommerce.8.9.3.zip woocommerce.zip
-RUN ls -al
 RUN unzip woocommerce.zip
-RUN ls -al
+RUN rm -f woocommerce.zip
 
 RUN chown -R www-data:www-data /var/www
 
@@ -60,8 +50,6 @@ RUN cp php.ini-production php.ini
 RUN sed -i 's/;zend_extension=opcache/zend_extension=opcache/g' php.ini
 RUN sed -i 's/;opcache.enable=1/opcache.enable=1/g' php.ini
 RUN sed -i 's/expose_php = On/expose_php = Off/g' php.ini
-
-RUN cat php.ini
 
 USER www-data
 
