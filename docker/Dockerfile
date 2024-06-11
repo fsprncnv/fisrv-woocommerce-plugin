@@ -8,10 +8,10 @@ FROM php:apache-bookworm
 # ---------------------------------------------------
 RUN openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 -subj "/C=GB/ST=London/L=London/O=Global Security/OU=IT Department/CN=example.com" -keyout ./ssl.key -out ./ssl.crt
 RUN ls -al
-RUN ls -al /etc/apache2/ssl/
-RUN mv ./ssl.crt /etc/apache2/ssl/ssl.crt
-RUN mv ./ssl.key /etc/apache2/ssl/ssl.key
-RUN ls -al /etc/apache2/ssl/
+RUN ls -al /etc/ssl/certs/
+RUN mv ./ssl.crt /etc/ssl/certs/ssl.crt
+RUN mv ./ssl.key /etc/ssl/certs/ssl.key
+RUN ls -al /etc/ssl/certs/
 
 # ---------------------------------------------------
 # Install Wordpress CLI
