@@ -22,6 +22,12 @@ RUN wp core download --allow-root --path=. --locale=en_US
 #RUN wp core install --allow-root --url=wpclidemo.dev --title="WP-CLI" --admin_user=wpcli --admin_password=wpcli --admin_email=info@wp-cli.org
 
 # ---------------------------------------------------
+# Self-signed Certificate Generation
+# ---------------------------------------------------
+RUN openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 -subj "/C=GB/ST=London/L=London/O=Global Security/OU=IT Department/CN=example.com" -keyout ./ssl.key -out ./ssl.crt
+RUN ls -al
+
+# ---------------------------------------------------
 # Copy Plugins
 # ---------------------------------------------------
 ADD *.tar.gz ./wp-content/plugins/custom-plugin/
@@ -45,11 +51,11 @@ RUN ls -al /etc/apache2/sites-enabled/
 # ---------------------------------------------------
 WORKDIR /usr/local/etc/php
 RUN cp php.ini-production php.ini
-#RUN sed -i 's/;extension=mysqli/extension=mysqli/g' php.ini
 RUN sed -i 's/;zend_extension=opcache/zend_extension=opcache/g' php.ini
 RUN sed -i 's/;opcache.enable=1/opcache.enable=1/g' php.ini
 RUN sed -i 's/expose_php = On/expose_php = Off/g' php.ini
 
 USER www-data
 
+EXPOSE 80
 EXPOSE 443
