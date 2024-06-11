@@ -3,22 +3,13 @@
 # ---------------------------------------------------
 FROM php:apache-bookworm
 
-RUN apt-get update
-RUN apt-get install -y ssl-cert
-RUN make-ssl-cert generate-default-snakeoil --force-overwrite
-#RUN chown www-data:www-data /etc/ssl/private/ssl-cert-snakeoil.key
-RUN ls -l /etc/ssl/certs/ssl-cert-snakeoil.pem /etc/ssl/private/ssl-cert-snakeoil.key
-RUN usermod -a -G ssl-cert www-data
-
 # ---------------------------------------------------
 # Self-signed Certificate Generation
 # ---------------------------------------------------
-RUN openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 -subj "/C=GB/ST=London/L=London/O=Global Security/OU=IT Department/CN=example.com" -keyout ./ssl.key -out ./ssl.crt
-RUN ls -al
-RUN ls -al /etc/ssl/certs/
-#RUN mv ./ssl.crt /etc/ssl/certs/ssl.crt
-#RUN mv ./ssl.key /etc/ssl/certs/ssl.key
-#RUN ls -al /etc/ssl/certs/
+RUN apt-get update
+RUN apt-get install -y ssl-cert
+RUN make-ssl-cert generate-default-snakeoil --force-overwrite
+RUN usermod -a -G ssl-cert www-data
 
 # ---------------------------------------------------
 # Install Wordpress CLI
@@ -55,9 +46,6 @@ RUN a2enmod ssl
 RUN a2enmod vhost_alias
 RUN a2ensite default-ssl
 
-RUN ls -al /etc/apache2/sites-enabled/
-RUN cat /etc/apache2/sites-enabled/default-ssl.conf
-
 # ---------------------------------------------------
 # PHP Configurations
 # ---------------------------------------------------
@@ -69,8 +57,4 @@ RUN sed -i 's/expose_php = On/expose_php = Off/g' php.ini
 
 USER www-data
 
-RUN cat /etc/ssl/certs/ssl-cert-snakeoil.pem
-RUN cat /etc/ssl/private/ssl-cert-snakeoil.key
-
-EXPOSE 80
 EXPOSE 443
