@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Plugin Name: Fiserv Gateway for Woocommerce
- * Version: 0.1.2
+ * Plugin Name: Fiserv Woocommerce Plugin
+ * Version: 0.1.0
  * Author: Fiserv
  * Author URI: https://fiserv.com
- * Text Domain: fiserv-gateway-for-woocommerce
+ * Text Domain: fiserv-woocommerce-plugin
  * Domain Path: /languages
  *
  * License: GNU General Public License v3.0
