@@ -30,7 +30,7 @@
 		}
 	},
 	"archive": {
-		"exclude": [ ".gitlab-ci.yml", ".gitignore", "/*.*", ".idea", "docker"]
+		"exclude": [ ".gitlab-ci.yml", ".gitignore", "/*.*", "/.*", "!/*.php", ".idea", "tests", "docker"]
 	},
 	"scripts": {
 			"build": [

@@ -30,6 +30,7 @@ npm-debug.log
 *.sql
 *.swp
 *.zip
+*.tar
 
 # Built packages
 build/
