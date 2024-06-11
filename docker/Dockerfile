@@ -35,27 +35,20 @@ WORKDIR /var/www/html/
 
 RUN wp core download --allow-root --path=. --locale=en_US
 RUN wp config create --allow-root --skip-check --dbhost=fisrv-woocommerce-db --dbname=wordpress --dbuser=wordpress --dbpass=wordpress
-RUN wp plugin install --allow-root woocommerce
 
 #RUN wp config set --allow-root --raw WP_DEBUG true
 #RUN wp config set --allow-root --raw WP_DEBUG_LOG true
 #RUN wp config set --allow-root --raw WP_DEBUG_DISPLAY false
-#
+
 
 # ---------------------------------------------------
 # Copy Plugins
 # ---------------------------------------------------
-ADD *.zip ./wp-content/plugins/custom-plugin/
-RUN ls ./wp-content/plugins/custom-plugin/
+ADD https://downloads.wordpress.org/plugin/woocommerce.8.9.3.zip ./wp-content/plugins/
+RUN unzip woocommerce.8.9.3.zip
+RUN ls ./wp-content/plugins/
 
 RUN chown -R www-data:www-data /var/www
-
-RUN docker-php-ext-install mysqli pdo pdo_mysql
-RUN docker-php-ext-enable mysqli
-RUN a2enmod rewrite
-RUN a2enmod ssl
-RUN a2enmod vhost_alias
-RUN a2ensite default-ssl
 
 # ---------------------------------------------------
 # PHP Configurations
