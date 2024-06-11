@@ -46,7 +46,7 @@ RUN wp config create --allow-root --skip-check --dbhost=fisrv-woocommerce-db --d
 # ---------------------------------------------------
 # Copy Plugins
 # ---------------------------------------------------
-ADD *.tar.gz ./wp-content/plugins/custom-plugin/
+ADD *.zip ./wp-content/plugins/custom-plugin/
 RUN ls ./wp-content/plugins/custom-plugin/
 
 RUN chown -R www-data:www-data /var/www
