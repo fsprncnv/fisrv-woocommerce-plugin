@@ -16,7 +16,7 @@ class CheckoutGateway extends WC_Payment_Gateway
         $this->has_fields = false;
         $this->method_title = 'Fiserv Gateway';
         $this->method_description = 'Description for Fiserv Gateway';
-        $this->description = 'Custom Gateway';
+        $this->description = 'Pay with Fiserv Checkout';
         $this->title = 'Fiserv Checkout';
 
         $this->init_form_fields();

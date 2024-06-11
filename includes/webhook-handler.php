@@ -47,6 +47,7 @@ class WebhookHandler
             $response = new WP_REST_Response([
                 'wc_order_id' => $order_id,
                 'event' => $json,
+                'received_at' => time(),
             ]);
             $response->set_status(200);
 
@@ -99,7 +100,7 @@ class WebhookHandler
             array_push(
                 $out,
                 [
-                    'received_at' => $entry->order_id,
+                    // 'received_at' => $entry->order_id,
                     'wc_order_id' => $entry->order_id,
                     'event' => json_decode($entry->meta_value),
                 ]

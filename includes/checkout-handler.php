@@ -270,7 +270,7 @@ class CheckoutHandler
 
             $checkout_id = $res->checkout->checkoutId;
             $checkout_link = $res->checkout->redirectionUrl;
-            $trace_id = $res->checkout->storeId;
+            $trace_id = $res->traceId;
 
             $order->update_meta_data('_fiserv_plugin_checkout_link', $checkout_link);
             $order->update_meta_data('_fiserv_plugin_cache_retry', 0);
