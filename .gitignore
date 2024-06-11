@@ -54,6 +54,7 @@ package-lock.json
 # Unit tests
 tmp/
 .phpunit.result.cache
+phpunit.xml
 
 # Composer
 vendor/
