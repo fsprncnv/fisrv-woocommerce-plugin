@@ -43,7 +43,7 @@ RUN wp config set --allow-root --raw WP_DEBUG true
 RUN wp config set --allow-root --raw WP_DEBUG_LOG true
 RUN wp config set --allow-root --raw WP_DEBUG_DISPLAY false
 RUN wp config list --allow-root
-RUN wp plugin install --allow-root woocommerce --activate
+RUN wp plugin install --allow-root woocommerce
 
 # ---------------------------------------------------
 # Copy Plugins
