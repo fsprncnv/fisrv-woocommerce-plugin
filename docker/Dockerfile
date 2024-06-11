@@ -31,15 +31,15 @@ RUN chown -R www-data:www-data /var/www
 RUN ls -al /var/www
 RUN ls -al .
 
-RUN ls -al /etc/apache2/sites-enabled
+RUN cat /etc/apache2/sites-enabled/000-default.conf
+RUN ls -al /etc/apache2/sites-available/
 
 RUN docker-php-ext-install mysqli pdo pdo_mysql
 RUN docker-php-ext-enable mysqli
 RUN a2enmod rewrite
 RUN a2enmod ssl
-RUN a2ensite ssl
 RUN a2enmod vhost_alias
-#COPY ./apache/000-default.conf /etc/apache2/sites-available/000-default.conf
+RUN a2ensite ssl
 
 # ---------------------------------------------------
 # PHP Configurations
