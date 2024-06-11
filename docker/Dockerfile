@@ -35,14 +35,12 @@ WORKDIR /var/www/html/
 
 RUN wp core download --allow-root --path=. --locale=en_US
 RUN wp config create --allow-root --skip-check --dbhost=fisrv-woocommerce-db --dbname=wordpress --dbuser=wordpress --dbpass=wordpress
-RUN wp config path --allow-root
-#RUN wp db create --allow-root
-#RUN wp core install --allow-root --url=wpclidemo.dev --title="WP-CLI" --admin_user=wpcli --admin_password=wpcli --admin_email=info@wp-cli.org
+RUN wp plugin install --allow-root woocommerce
 
 #RUN wp config set --allow-root --raw WP_DEBUG true
 #RUN wp config set --allow-root --raw WP_DEBUG_LOG true
 #RUN wp config set --allow-root --raw WP_DEBUG_DISPLAY false
-#RUN wp plugin install --allow-root woocommerce
+#
 
 # ---------------------------------------------------
 # Copy Plugins
