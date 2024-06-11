@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "git@gitlab.mherrm.de:cgi/fiserv-php-client.git",
-                "reference": "f2deb90154e150f1a908436307a74d4798825ca1"
+                "reference": "9927965c936e3c5a493550f74711a0446b25646b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.mherrm.de/api/v4/projects/64/packages/composer/archives/fiserv/php-api-wrapper.zip?sha=f2deb90154e150f1a908436307a74d4798825ca1",
-                "reference": "f2deb90154e150f1a908436307a74d4798825ca1",
+                "url": "https://gitlab.mherrm.de/api/v4/projects/64/packages/composer/archives/fiserv/php-api-wrapper.zip?sha=9927965c936e3c5a493550f74711a0446b25646b",
+                "reference": "9927965c936e3c5a493550f74711a0446b25646b",
                 "shasum": ""
             },
             "require": {
@@ -986,12 +986,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "bfe55ab9f51514c30870772e70d825eb160508bf"
+                "reference": "cdeb0d99ecb1c4ad07e2e0b4e744d19965951d56"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/bfe55ab9f51514c30870772e70d825eb160508bf",
-                "reference": "bfe55ab9f51514c30870772e70d825eb160508bf",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/cdeb0d99ecb1c4ad07e2e0b4e744d19965951d56",
+                "reference": "cdeb0d99ecb1c4ad07e2e0b4e744d19965951d56",
                 "shasum": ""
             },
             "require": {
@@ -1081,7 +1081,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-06-03T05:41:34+00:00"
+            "time": "2024-06-11T09:46:58+00:00"
         },
         {
             "name": "sebastian/cli-parser",

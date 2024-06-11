@@ -2,10 +2,14 @@
 
 use FiservWoocommercePlugin\CheckoutHandler;
 
+use function PHPUnit\Framework\stringStartsWith;
+
 if (!defined('ABSPATH')) exit;
 
 class CheckoutGateway extends WC_Payment_Gateway
 {
+    private string $checkout_lane_domain = 'https://ci.checkout-lane.com/';
+
     public function __construct()
     {
         $this->id = 'fiserv-gateway';
@@ -76,9 +80,19 @@ class CheckoutGateway extends WC_Payment_Gateway
         $order = wc_get_order($order_id);
 
         try {
-            // $order->update_status('wc-on-hold', 'Awaiting Fiserv Checkout');
+            $cache = $order->get_meta('_fiserv_plugin_checkout_link', true);
+            $retryNumber = $order->get_meta('_fiserv_plugin_cache_retry');
+
+            // if (is_string($cache) && stringStartsWith(self::$checkout_lane_domain && $retryNumber < 2)) {
+            //     $retryNumber = $order->get_meta('_fiserv_plugin_cache_retry');
+
+            //     $order->update_meta_data('_fiserv_plugin_cache_retry', $retryNumber + 1);
+            //     $order->save_meta_data();
+            //     $checkout_link = $cache;
+            // } else {
+            // }
+
             $checkout_link = CheckoutHandler::create_checkout_link($order);
-            // $order->update_status('wc-processing', 'Processing Fiserv Checkout');
 
             return [
                 'result' => 'success',
@@ -86,10 +100,7 @@ class CheckoutGateway extends WC_Payment_Gateway
             ];
         } catch (Throwable $th) {
             $message = 'Failed creating Fiserv Checkout - ' . $th->getMessage();
-            echo esc_html($th->getMessage());
-
             wc_add_notice($message, 'error');
-            wc_print_notices();
 
             WCLogger::error($order, $message);
             $order->update_status('wc-failed', $message);

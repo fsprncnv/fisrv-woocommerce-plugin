@@ -73,23 +73,16 @@ class CheckoutHandler
     {
         self::$domain = get_site_url();
 
-        // add_action('woocommerce_before_checkout_process', [$this, 'something']);
-        add_action('before_woocommerce_pay_form', [$this, 'retry_payment'], 1, 3);
-
         /** On init, active output buffer (to enable redirects) */
         add_action('init', [$this, 'output_buffer']);
 
-        /** Show transaction error message */
-        // add_action('woocommerce_before_checkout_form', [$this, 'maybe_failed_transaction'], 1);
-
-        /** Remove payment original Place Order button */
-        //add_filter('woocommerce_order_button_html', '__return_false', 1);
-
-        /** Remove payment method selection section */
-        // add_filter('woocommerce_cart_needs_payment', '__return_false');
-
-        // add_action('woocommerce_after_order_notes', [CheckoutViewRenderer::class, 'render_checkout_button_as_button']);
+        /** Fill out fields with default values for testing */
         add_filter('woocommerce_checkout_fields', [$this, 'fill_out_fields']);
+
+        /** Callback on failed payment, retry flow */
+        add_action('before_woocommerce_pay_form', [$this, 'retry_payment'], 1, 3);
+
+        /** Callback on completed order */
         add_action('woocommerce_thankyou', [$this, 'order_complete_callback'], 1, 1);
     }
 
@@ -265,8 +258,6 @@ class CheckoutHandler
      * returned checkout link to '#' (no redirect)
      * @return string URL of hosted payment page
      * 
-     * @todo Currently, passing floats (to transaction amount) causes unexpected behaviour.
-     * Until float parameters are fixed, the total is cast to integers (amount is floored).
      */
     public static function create_checkout_link(object $order): string
     {
@@ -279,11 +270,14 @@ class CheckoutHandler
 
             $checkout_id = $res->checkout->checkoutId;
             $checkout_link = $res->checkout->redirectionUrl;
+            $trace_id = $res->checkout->storeId;
 
             $order->update_meta_data('_fiserv_plugin_checkout_link', $checkout_link);
+            $order->update_meta_data('_fiserv_plugin_cache_retry', 0);
             $order->update_meta_data('_fiserv_plugin_checkout_id', $checkout_id);
             $order->update_meta_data('_fiserv_plugin_trace_id', $checkout_id);
             $order->save_meta_data();
+            $order->add_order_note('Fiserv checkout link ' . $checkout_link . ' created with checkout ID ' . $checkout_id . ' and trace ID ' . $trace_id . '.');
 
             return $checkout_link;
         } catch (Throwable $th) {
@@ -316,12 +310,12 @@ class CheckoutHandler
             $locale = $wp_language;
         }
 
+        // @todo FLOAT BUG
         $req->checkoutSettings->locale = $locale;
-
-        $total = intval($order->get_total());
-        $successUrl = $order->get_checkout_order_received_url();
+        $total = $order->get_total();
 
         $wc_checkout_link = wc_get_page_permalink('checkout');
+        $successUrl = $order->get_checkout_order_received_url();
         $failureUrl = $order->get_checkout_payment_url();
 
         $req->merchantTransactionId = $order->get_id();
@@ -336,6 +330,7 @@ class CheckoutHandler
 
         $req->checkoutSettings->redirectBackUrls->failureUrl = add_query_arg([
             '_wpnonce' => $nonce,
+            'transaction_failed' => true,
             'wc_order_id' => $order->get_id(),
         ], $failureUrl);
 

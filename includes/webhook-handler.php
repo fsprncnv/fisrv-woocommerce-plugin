@@ -50,11 +50,12 @@ class WebhookHandler
             ]);
             $response->set_status(200);
 
-            self::update_order($order_id, $json);
+            $webhook_event = new WebhookEvent($json);
+            self::update_order($order_id, $webhook_event);
 
             return $response;
         } catch (Exception $e) {
-            return new WP_Error('Webhook handling has failed', $e->getMessage(), array('status' => 403));
+            return new WP_Error('Webhook handling has failed', $e->getMessage(), ['status' => 403]);
         }
     }
 
@@ -81,17 +82,28 @@ class WebhookHandler
         global $wpdb;
         $table_name = $wpdb->prefix . 'wc_orders_meta';
 
-        $res = wp_cache_get('_meta_data_query_cache');
-        if (!$res || count($res) === 0) {
-            $query = ("select meta_value from " . $table_name . " where meta_key = '_fiserv_plugin_webhook_event'");
-            $res = $wpdb->get_results($query); // db ok
-            wp_cache_set('_meta_data_query_cache', $res);
-        }
+        // $res = wp_cache_get('_meta_data_query_cache');
+        // if (!$res || count($res) === 0) {
+        // }
+
+        $query = ("select meta_value, order_id from " . $table_name . " where meta_key = '_fiserv_plugin_webhook_event'");
+        $res = $wpdb->get_results($query); // db ok // no cache ok
 
         $out = [];
 
         foreach ($res as $entry) {
-            array_push($out, json_decode($entry->meta_value));
+            if ($entry->meta_value === null) {
+                continue;
+            }
+
+            array_push(
+                $out,
+                [
+                    'received_at' => $entry->order_id,
+                    'wc_order_id' => $entry->order_id,
+                    'event' => json_decode($entry->meta_value),
+                ]
+            );
         }
 
         return new WP_REST_Response($out);
@@ -114,18 +126,18 @@ class WebhookHandler
      * meta data.
      * 
      * @param int $order_id Identifier of corresponding order
-     * @param array $event_data Webhook event sent from checkout solution
+     * @param WebhookEvent $event Webhook event sent from checkout solution
      */
-    private static function update_order(int $order_id, array $event_data): void
+    private static function update_order(int $order_id, WebhookEvent $event): void
     {
         $order = wc_get_order($order_id);
         if (!$order) {
             throw new Exception(esc_html('Order with ID ' . $order_id . ' has not been found.'));
         }
 
-        $order->update_meta_data('_fiserv_plugin_webhook_event', $event_data);
+        $order->update_meta_data('_fiserv_plugin_webhook_event', $event);
 
-        $ipgTransactionStatus = $event_data['transactionStatus'];
+        $ipgTransactionStatus = (string) $event->transactionStatus;
         $wc_status = self::$wc_fiserv_status_map[$ipgTransactionStatus];
 
         if ($order->has_status('wc-completed') || $order->has_status('wc-cancelled')) {
