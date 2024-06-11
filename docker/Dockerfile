@@ -44,8 +44,9 @@ RUN wp config create --allow-root --skip-check --dbhost=fisrv-woocommerce-db --d
 # ---------------------------------------------------
 # Copy Plugins
 # ---------------------------------------------------
-ADD https://downloads.wordpress.org/plugin/woocommerce.8.9.3.zip ./wp-content/plugins/
-RUN unzip woocommerce.8.9.3.zip
+ADD https://downloads.wordpress.org/plugin/woocommerce.8.9.3.zip ./wp-content/plugins/woocommerce.zip
+RUN ls ./wp-content/plugins/
+RUN unzip woocommerce.zip
 RUN ls ./wp-content/plugins/
 
 RUN chown -R www-data:www-data /var/www
