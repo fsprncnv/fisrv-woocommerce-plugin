@@ -4,12 +4,22 @@
 FROM php:apache-bookworm
 
 # ---------------------------------------------------
-# Self-signed Certificate Generation
+# Self-Signed Certificate Generation
 # ---------------------------------------------------
 RUN apt-get update
 RUN apt-get install -y ssl-cert
 RUN make-ssl-cert generate-default-snakeoil --force-overwrite
 RUN usermod -a -G ssl-cert www-data
+
+# ---------------------------------------------------
+# Apache Configuration
+# ---------------------------------------------------
+RUN docker-php-ext-install mysqli pdo pdo_mysql
+RUN docker-php-ext-enable mysqli
+RUN a2enmod rewrite
+RUN a2enmod ssl
+RUN a2enmod vhost_alias
+RUN a2ensite default-ssl
 
 # ---------------------------------------------------
 # Install Wordpress CLI
@@ -25,7 +35,7 @@ WORKDIR /var/www/html/
 
 RUN wp --info
 RUN wp core download --allow-root --path=. --locale=en_US
-RUN wp config create --allow-root --skip-check --dbname=fisrv-woocommerce-db --dbuser=wordpress --prompt=wordpress
+RUN wp config create --allow-root --skip-check --dbhost=fisrv-woocommerce-db --dbname=wordpress --dbuser=wordpress --dbpass=wordpress
 #RUN wp db create --allow-root
 #RUN wp core install --allow-root --url=wpclidemo.dev --title="WP-CLI" --admin_user=wpcli --admin_password=wpcli --admin_email=info@wp-cli.org
 
@@ -36,8 +46,6 @@ ADD *.tar.gz ./wp-content/plugins/custom-plugin/
 RUN ls ./wp-content/plugins/custom-plugin/
 
 RUN chown -R www-data:www-data /var/www
-RUN ls -al /var/www
-RUN ls -al .
 
 RUN docker-php-ext-install mysqli pdo pdo_mysql
 RUN docker-php-ext-enable mysqli
