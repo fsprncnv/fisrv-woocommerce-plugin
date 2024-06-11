@@ -4,6 +4,14 @@
 FROM php:apache-bookworm
 
 # ---------------------------------------------------
+# Self-signed Certificate Generation
+# ---------------------------------------------------
+RUN openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 -subj "/C=GB/ST=London/L=London/O=Global Security/OU=IT Department/CN=example.com" -keyout ./ssl.key -out ./ssl.crt
+RUN mv ./ssl.crt /etc/apache2/ssl/ssl.crt
+RUN mv ./ssl.key /etc/apache2/ssl/ssl.key
+RUN ls -al /etc/apache2/ssl/
+
+# ---------------------------------------------------
 # Install Wordpress CLI
 # ---------------------------------------------------
 ADD https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar wp-cli.phar
@@ -20,12 +28,6 @@ RUN wp core download --allow-root --path=. --locale=en_US
 #RUN wp config create --allow-root --dbname=fiwoodb --dbuser=wordpress --prompt=Test1234
 #RUN wp db create --allow-root
 #RUN wp core install --allow-root --url=wpclidemo.dev --title="WP-CLI" --admin_user=wpcli --admin_password=wpcli --admin_email=info@wp-cli.org
-
-# ---------------------------------------------------
-# Self-signed Certificate Generation
-# ---------------------------------------------------
-RUN openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 -subj "/C=GB/ST=London/L=London/O=Global Security/OU=IT Department/CN=example.com" -keyout ./ssl.key -out ./ssl.crt
-RUN ls -al
 
 # ---------------------------------------------------
 # Copy Plugins
@@ -45,6 +47,7 @@ RUN a2enmod vhost_alias
 RUN a2ensite default-ssl
 
 RUN ls -al /etc/apache2/sites-enabled/
+RUN cat /etc/apache2/sites-enabled/sites-available/default-ssl.conf
 
 # ---------------------------------------------------
 # PHP Configurations
