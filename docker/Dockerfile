@@ -42,6 +42,7 @@ RUN wp config create --allow-root --skip-check --dbhost=fisrv-woocommerce-db --d
 RUN wp config set --allow-root --raw WP_DEBUG true
 RUN wp config set --allow-root --raw WP_DEBUG_LOG true
 RUN wp config set --allow-root --raw WP_DEBUG_DISPLAY false
+RUN wp config list --allow-root
 
 # ---------------------------------------------------
 # Copy Plugins
