@@ -35,7 +35,7 @@ WORKDIR /var/www/html/
 
 RUN wp core download --allow-root --path=. --locale=en_US
 RUN wp config create --allow-root --skip-check --dbhost=fisrv-woocommerce-db --dbname=wordpress --dbuser=wordpress --dbpass=wordpress
-RUN wp config path
+RUN wp config path --allow-root
 #RUN wp db create --allow-root
 #RUN wp core install --allow-root --url=wpclidemo.dev --title="WP-CLI" --admin_user=wpcli --admin_password=wpcli --admin_email=info@wp-cli.org
 
