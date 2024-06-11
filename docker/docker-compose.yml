@@ -40,8 +40,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "1.0"
-          memory: 50M
+          cpus: "1.5"
+          memory: 200M
 networks:
   traefik:
     external: true
