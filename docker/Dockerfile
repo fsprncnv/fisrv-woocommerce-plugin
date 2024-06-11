@@ -5,6 +5,7 @@ FROM php:apache-bookworm
 
 RUN apt-get update
 RUN apt-get install -y ssl-cert
+RUN make-ssl-cert generate-default-snakeoil --force-overwrite
 
 # ---------------------------------------------------
 # Self-signed Certificate Generation
