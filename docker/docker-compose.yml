@@ -13,9 +13,6 @@ services:
       - MYSQL_PASSWORD=wordpress
     networks:
       - default
-    expose:
-      - 3306
-      - 33060
   paypal:
     image: registry.gitlab.mherrm.de/cgi/fiserv-woocommerce-plugin:latest
     container_name: fiwoo
