@@ -52,7 +52,7 @@ RUN a2enmod vhost_alias
 RUN a2ensite default-ssl
 
 RUN ls -al /etc/apache2/sites-enabled/
-RUN cat /etc/apache2/sites-enabled/sites-available/default-ssl.conf
+RUN cat /etc/apache2/sites-enabled/default-ssl.conf
 
 # ---------------------------------------------------
 # PHP Configurations
