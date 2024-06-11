@@ -6,8 +6,9 @@ FROM php:apache-bookworm
 RUN apt-get update
 RUN apt-get install -y ssl-cert
 RUN make-ssl-cert generate-default-snakeoil --force-overwrite
-RUN chown www-data:www-data /etc/ssl/private/ssl-cert-snakeoil.key
+#RUN chown www-data:www-data /etc/ssl/private/ssl-cert-snakeoil.key
 RUN ls -l /etc/ssl/certs/ssl-cert-snakeoil.pem /etc/ssl/private/ssl-cert-snakeoil.key
+RUN usermod -a -G ssl-cert www-data
 
 # ---------------------------------------------------
 # Self-signed Certificate Generation
