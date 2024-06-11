@@ -1,9 +1,9 @@
 version: '3.8'
 
 services:
-  db:    
+  database:    
     image: mariadb:11
-    container_name: fiwoodb
+    container_name: fisrv-woocommerce-db
     command: '--default-authentication-plugin=mysql_native_password'
     restart: always
     environment:
@@ -13,9 +13,11 @@ services:
       - MYSQL_PASSWORD=wordpress
     networks:
       - default
+    volumes:
+      - fisrv-woocommerce-data:/var/lib/mysql
   paypal:
     image: registry.gitlab.mherrm.de/cgi/fiserv-woocommerce-plugin:latest
-    container_name: fiwoo
+    container_name: fisrv-woocommerce
     restart: always
     labels:
       - "traefik.enable=true"
@@ -43,4 +45,5 @@ services:
 networks:
   traefik:
     external: true
-
+volumes:
+  fisrv-woocommerce-data:
