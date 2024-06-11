@@ -31,6 +31,8 @@ RUN chown -R www-data:www-data /var/www
 RUN ls -al /var/www
 RUN ls -al .
 
+RUN ls -al /etc/apache2/sites-enabled
+
 RUN docker-php-ext-install mysqli pdo pdo_mysql
 RUN docker-php-ext-enable mysqli
 RUN a2enmod rewrite
