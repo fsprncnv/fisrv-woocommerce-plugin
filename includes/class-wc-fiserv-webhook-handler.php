@@ -46,7 +46,7 @@ class WC_Fiserv_Webhook_Handler
      * 
      * @todo Error handling when handling response object !!
      */
-    public function consume_events(WP_REST_Request $request)
+    public function consume_events(WP_REST_Request $request): WP_REST_Response | WP_Error
     {
         $request_body = $request->get_body();
         $order_id = $request->get_param('wc_order_id');
@@ -88,38 +88,33 @@ class WC_Fiserv_Webhook_Handler
      * 
      * @return WP_REST_Response Response data
      */
-    public static function get_events_callback(): WP_REST_Response
+    public static function get_events_callback(WP_REST_Request $request): WP_REST_Response | WP_Error
     {
-        global $wpdb;
-        $table_name = $wpdb->prefix . 'wc_orders_meta';
+        $order_id = $request->get_param('wc_order_id');
 
-        // $res = wp_cache_get('_meta_data_query_cache');
-        // if (!$res || count($res) === 0) {
-        // }
+        $order = wc_get_order($order_id);
 
-        $query = ("select meta_value, order_id from " . $table_name . " where meta_key = '_fiserv_plugin_webhook_event'");
-        $res = $wpdb->get_results($query); // db ok // no cache ok
-
-        $out = [];
-
-        foreach ($res as $entry) {
-            $parsed_event = json_decode($entry->meta_value);
-
-            if ($parsed_event === null) {
-                continue;
-            }
-
-            array_push(
-                $out,
-                [
-                    'received_at' => $parsed_event->receivedAt,
-                    'wc_order_id' => $entry->order_id,
-                    'event' => $parsed_event,
-                ]
-            );
+        if (!$order) {
+            return new WP_Error('Given order ID not found.', ['status' => 404]);
         }
 
-        return new WP_REST_Response($out);
+        $meta_value = $order->get_meta('_fiserv_plugin_webhook_event');
+
+        if (!$meta_value) {
+            return new WP_Error('Order has no saved events', ['status' => 404]);
+        }
+
+        $parsed_event = json_decode($meta_value);
+
+        if ($parsed_event === null) {
+            return new WP_Error('Could not parse webhook event.', '$meta_value', ['status' => 500]);
+        }
+
+        return new WP_REST_Response([
+            'received_at' => $parsed_event->receivedAt,
+            'wc_order_id' => $order_id,
+            'event' => $parsed_event,
+        ]);
     }
 
     /**
@@ -152,9 +147,10 @@ class WC_Fiserv_Webhook_Handler
 
         $ipgTransactionStatus = (string) $event->transactionStatus;
         $wc_status = self::$wc_fiserv_status_map[$ipgTransactionStatus];
+        $wc_status_unprefixed = substr($wc_status, 3);
 
-        if ($order->has_status('wc-completed') || $order->has_status('wc-cancelled')) {
-            WC_Fiserv_Logger::log($order, 'Attempted to change status of order that has been processed already. Prior status: ' . $order->get_status() . 'Attempted status change: ' . $wc_status);
+        if ($order->has_status('completed') || $order->has_status('cancelled')) {
+            WC_Fiserv_Logger::log($order, 'Attempted to change status of order that has been processed already. Prior status: ' . $order->get_status() . ' Attempted status change: ' . $wc_status_unprefixed);
             return;
         }
 
@@ -164,7 +160,8 @@ class WC_Fiserv_Webhook_Handler
         }
 
         $order->update_status($wc_status, 'Transaction status changed');
-        WC_Fiserv_Logger::log($order, 'Order' . $order->get_id() . 'changed to status ' . $order->get_status());
+        $order->add_order_note('Fiserv checkout has updated order to ' . $wc_status_unprefixed);
+        WC_Fiserv_Logger::log($order, 'Order ' . $order->get_id() . ' changed to status ' . $order->get_status());
 
         $order->save_meta_data();
     }
