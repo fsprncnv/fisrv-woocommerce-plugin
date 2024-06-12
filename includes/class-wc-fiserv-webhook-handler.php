@@ -1,6 +1,17 @@
 <?php
 
-class WebhookHandler
+if (!defined('ABSPATH')) exit;
+
+/**
+ * Class that handles creation of webhook consumers to receive order
+ * webhook event sent by Checkout Solution.
+ *
+ * @package    WooCommerce
+ * @category   Payment Gateways
+ * @author     Fiserv
+ * @since      1.0.0
+ */
+class WC_Fiserv_Webhook_Handler
 {
     public static string $webhook_endpoint = '/fiserv_woocommerce_plugin/v1';
     private static array $event_log = [];

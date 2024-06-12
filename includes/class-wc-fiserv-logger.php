@@ -1,8 +1,19 @@
 <?php
 
-class WCLogger
+if (!defined('ABSPATH')) exit;
+
+/**
+ * Class that handles creation of webhook consumers to receive order
+ * webhook event sent by Checkout Solution.
+ *
+ * @package    WooCommerce
+ * @category   Payment Gateways
+ * @author     Fiserv
+ * @since      1.0.0
+ */
+class WC_Fiserv_Logger
 {
-    const WC_LOG_SOURCE = 'woocommerce-gateway-fiserv';
+    const WC_LOG_SOURCE = 'fiserv-checkout-for-woocommerce';
 
     /**
      * Log some message to WC admin page as info log

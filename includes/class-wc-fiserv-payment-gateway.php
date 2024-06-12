@@ -1,12 +1,16 @@
 <?php
 
-use FiservWoocommercePlugin\CheckoutHandler;
-
-use function PHPUnit\Framework\stringStartsWith;
-
 if (!defined('ABSPATH')) exit;
 
-class CheckoutGateway extends WC_Payment_Gateway
+/**
+ * Custom Woocommerce payment gateway.
+ *
+ * @package    WooCommerce
+ * @category   Payment Gateways
+ * @author     Fiserv
+ * @since      1.0.0
+ */
+class WC_Fiserv_Payment_Gateway extends WC_Payment_Gateway
 {
     private string $checkout_lane_domain = 'https://ci.checkout-lane.com/';
 
@@ -15,8 +19,8 @@ class CheckoutGateway extends WC_Payment_Gateway
         $this->id = 'fiserv-gateway';
         $this->has_fields = false;
         $this->method_title = 'Fiserv Gateway';
-        $this->method_description = 'Description for Fiserv Gateway';
-        $this->description = 'Pay with Fiserv Checkout';
+        $this->method_description = 'Pay with Fiserv Checkout';
+        $this->description = 'Pay with credit card';
         $this->title = 'Fiserv Checkout';
 
         $this->init_form_fields();
@@ -25,7 +29,7 @@ class CheckoutGateway extends WC_Payment_Gateway
 
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, [$this, 'process_admin_options']);
 
-        CheckoutHandler::init_fiserv_sdk(
+        WC_Fiserv_Checkout_Handler::init_fiserv_sdk(
             $this->get_option('api_key'),
             $this->get_option('api_secret'),
             $this->get_option('store_id'),
@@ -47,19 +51,19 @@ class CheckoutGateway extends WC_Payment_Gateway
         'enabled' => [
             'title'         => 'Enable/Disable',
             'type'          => 'checkbox',
-            'label'         => 'Enable Custom Payment Gateway',
+            'label'         => 'Enable Fiserv Payment Gateway',
             'default'       => 'yes'
         ],
         'api_key' => [
             'title'         => 'API Key',
             'type'          => 'text',
-            'description'   => 'Aquire API Key from Developer Portal',
+            'description'   => 'Acquire API Key from Developer Portal',
             'desc_tip'      => true,
         ],
         'api_secret' => [
             'title'         => 'API Secret',
             'type'          => 'password',
-            'description'   => 'Aquire API Secret from Developer Portal',
+            'description'   => 'Acquire API Secret from Developer Portal',
             'desc_tip'      => true,
         ],
         'store_id' => [
@@ -92,7 +96,7 @@ class CheckoutGateway extends WC_Payment_Gateway
             // } else {
             // }
 
-            $checkout_link = CheckoutHandler::create_checkout_link($order);
+            $checkout_link = WC_Fiserv_Checkout_Handler::create_checkout_link($order);
 
             return [
                 'result' => 'success',
@@ -102,7 +106,7 @@ class CheckoutGateway extends WC_Payment_Gateway
             $message = 'Failed creating Fiserv Checkout - ' . $th->getMessage();
             wc_add_notice($message, 'error');
 
-            WCLogger::error($order, $message);
+            WC_Fiserv_Logger::error($order, $message);
             $order->update_status('wc-failed', $message);
 
             return [

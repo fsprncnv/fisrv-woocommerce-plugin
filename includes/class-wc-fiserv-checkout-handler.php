@@ -1,27 +1,18 @@
 <?php
-
-namespace FiservWoocommercePlugin;
-
-use Config;
-use CreateCheckoutRequest;
-use Exception;
 use Fiserv\CheckoutSolution;
-use Throwable;
-use WCLogger;
-use WebhookHandler;
+
+if (!defined('ABSPATH')) exit;
 
 /**
- * Valid
- * 5579346132831154
- * 
- * Invalid
- * 4182917993774394
+ * Class that handles creation of redirection link
+ * of checkout solution and further checkout related data handling.
+ *
+ * @package    WooCommerce
+ * @category   Payment Gateways
+ * @author     Fiserv
+ * @since      1.0.0
  */
-
-/**
- * This class handles logic involving the checkout
- */
-class CheckoutHandler
+class WC_Fiserv_Checkout_Handler
 {
     /**
      * Default params to be passed as request body of post checkout
@@ -61,7 +52,6 @@ class CheckoutHandler
         ]
     ];
 
-    private static string $domain;
     private static bool $REQUEST_FAILED = false;
     private static string $IPG_NONCE = 'ipg-nonce';
 
@@ -71,8 +61,6 @@ class CheckoutHandler
      */
     public function __construct()
     {
-        self::$domain = get_site_url();
-
         /** On init, active output buffer (to enable redirects) */
         add_action('init', [$this, 'output_buffer']);
 
@@ -98,7 +86,7 @@ class CheckoutHandler
     public static function retry_payment($order, $order_button_text, $available_gateways): array
     {
         if (!isset($_REQUEST['_wpnonce']) || !wp_verify_nonce($_REQUEST['_wpnonce'], self::$IPG_NONCE)) {
-            WCLogger::error($order, 'Security check: Nonce was invalid when checkout redirected back to failure URL.');
+            WC_Fiserv_Logger::error($order, 'Security check: Nonce was invalid when checkout redirected back to failure URL.');
             die();
         }
 
@@ -110,7 +98,7 @@ class CheckoutHandler
 
         wc_add_notice('Payment has failed: ' . $ipg_message, 'error');
         wc_print_notices();
-        WCLogger::error($order, 'Payment validation failed, retrying on checkout page: ' . $ipg_message . ' -- ' . $ipg_code);
+        WC_Fiserv_Logger::error($order, 'Payment validation failed, retrying on checkout page: ' . $ipg_message . ' -- ' . $ipg_code);
 
         return [
             'order'              => $order,
@@ -132,7 +120,7 @@ class CheckoutHandler
         $order->update_status('wc-pending', 'Retrying payment');
 
         if (!isset($_REQUEST['_wpnonce']) || !wp_verify_nonce($_REQUEST['_wpnonce'], self::$IPG_NONCE)) {
-            WCLogger::error($order, 'Security check: Nonce was invalid when checkout redirected back to failure URL.');
+            WC_Fiserv_Logger::error($order, 'Security check: Nonce was invalid when checkout redirected back to failure URL.');
             die();
         }
 
@@ -150,7 +138,7 @@ class CheckoutHandler
         });
 
         wc_add_notice('Payment has failed: ' . $_GET['message'], 'error');
-        WCLogger::error($order, 'Payment validation failed, retrying on checkout page: ' . $_GET['message'] . ' -- ' . $_GET['code']);
+        WC_Fiserv_Logger::error($order, 'Payment validation failed, retrying on checkout page: ' . $_GET['message'] . ' -- ' . $_GET['code']);
     }
 
     /**
@@ -183,7 +171,7 @@ class CheckoutHandler
     private static function verify_nonce(object $order): void
     {
         if (!isset($_REQUEST['_wpnonce']) || !wp_verify_nonce($_REQUEST['_wpnonce'], self::$IPG_NONCE)) {
-            WCLogger::error($order, 'Security check: Nonce was invalid when checkout redirected back to failure URL.');
+            WC_Fiserv_Logger::error($order, 'Security check: Nonce was invalid when checkout redirected back to failure URL.');
             die();
         }
     }
@@ -205,7 +193,7 @@ class CheckoutHandler
             $has_completed = $order->payment_complete();
             if ($has_completed) {
                 $order->update_status('wc-completed', 'Order has completed');
-                WCLogger::log($order, 'Order completed with card payment.');
+                WC_Fiserv_Logger::log($order, 'Order completed with card payment.');
             }
         }
     }
@@ -310,7 +298,6 @@ class CheckoutHandler
             $locale = $wp_language;
         }
 
-        // @todo FLOAT BUG
         $req->checkoutSettings->locale = $locale;
         $total = $order->get_total();
 
@@ -340,7 +327,7 @@ class CheckoutHandler
         $req->checkoutSettings->webHooksUrl = add_query_arg([
             '_wpnonce' => $nonce,
             'wc_order_id' => $order->get_id(),
-        ], WebhookHandler::$webhook_endpoint . '/events');
+        ], WC_Fiserv_Webhook_Handler::$webhook_endpoint . '/events');
 
         // $req->checkoutSettings->preSelectedPaymentMethod = 'cards';
         return $req;

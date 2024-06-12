@@ -63,5 +63,6 @@ bin/composer/**/vendor/
 lib/vendor/
 contributors.md
 contributors.html
+composer.lock
 
 auth.json
