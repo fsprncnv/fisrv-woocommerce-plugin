@@ -55,15 +55,14 @@ class WC_Fiserv_Webhook_Handler
             array_push(self::$event_log, "Event at " . time());
             $json = json_decode($request_body, true);
 
-            $response = new WP_REST_Response([
-                'wc_order_id' => $order_id,
-                'event' => $json,
-                'received_at' => time(),
-            ]);
-            $response->set_status(200);
-
             $webhook_event = new WebhookEvent($json);
             self::update_order($order_id, $webhook_event);
+
+            $response = new WP_REST_Response([
+                'wc_order_id' => $order_id,
+                'event' => $webhook_event,
+            ]);
+            $response->set_status(200);
 
             return $response;
         } catch (Exception $e) {
@@ -104,16 +103,18 @@ class WC_Fiserv_Webhook_Handler
         $out = [];
 
         foreach ($res as $entry) {
-            if ($entry->meta_value === null) {
+            $parsed_event = json_decode($entry->meta_value);
+
+            if ($parsed_event === null) {
                 continue;
             }
 
             array_push(
                 $out,
                 [
-                    // 'received_at' => $entry->order_id,
+                    'received_at' => $parsed_event->receivedAt,
                     'wc_order_id' => $entry->order_id,
-                    'event' => json_decode($entry->meta_value),
+                    'event' => $parsed_event,
                 ]
             );
         }
@@ -147,23 +148,23 @@ class WC_Fiserv_Webhook_Handler
             throw new Exception(esc_html('Order with ID ' . $order_id . ' has not been found.'));
         }
 
-        $order->update_meta_data('_fiserv_plugin_webhook_event', $event);
+        $order->update_meta_data('_fiserv_plugin_webhook_event', json_encode($event));
 
         $ipgTransactionStatus = (string) $event->transactionStatus;
         $wc_status = self::$wc_fiserv_status_map[$ipgTransactionStatus];
 
         if ($order->has_status('wc-completed') || $order->has_status('wc-cancelled')) {
-            WCLogger::log($order, 'Attempted to change status of order that has been processed already. Prior status: ' . $order->get_status() . 'Attempted status change: ' . $wc_status);
+            WC_Fiserv_Logger::log($order, 'Attempted to change status of order that has been processed already. Prior status: ' . $order->get_status() . 'Attempted status change: ' . $wc_status);
             return;
         }
 
         if ($ipgTransactionStatus === 'APPROVED') {
-            WCLogger::log($order, 'Order completed');
+            WC_Fiserv_Logger::log($order, 'Order completed');
             $order->payment_complete();
         }
 
         $order->update_status($wc_status, 'Transaction status changed');
-        WCLogger::log($order, 'Order' . $order->get_id() . 'changed to status ' . $order->get_status());
+        WC_Fiserv_Logger::log($order, 'Order' . $order->get_id() . 'changed to status ' . $order->get_status());
 
         $order->save_meta_data();
     }

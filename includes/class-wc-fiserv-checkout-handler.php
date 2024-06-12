@@ -1,4 +1,5 @@
 <?php
+
 use Fiserv\CheckoutSolution;
 
 if (!defined('ABSPATH')) exit;
@@ -54,6 +55,7 @@ class WC_Fiserv_Checkout_Handler
 
     private static bool $REQUEST_FAILED = false;
     private static string $IPG_NONCE = 'ipg-nonce';
+    private static bool $IS_DEV = true;
 
     /**
      * Constuctor mounting the checkout logic and button UI injection.
@@ -64,8 +66,10 @@ class WC_Fiserv_Checkout_Handler
         /** On init, active output buffer (to enable redirects) */
         add_action('init', [$this, 'output_buffer']);
 
-        /** Fill out fields with default values for testing */
-        add_filter('woocommerce_checkout_fields', [$this, 'fill_out_fields']);
+        if (self::$IS_DEV) {
+            /** Fill out fields with default values for testing */
+            add_filter('woocommerce_checkout_fields', [$this, 'fill_out_fields']);
+        }
 
         /** Callback on failed payment, retry flow */
         add_action('before_woocommerce_pay_form', [$this, 'retry_payment'], 1, 3);
