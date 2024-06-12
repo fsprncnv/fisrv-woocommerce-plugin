@@ -40,6 +40,12 @@ ADD https://downloads.wordpress.org/plugin/woocommerce.8.9.3.zip woocommerce.zip
 RUN unzip woocommerce.zip
 RUN rm -f woocommerce.zip
 
+ADD *.zip plugin.zip
+RUN unzip plugin.zip
+RUN rm -f plugin.zip
+
+RUN ls -al
+
 RUN chown -R www-data:www-data /var/www
 
 # ---------------------------------------------------
