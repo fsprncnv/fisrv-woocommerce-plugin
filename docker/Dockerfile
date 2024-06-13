@@ -23,10 +23,10 @@ RUN sed -i 's/ServerSignature On/ServerSignature Off/g' security.conf
 RUN sed -i 's/ServerTokens OS/ServerTokens Prod/g' security.conf
 RUN sed -i 's/#Header set X-Content-Type-Options: "nosniff"/Header always set X-Content-Type-Options: "nosniff"/g' security.conf
 RUN sed -i 's/#Header set X-Frame-Options: "sameorigin"/Header always set X-Frame-Options: "sameorigin"/g' security.conf
-#RUN echo 'Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"' >> security.conf
-#RUN echo 'Header always set X-XSS-Protection "1; mode=block"' >> security.conf
-#RUN echo 'Header always set X-Permitted-Cross-Domain-Policies "none"' >> security.conf
-#RUN echo 'Header always set Referrer-Policy "no-referrer-when-downgrade"' >> security.conf
+RUN echo 'Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"' >> security.conf
+RUN echo 'Header always set X-XSS-Protection "1; mode=block"' >> security.conf
+RUN echo 'Header always set X-Permitted-Cross-Domain-Policies "none"' >> security.conf
+RUN echo 'Header always set Referrer-Policy "no-referrer-when-downgrade"' >> security.conf
 #RUN echo 'Header always set Content-Security-Policy "default-src 'https:'; script-src 'unsafe-inline'"' >> security.conf
 RUN cat security.conf
 
@@ -46,11 +46,11 @@ RUN wp config create --allow-root --skip-check --dbhost=fisrv-woocommerce-db --d
 # ---------------------------------------------------
 WORKDIR /var/www/html/wp-content/plugins/
 ADD https://downloads.wordpress.org/plugin/woocommerce.8.9.3.zip woocommerce.zip
-RUN unzip woocommerce.zip
+RUN unzip -qq woocommerce.zip
 RUN rm -f woocommerce.zip
 
 ADD *.zip plugin.zip
-RUN unzip plugin.zip -d fiserv/
+RUN unzip -qq plugin.zip -d fiserv/
 RUN rm -f plugin.zip
 
 RUN chown -R www-data:www-data /var/www
