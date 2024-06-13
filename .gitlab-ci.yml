@@ -21,5 +21,3 @@ build:
 
 docker:
   extends: .base_docker
-  services:
-    - mysql:5.7
