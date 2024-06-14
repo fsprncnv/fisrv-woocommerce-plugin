@@ -16,7 +16,7 @@ services:
     volumes:
       - db:/var/lib/mysql
   paypal:
-    image: registry.gitlab.mherrm.de/cgi/fiserv-woocommerce-plugin:latest
+    image: registry.gitlab.mherrm.de/cgi/fisrv-woocommerce-plugin:latest
     container_name: fisrv-woocommerce-apache
     restart: always
     labels:
