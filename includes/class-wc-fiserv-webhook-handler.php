@@ -1,6 +1,7 @@
 <?php
 
-if (!defined('ABSPATH')) exit;
+use Fiserv\Models\TransactionStatus;
+use Fiserv\Models\WebhookEvent\WebhookEvent;
 
 /**
  * Class that handles creation of webhook consumers to receive order
@@ -11,31 +12,9 @@ if (!defined('ABSPATH')) exit;
  * @author     Fiserv
  * @since      1.0.0
  */
-class WC_Fiserv_Webhook_Handler
+final class WC_Fiserv_Webhook_Handler
 {
     public static string $webhook_endpoint = '/fiserv_woocommerce_plugin/v1';
-    private static array $event_log = [];
-    public static $instance;
-    public static int $log_size = 0;
-    public static $self_hash_reference;
-
-    public static function get()
-    {
-        if (self::$instance === null) {
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
-
-    public function __construct()
-    {
-        self::$instance = $this;
-        add_action('rest_api_init', [$this, 'register_consume_events']);
-        add_action('rest_api_init', [$this, 'register_get_events']);
-
-        self::$self_hash_reference = spl_object_hash($this);
-        self::$log_size = count(self::$event_log);
-    }
 
     /**
      * Receive event from Fiserv checkout solution
@@ -43,24 +22,19 @@ class WC_Fiserv_Webhook_Handler
      * @param WP_REST_Request $request Event data
      * @return WP_REST_Response Reponse acknowledging sent data
      * @return WP_Error 403 Code if request has failed
-     * 
-     * @todo Error handling when handling response object !!
      */
-    public function consume_events(WP_REST_Request $request): WP_REST_Response | WP_Error
+    public static function consume_events(WP_REST_Request $request): WP_REST_Response | WP_Error
     {
         $request_body = $request->get_body();
         $order_id = $request->get_param('wc_order_id');
 
         try {
-            array_push(self::$event_log, "Event at " . time());
-            $json = json_decode($request_body, true);
-
-            $webhook_event = new WebhookEvent($json);
+            $webhook_event = new WebhookEvent($request_body);
             self::update_order($order_id, $webhook_event);
 
             $response = new WP_REST_Response([
                 'wc_order_id' => $order_id,
-                'event' => $webhook_event,
+                'events' => $webhook_event,
             ]);
             $response->set_status(200);
 
@@ -74,11 +48,11 @@ class WC_Fiserv_Webhook_Handler
      * Register POST route at /wp-json/fiserv_woocommerce_plugin/v1/api.
      * Receive from events from Fiserv checkout solution
      */
-    public function register_consume_events()
+    public static function register_consume_events()
     {
         register_rest_route(self::$webhook_endpoint, '/events', [
             'methods' => 'POST',
-            'callback' => [$this, 'consume_events']
+            'callback' => [self::class, 'consume_events']
         ]);
     }
 
@@ -104,16 +78,15 @@ class WC_Fiserv_Webhook_Handler
             return new WP_Error('Order has no saved events', ['status' => 404]);
         }
 
-        $parsed_event = json_decode($meta_value);
+        $stored_events_list = json_decode($meta_value, true);
 
-        if ($parsed_event === null) {
+        if (is_null($stored_events_list)) {
             return new WP_Error('Could not parse webhook event.', '$meta_value', ['status' => 500]);
         }
 
         return new WP_REST_Response([
-            'received_at' => $parsed_event->receivedAt,
             'wc_order_id' => $order_id,
-            'event' => $parsed_event,
+            'events' => $stored_events_list,
         ]);
     }
 
@@ -121,11 +94,11 @@ class WC_Fiserv_Webhook_Handler
      * Register GET route at /wp-json/fiserv_woocommerce_plugin/v1/api.
      * Display all entries of event log.
      */
-    public function register_get_events()
+    public static function register_get_events()
     {
         register_rest_route(self::$webhook_endpoint, '/events', [
             'methods' => 'GET',
-            'callback' => [$this, 'get_events_callback']
+            'callback' => [self::class, 'get_events_callback']
         ]);
     }
 
@@ -143,10 +116,44 @@ class WC_Fiserv_Webhook_Handler
             throw new Exception(esc_html('Order with ID ' . $order_id . ' has not been found.'));
         }
 
-        $order->update_meta_data('_fiserv_plugin_webhook_event', json_encode($event));
+        $stored_events_list = json_decode($order->get_meta('_fiserv_plugin_webhook_event'), true);
+        $events_list = [];
 
-        $ipgTransactionStatus = (string) $event->transactionStatus;
-        $wc_status = self::$wc_fiserv_status_map[$ipgTransactionStatus];
+        if (is_array($stored_events_list)) {
+            $events_list = $stored_events_list;
+        }
+
+        array_unshift($events_list, $event);
+
+        $order->update_meta_data('_fiserv_plugin_webhook_event', json_encode($events_list));
+        $ipgTransactionStatus = $event->transactionStatus;
+
+        switch ($ipgTransactionStatus) {
+            case TransactionStatus::WAITING:
+                $wc_status = 'wc-on-hold';
+                break;
+            case TransactionStatus::PARTIAL:
+                $wc_status = 'wc-processing';
+                break;
+            case TransactionStatus::APPROVED:
+                $wc_status = 'wc-completed';
+                WC_Fiserv_Logger::log($order, 'Order completed');
+                $order->payment_complete();
+                break;
+            case TransactionStatus::PROCESSING_FAILED:
+                $wc_status = 'wc-failed';
+                break;
+            case TransactionStatus::VALIDATION_FAILED:
+                $wc_status = 'wc-failed';
+                break;
+            case TransactionStatus::DECLINED:
+                $wc_status = 'wc-cancelled';
+                break;
+
+            default:
+                break;
+        }
+
         $wc_status_unprefixed = substr($wc_status, 3);
 
         if ($order->has_status('completed') || $order->has_status('cancelled')) {
@@ -154,10 +161,6 @@ class WC_Fiserv_Webhook_Handler
             return;
         }
 
-        if ($ipgTransactionStatus === 'APPROVED') {
-            WC_Fiserv_Logger::log($order, 'Order completed');
-            $order->payment_complete();
-        }
 
         $order->update_status($wc_status, 'Transaction status changed');
         $order->add_order_note('Fiserv checkout has updated order to ' . $wc_status_unprefixed);
@@ -171,7 +174,7 @@ class WC_Fiserv_Webhook_Handler
      * to WC status
      * @todo Subject to change
      */
-    public static array $wc_fiserv_status_map = [
+    private static array $wc_fiserv_status_map_delete = [
         'WAITING' =>            'wc-on-hold',
         'PARTIAL' =>            'wc-processing',
         'APPROVED' =>           'wc-completed',
