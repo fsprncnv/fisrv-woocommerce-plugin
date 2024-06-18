@@ -158,6 +158,7 @@ final class WC_Fiserv_Checkout_Handler
     public static function create_checkout_link(object $order): string
     {
         try {
+            /** @todo No weird paramters */
             $request = self::$client->createBasicCheckoutRequest(0, '', '');
 
             $request = self::pass_checkout_data($request, $order);
