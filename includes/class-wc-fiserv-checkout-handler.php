@@ -1,8 +1,9 @@
 <?php
 
-use Fiserv\CheckoutSolution;
-
-if (!defined('ABSPATH')) exit;
+use Fiserv\Checkout\CheckoutClient;
+use Fiserv\Models\CheckoutClientRequest;
+use Fiserv\Models\Locale;
+use Fiserv\Models\PreSelectedPaymentMethod;
 
 /**
  * Class that handles creation of redirection link
@@ -13,70 +14,11 @@ if (!defined('ABSPATH')) exit;
  * @author     Fiserv
  * @since      1.0.0
  */
-class WC_Fiserv_Checkout_Handler
+final class WC_Fiserv_Checkout_Handler
 {
-    /**
-     * Default params to be passed as request body of post checkout
-     */
-    public const createCheckoutRequestParams = [
-        'transactionOrigin' => 'ECOM',
-        'transactionType' => 'SALE',
-        'transactionAmount' => [
-            'total' => 0,
-            'currency' => 'EUR'
-        ],
-        'checkoutSettings' => [
-            'locale' => 'en_GB',
-            'webHooksUrl' => 'https://nonce.com',
-            'redirectBackUrls' => [
-                'successUrl' => 'https://nonce.com',
-                'failureUrl' => 'https://nonce.com'
-            ]
-        ],
-        'paymentMethodDetails' => [
-            'cards' => [
-                'createToken' => [
-                    'toBeUsedFor' => 'UNSCHEDULED',
-                ],
-            ],
-        ],
-        'storeId' => 'NULL',
-        'order' => [
-            'orderDetails' => [
-                'purchaseOrderNumber' => 0,
-            ],
-            'billing' => [
-                'person' => [],
-                'contact' => [],
-                'address' => [],
-            ]
-        ]
-    ];
-
     private static bool $REQUEST_FAILED = false;
     private static string $IPG_NONCE = 'ipg-nonce';
-    private static bool $IS_DEV = true;
-
-    /**
-     * Constuctor mounting the checkout logic and button UI injection.
-     * Set origin as plugin in request header (useeg agent).
-     */
-    public function __construct()
-    {
-        /** On init, active output buffer (to enable redirects) */
-        add_action('init', [$this, 'output_buffer']);
-
-        if (self::$IS_DEV) {
-            /** Fill out fields with default values for testing */
-            add_filter('woocommerce_checkout_fields', [$this, 'fill_out_fields']);
-        }
-
-        /** Callback on failed payment, retry flow */
-        add_action('before_woocommerce_pay_form', [$this, 'retry_payment'], 1, 3);
-
-        /** Callback on completed order */
-        add_action('woocommerce_thankyou', [$this, 'order_complete_callback'], 1, 1);
-    }
+    private static CheckoutClient $client;
 
     /**
      * Triggered right before the Pay for Order form, after validation of the order and customer.
@@ -109,40 +51,6 @@ class WC_Fiserv_Checkout_Handler
             'available_gateways' => $available_gateways,
             'order_button_text'  => $order_button_text,
         ];
-    }
-
-    /**
-     * Callback hook that gets called on checkout page. Check if query params
-     * are present that indicate a failed transaction (failUrl from checkout solution).
-     * If redirected from failed transaction, display error notice and set
-     * order status accordingly.
-     */
-    public static function maybe_failed_transaction(): void
-    {
-        $order_id = $_GET['wc_order_id'];
-        $order = wc_get_order($order_id);
-        $order->update_status('wc-pending', 'Retrying payment');
-
-        if (!isset($_REQUEST['_wpnonce']) || !wp_verify_nonce($_REQUEST['_wpnonce'], self::$IPG_NONCE)) {
-            WC_Fiserv_Logger::error($order, 'Security check: Nonce was invalid when checkout redirected back to failure URL.');
-            die();
-        }
-
-        if (!isset($_GET['wc_order_id'])) {
-            return;
-        }
-
-        if (!isset($_GET['code']) || !isset($_GET['message'])) {
-            return;
-        }
-
-        /** Remove billing section when on retry payment page */
-        add_action('woocommerce_checkout_fields', function () {
-            return [];
-        });
-
-        wc_add_notice('Payment has failed: ' . $_GET['message'], 'error');
-        WC_Fiserv_Logger::error($order, 'Payment validation failed, retrying on checkout page: ' . $_GET['message'] . ' -- ' . $_GET['code']);
     }
 
     /**
@@ -186,7 +94,7 @@ class WC_Fiserv_Checkout_Handler
      * 
      * @param string $order_id WC order ID
      */
-    public function order_complete_callback(string $order_id): void
+    public static function order_complete_callback(string $order_id): void
     {
         $order = wc_get_order($order_id);
         self::verify_nonce($order);
@@ -225,20 +133,16 @@ class WC_Fiserv_Checkout_Handler
      */
     public static function init_fiserv_sdk($api_key, $api_secret, $store_id): void
     {
-        Config::$ORIGIN = 'Woocommerce Plugin';
-        Config::$API_KEY = $api_key;
-        Config::$API_SECRET = $api_secret;
-        Config::$STORE_ID = $store_id;
-    }
+        $plugin_data = get_plugin_data(__FILE__);
+        $plugin_version = $plugin_data['Version'];
 
-    /**
-     * This method turns on output buffering. See references for more info on output buffering.
-     * This has to be actived to enable redirection to external locations, for instance, the hosted payment page.
-     * @see ob_start()
-     */
-    function output_buffer()
-    {
-        ob_start();
+        self::$client = new CheckoutClient([
+            'user' => 'WoocommercePlugin/' . $plugin_version,
+            'is_prod' => false,
+            'api_key' => $api_key,
+            'api_secret' => $api_secret,
+            'store_id' => $store_id,
+        ]);
     }
 
     /**
@@ -254,20 +158,21 @@ class WC_Fiserv_Checkout_Handler
     public static function create_checkout_link(object $order): string
     {
         try {
-            $req = new CreateCheckoutRequest(self::createCheckoutRequestParams);
-            $req = self::pass_checkout_data($req, $order);
-            $req = self::pass_billing_data($req, $order);
+            $request = self::$client->createBasicCheckoutRequest(0, '', '');
 
-            $res = CheckoutSolution::postCheckouts($req);
+            $request = self::pass_checkout_data($request, $order);
+            $request = self::pass_billing_data($request, $order);
 
-            $checkout_id = $res->checkout->checkoutId;
-            $checkout_link = $res->checkout->redirectionUrl;
-            $trace_id = $res->traceId;
+            $response = self::$client->createCheckout($request);
+
+            $checkout_id = $response->checkout->checkoutId;
+            $checkout_link = $response->checkout->redirectionUrl;
+            $trace_id = $response->traceId;
 
             $order->update_meta_data('_fiserv_plugin_checkout_link', $checkout_link);
             $order->update_meta_data('_fiserv_plugin_cache_retry', 0);
             $order->update_meta_data('_fiserv_plugin_checkout_id', $checkout_id);
-            $order->update_meta_data('_fiserv_plugin_trace_id', $checkout_id);
+            $order->update_meta_data('_fiserv_plugin_trace_id', $response->traceId);
             $order->save_meta_data();
             $order->add_order_note('Fiserv checkout link ' . $checkout_link . ' created with checkout ID ' . $checkout_id . ' and trace ID ' . $trace_id . '.');
 
@@ -281,28 +186,20 @@ class WC_Fiserv_Checkout_Handler
     /**
      * Pass checkout data (totals, redirects, language etc.) to request object of checkout
      * 
-     * @param CreateCheckoutRequest $req    Request object to modify
+     * @param CheckoutClientRequest $req    Request object to modify
      * @param object $order                 Woocommerce order object
-     * @return CreateCheckoutRequest        Modified request object
+     * @return CheckoutClientRequest        Modified request object
      */
-    private static function pass_checkout_data(CreateCheckoutRequest $req, object $order): CreateCheckoutRequest
+    private static function pass_checkout_data(CheckoutClientRequest $req, object $order): CheckoutClientRequest
     {
         $wp_language = str_replace('-', '_', get_bloginfo('language'));
-        $locale = 'en_GB';
-
-        $supported_locales = [
-            'en_GB', 'en_US', 'de_DE', 'nl_NL'
-        ];
+        $locale = Locale::tryFrom($wp_language);
 
         if (substr($wp_language, 0, 2) == 'de') {
-            $locale = 'de_DE';
+            $locale = Locale::de_DE;
         }
 
-        if (in_array($wp_language, $supported_locales)) {
-            $locale = $wp_language;
-        }
-
-        $req->checkoutSettings->locale = $locale;
+        $req->checkoutSettings->locale = $locale ?? 'en_GB';
         $total = $order->get_total();
 
         $wc_checkout_link = wc_get_page_permalink('checkout');
@@ -332,19 +229,19 @@ class WC_Fiserv_Checkout_Handler
             '_wpnonce' => $nonce,
             'wc_order_id' => $order->get_id(),
         ], WC_Fiserv_Webhook_Handler::$webhook_endpoint . '/events');
+        $req->checkoutSettings->preSelectedPaymentMethod = PreSelectedPaymentMethod::CARDS;
 
-        // $req->checkoutSettings->preSelectedPaymentMethod = 'cards';
         return $req;
     }
 
     /**
      * Pass billing data from WC billing form to request object of checkout
      * 
-     * @param CreateCheckoutRequest $req    Request object to modify
+     * @param CheckoutClientRequest $req    Request object to modify
      * @param object $order                 Woocommerce order object
-     * @return CreateCheckoutRequest        Modified request object
+     * @return CheckoutClientRequest        Modified request object
      */
-    private static function pass_billing_data(CreateCheckoutRequest $req, object $order): CreateCheckoutRequest
+    private static function pass_billing_data(CheckoutClientRequest $req, object $order): CheckoutClientRequest
     {
         $req->order->billing->person->firstName     = $order->get_billing_first_name();
         $req->order->billing->person->lastName      = $order->get_billing_last_name();
@@ -368,4 +265,12 @@ class WC_Fiserv_Checkout_Handler
     {
         return self::$REQUEST_FAILED;
     }
+
+    /**
+     * Valid
+     * 5579346132831154
+     * 
+     * Invalid
+     * 4182917993774394
+     */
 }

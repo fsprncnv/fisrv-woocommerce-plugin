@@ -1,7 +1,5 @@
 <?php
 
-if (!defined('ABSPATH')) exit;
-
 /**
  * Custom Woocommerce payment gateway.
  *
@@ -10,10 +8,8 @@ if (!defined('ABSPATH')) exit;
  * @author     Fiserv
  * @since      1.0.0
  */
-class WC_Fiserv_Payment_Gateway extends WC_Payment_Gateway
+final class WC_Fiserv_Payment_Gateway extends WC_Payment_Gateway
 {
-    private string $checkout_lane_domain = 'https://ci.checkout-lane.com/';
-
     public function __construct()
     {
         $this->id = 'fiserv-gateway';

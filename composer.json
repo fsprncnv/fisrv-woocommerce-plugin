@@ -10,7 +10,7 @@
 		]
 	},
 	"require": {
-		"fiserv/php-api-wrapper": "*"
+		"fiserv/php-client": "*"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "^9.0",

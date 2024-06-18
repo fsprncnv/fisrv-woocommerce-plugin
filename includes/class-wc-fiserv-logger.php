@@ -1,7 +1,5 @@
 <?php
 
-if (!defined('ABSPATH')) exit;
-
 /**
  * Class that handles creation of webhook consumers to receive order
  * webhook event sent by Checkout Solution.
@@ -11,9 +9,9 @@ if (!defined('ABSPATH')) exit;
  * @author     Fiserv
  * @since      1.0.0
  */
-class WC_Fiserv_Logger
+final class WC_Fiserv_Logger
 {
-    const WC_LOG_SOURCE = 'fiserv-checkout-for-woocommerce';
+    private const WC_LOG_SOURCE = 'fiserv-checkout-for-woocommerce';
 
     /**
      * Log some message to WC admin page as info log
@@ -46,17 +44,13 @@ class WC_Fiserv_Logger
      */
     private static function create_log_context(object $order): array
     {
-        $ipg_link = $order->get_meta('_fiserv_plugin_checkout_link');
-        $ipg_checkout_id = $order->get_meta('_fiserv_plugin_checkout_id');
-        $ipg_trace_id = $order->get_meta('_fiserv_plugin_trace_id');
-
         return [
             'source' => self::WC_LOG_SOURCE,
             'wc_order_id' => $order->get_id(),
             'wc_order_key' => $order->get_order_key(),
-            'ipg_link' => $ipg_link,
-            'ipg_checkout_id' => $ipg_checkout_id,
-            'ipg_trace_id' => $ipg_trace_id,
+            'fiserv_link' => $order->get_meta('_fiserv_plugin_checkout_link'),
+            'fiserv_checkout_id' => $order->get_meta('_fiserv_plugin_checkout_id'),
+            'fiserv_trace_id' => $order->get_meta('_fiserv_plugin_trace_id'),
         ];
     }
 }

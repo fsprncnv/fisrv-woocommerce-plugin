@@ -17,10 +17,6 @@
 
 defined('ABSPATH') || exit;
 
-if (!defined('MAIN_PLUGIN_FILE')) {
-	define('MAIN_PLUGIN_FILE', __FILE__);
-}
-
 require_once plugin_dir_path(__FILE__) . '/vendor/autoload.php';
 
 // phpcs:disable WordPress.Files.FileName
@@ -53,7 +49,7 @@ function fiserv_checkout_for_woocommerce_activate()
 	}
 }
 
-if (!class_exists(PLUGIN_SLUG)) :
+if (!class_exists(PLUGIN_SLUG)) {
 	/**
 	 * The fiserv_checkout_for_woocommerce class.
 	 */
@@ -66,18 +62,31 @@ if (!class_exists(PLUGIN_SLUG)) :
 		 */
 		private static $instance;
 
+		private static bool $IS_DEV = true;
+
 		/**
 		 * Constructor.
 		 */
-		public function __construct()
+		private function __construct()
 		{
-			if (is_admin()) {
+			add_filter('woocommerce_payment_gateways', [$this, 'payment_gateways_callback']);
+
+			/** Callback on failed payment, retry flow */
+			add_action('before_woocommerce_pay_form', [WC_Fiserv_Checkout_Handler::class, 'retry_payment'], 1, 3);
+
+			/** Callback on completed order */
+			add_action('woocommerce_thankyou', [WC_Fiserv_Checkout_Handler::class, 'order_complete_callback'], 1, 1);
+
+			if (self::$IS_DEV) {
+				/** Fill out fields with default values for testing */
+				add_filter('woocommerce_checkout_fields', [WC_Fiserv_Checkout_Handler::class, 'fill_out_fields']);
 			}
 
-			new WC_Fiserv_Webhook_Handler();
-			new WC_Fiserv_Checkout_Handler();
+			/** Register webhook consumer */
+			add_action('rest_api_init', [WC_Fiserv_Webhook_Handler::class, 'register_consume_events']);
 
-			add_filter('woocommerce_payment_gateways', [$this, 'payment_gateways_callback']);
+			/** @todo Remove. Register webhook logger for testing purposes */
+			add_action('rest_api_init', [WC_Fiserv_Webhook_Handler::class, 'register_get_events']);
 		}
 
 		/**
@@ -115,11 +124,11 @@ if (!class_exists(PLUGIN_SLUG)) :
 		public function payment_gateways_callback($methods)
 		{
 			new WC_Fiserv_Payment_Gateway();
-			$methods[] = 'WC_Fiserv_Payment_Gateway';
+			$methods[] = WC_Fiserv_Payment_Gateway::class;
 			return $methods;
 		}
 	}
-endif;
+}
 
 add_action('plugins_loaded',  PLUGIN_SLUG . '_init', 10);
 
