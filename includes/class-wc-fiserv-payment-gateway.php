@@ -126,11 +126,7 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Payment_Gateway
         }
 
         try {
-            if ($cache = self::is_cached($order) && $this->USE_CACHE) {
-                $checkout_link = $cache;
-            } else {
-                $checkout_link = WC_Fiserv_Checkout_Handler::create_checkout_link($order, $this->selected_method);
-            }
+            $checkout_link = WC_Fiserv_Checkout_Handler::create_checkout_link($order, $this->selected_method);
 
             return [
                 'result' => 'success',

@@ -19,14 +19,14 @@ final class WC_Fiserv_Webhook_Handler
     /**
      * Receive event from Fiserv checkout solution
      * 
-     * @param WP_REST_Request<mixed> $request Event data
+     * @param WP_REST_Request $request Event data
      * @return WP_REST_Response Reponse acknowledging sent data
      * @return WP_Error 403 Code if request has failed
      */
     public static function consume_events(WP_REST_Request $request): WP_REST_Response | WP_Error
     {
         $request_body = $request->get_body();
-        $order_id = (string) $request->get_param('wc_order_id');
+        $order_id = strval($request->get_param('wc_order_id'));
 
         try {
             $webhook_event = new WebhookEvent($request_body);
@@ -72,7 +72,7 @@ final class WC_Fiserv_Webhook_Handler
             throw new Exception(esc_html('Order with ID ' . $order_id . ' has not been found.'));
         }
 
-        $stored_events_list = json_decode((string) $order->get_meta('_fiserv_plugin_webhook_event'), true);
+        $stored_events_list = json_decode(strval($order->get_meta('_fiserv_plugin_webhook_event')), true);
         $events_list = [];
 
         if (is_array($stored_events_list)) {
@@ -80,8 +80,12 @@ final class WC_Fiserv_Webhook_Handler
         }
 
         array_unshift($events_list, $event);
+        $event_list_json = json_encode($events_list);
 
-        $order->update_meta_data('_fiserv_plugin_webhook_event', json_encode($events_list));
+        if (is_string($event_list_json)) {
+            $order->update_meta_data('_fiserv_plugin_webhook_event', $event_list_json);
+        }
+
         $ipgTransactionStatus = $event->transactionStatus;
 
         switch ($ipgTransactionStatus) {

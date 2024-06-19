@@ -2,7 +2,7 @@
 
 /**
  * Plugin Name: Fiserv Checkout for Woocommerce
- * Version: 1.0.0
+ * Version: 0.0.4
  * Description: Fiserv checkout plugin for Woocommerce
  * Author: Fiserv
  * Author URI: https://fiserv.com
@@ -61,6 +61,7 @@ if (!class_exists(PLUGIN_SLUG)) {
 		 * @var \fiserv_checkout_for_woocommerce single instance of this class.
 		 */
 		private static $instance;
+		private string $version = '0.0.4';
 
 		private static bool $IS_DEV = true;
 
@@ -121,8 +122,8 @@ if (!class_exists(PLUGIN_SLUG)) {
 		/**
 		 * Load in payment gateways
 		 * 
-		 * @param array<WC_Payment_Gateway> $methods Current methods
-		 * @return array<WC_Payment_Gateway> Methods to return
+		 * @param array<string> $methods Current methods
+		 * @return array<string> Methods to return
 		 */
 		public function payment_gateways_callback(array $methods): array
 		{

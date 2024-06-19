@@ -1,7 +1,7 @@
 {
 	"name": "extension/fiserv-woocommerce-plugin",
 	"description": "WooCommerce plugin integration with Fiserv",
-	"version": "1.0.1",
+	"version": "0.0.4",
 	"minimum-stability": "dev",
 	"license": "MIT",
 	"autoload": {

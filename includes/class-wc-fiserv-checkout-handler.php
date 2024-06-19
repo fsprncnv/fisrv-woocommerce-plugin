@@ -101,8 +101,8 @@ final class WC_Fiserv_Checkout_Handler
      * Fill out text fields on billing section on checkout
      * with default values.
      * 
-     * @param array<string, array> $fields
-     * @return array<string, array> 
+     * @param array<string, mixed> $fields
+     * @return array<string, mixed> 
      */
     public static function fill_out_fields(array $fields): array
     {
@@ -194,9 +194,14 @@ final class WC_Fiserv_Checkout_Handler
             $item_data = $item->get_data();
 
             $req->order->basket->lineItems[] = new LineItem([
-                'name' => $item->get_name(),
-                'quantity' => $item->get_quantity(),
-                'price' => $item_data['total'],
+                'itemIdentifier'    => $item->get_id(),
+                'name'              => $item->get_name(),
+                'price'             => $item_data['total'],
+                'quantity'          => $item->get_quantity(),
+                'shippingCost'      => 0,
+                'valueAddedTax'     => 0,
+                'miscellaneousFee'  => 0,
+                'total'             => $item_data['total'],
             ]);
         }
         return $req;
