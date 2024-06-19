@@ -41,7 +41,7 @@ register_activation_hook(__FILE__, PLUGIN_SLUG . '_activate');
  *
  * @since 0.1.0
  */
-function fiserv_checkout_for_woocommerce_activate()
+function fiserv_checkout_for_woocommerce_activate(): void
 {
 	if (!class_exists('WooCommerce')) {
 		add_action('admin_notices', PLUGIN_SLUG . '_missing_wc_notice');
@@ -84,9 +84,6 @@ if (!class_exists(PLUGIN_SLUG)) {
 
 			/** Register webhook consumer */
 			add_action('rest_api_init', [WC_Fiserv_Webhook_Handler::class, 'register_consume_events']);
-
-			/** @todo Remove. Register webhook logger for testing purposes */
-			add_action('rest_api_init', [WC_Fiserv_Webhook_Handler::class, 'register_get_events']);
 		}
 
 		/**
@@ -123,8 +120,11 @@ if (!class_exists(PLUGIN_SLUG)) {
 
 		public function payment_gateways_callback($methods)
 		{
-			new WC_Fiserv_Payment_Gateway();
-			$methods[] = WC_Fiserv_Payment_Gateway::class;
+			array_push(
+				$methods,
+				WC_Fiserv_Gateway_GPay::class,
+				WC_Fiserv_Gateway_Cards::class
+			);
 			return $methods;
 		}
 	}
