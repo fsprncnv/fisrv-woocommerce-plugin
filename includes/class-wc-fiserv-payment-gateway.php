@@ -15,6 +15,7 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Payment_Gateway
     protected static PreSelectedPaymentMethod $selected_method;
     protected string $default_title = 'yes';
     protected string $default_description;
+    private const USE_CACHE = false;
 
     public function __construct()
     {
@@ -108,12 +109,13 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Payment_Gateway
         return $cache;
     }
 
+
     public function process_payment($order_id): array
     {
         $order = wc_get_order($order_id);
 
         try {
-            if ($cache = self::is_cached($order)) {
+            if ($cache = self::is_cached($order) && self::USE_CACHE) {
                 $checkout_link = $cache;
             } else {
                 $checkout_link = WC_Fiserv_Checkout_Handler::create_checkout_link($order, self::$selected_method);

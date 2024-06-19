@@ -1,9 +1,13 @@
 <?php
 
 use Fiserv\Checkout\CheckoutClient;
+use Fiserv\Models\Basket;
 use Fiserv\Models\CheckoutClientRequest;
+use Fiserv\Models\Currency;
+use Fiserv\Models\LineItem;
 use Fiserv\Models\Locale;
 use Fiserv\Models\PreSelectedPaymentMethod;
+use Fiserv\Models\TransactionAmount;
 
 /**
  * Class that handles creation of redirection link
@@ -155,14 +159,15 @@ final class WC_Fiserv_Checkout_Handler
      * @return string URL of hosted payment page
      * 
      */
-    public static function create_checkout_link(object $order): string
+    public static function create_checkout_link(object $order, PreSelectedPaymentMethod $method): string
     {
         try {
-            /** @todo No weird paramters */
+            /** @todo This is weird */
             $request = self::$client->createBasicCheckoutRequest(0, '', '');
 
-            $request = self::pass_checkout_data($request, $order);
+            $request = self::pass_checkout_data($request, $order, $method);
             $request = self::pass_billing_data($request, $order);
+            $request = self::pass_basket($request, $order);
 
             $response = self::$client->createCheckout($request);
 
@@ -185,14 +190,38 @@ final class WC_Fiserv_Checkout_Handler
     }
 
     /**
+     * Pass line items from WC to checkout
+     * 
+     * @param CheckoutClientRequest $req    Request object to modify
+     * @param object $order                 Woocommerce order object
+     * @return CheckoutClientRequest        Modified request object
+     */
+    private static function pass_basket(CheckoutClientRequest $req, object $order): CheckoutClientRequest
+    {
+        $wc_items = $order->get_items();
+
+        foreach ($wc_items as $item) {
+            $item_data = $item->get_data();
+
+            $req->order->basket->lineItems[] = new LineItem([
+                'name' => $item->get_name(),
+                'quantity' => $item->get_quantity(),
+                'price' => $item_data['total'],
+            ]);
+        }
+        return $req;
+    }
+
+    /**
      * Pass checkout data (totals, redirects, language etc.) to request object of checkout
      * 
      * @param CheckoutClientRequest $req    Request object to modify
      * @param object $order                 Woocommerce order object
      * @return CheckoutClientRequest        Modified request object
      */
-    private static function pass_checkout_data(CheckoutClientRequest $req, object $order): CheckoutClientRequest
+    private static function pass_checkout_data(CheckoutClientRequest $req, object $order, PreSelectedPaymentMethod $method): CheckoutClientRequest
     {
+        /** Locale */
         $wp_language = str_replace('-', '_', get_bloginfo('language'));
         $locale = Locale::tryFrom($wp_language);
 
@@ -201,27 +230,34 @@ final class WC_Fiserv_Checkout_Handler
         }
 
         $req->checkoutSettings->locale = $locale ?? 'en_GB';
-        $total = $order->get_total();
 
-        $wc_checkout_link = wc_get_page_permalink('checkout');
-        $successUrl = $order->get_checkout_order_received_url();
-        $failureUrl = $order->get_checkout_payment_url();
+        /** Currency */
+        $wp_currency = get_woocommerce_currency();
+        $req->transactionAmount->currency = Currency::tryFrom($wp_currency) ?? 'EUR';
 
+        /** WC order numbers, IDs */
         $req->merchantTransactionId = $order->get_id();
-        $req->transactionAmount->total = $total;
+        $req->order->orderDetails->purchaseOrderNumber = $order->get_id();
 
+        /** Order totals */
+        $req->transactionAmount->total = $order->get_total();
+        $req->transactionAmount->components->subtotal = $order->get_subtotal();
+        $req->transactionAmount->components->vatAmount = $order->get_total_tax();
+        $req->transactionAmount->components->shipping = $order->get_shipping_total();
+
+        /** Redirect URLs */
         $nonce = wp_create_nonce(self::$IPG_NONCE);
 
         $req->checkoutSettings->redirectBackUrls->successUrl = add_query_arg([
             '_wpnonce' => $nonce,
             'transaction_approved' => true,
-        ], $successUrl);
+        ], $order->get_checkout_order_received_url());
 
         $req->checkoutSettings->redirectBackUrls->failureUrl = add_query_arg([
             '_wpnonce' => $nonce,
             'transaction_failed' => true,
             'wc_order_id' => $order->get_id(),
-        ], $failureUrl);
+        ], $order->get_checkout_payment_url());
 
         /** Append ampersand to allow checkout solution to append query params */
         $req->checkoutSettings->redirectBackUrls->failureUrl .= '&';
@@ -230,7 +266,7 @@ final class WC_Fiserv_Checkout_Handler
             '_wpnonce' => $nonce,
             'wc_order_id' => $order->get_id(),
         ], WC_Fiserv_Webhook_Handler::$webhook_endpoint . '/events');
-        $req->checkoutSettings->preSelectedPaymentMethod = PreSelectedPaymentMethod::CARDS;
+        $req->checkoutSettings->preSelectedPaymentMethod = $method;
 
         return $req;
     }
@@ -255,7 +291,6 @@ final class WC_Fiserv_Checkout_Handler
 
         return $req;
     }
-
 
     /**
      * Getter for requestFailed flag
