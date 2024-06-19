@@ -118,7 +118,13 @@ if (!class_exists(PLUGIN_SLUG)) {
 			return self::$instance;
 		}
 
-		public function payment_gateways_callback($methods): array
+		/**
+		 * Load in payment gateways
+		 * 
+		 * @param array<WC_Payment_Gateway> $methods Current methods
+		 * @return array<WC_Payment_Gateway> Methods to return
+		 */
+		public function payment_gateways_callback(array $methods): array
 		{
 			array_push(
 				$methods,

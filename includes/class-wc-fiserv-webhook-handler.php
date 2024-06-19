@@ -19,14 +19,14 @@ final class WC_Fiserv_Webhook_Handler
     /**
      * Receive event from Fiserv checkout solution
      * 
-     * @param WP_REST_Request $request Event data
+     * @param WP_REST_Request<mixed> $request Event data
      * @return WP_REST_Response Reponse acknowledging sent data
      * @return WP_Error 403 Code if request has failed
      */
     public static function consume_events(WP_REST_Request $request): WP_REST_Response | WP_Error
     {
         $request_body = $request->get_body();
-        $order_id = $request->get_param('wc_order_id');
+        $order_id = (string) $request->get_param('wc_order_id');
 
         try {
             $webhook_event = new WebhookEvent($request_body);
@@ -48,7 +48,7 @@ final class WC_Fiserv_Webhook_Handler
      * Register POST route at /wp-json/fiserv_woocommerce_plugin/v1/api.
      * Receive from events from Fiserv checkout solution
      */
-    public static function register_consume_events()
+    public static function register_consume_events(): void
     {
         register_rest_route(self::$webhook_endpoint, '/events', [
             'methods' => 'POST',
@@ -60,17 +60,19 @@ final class WC_Fiserv_Webhook_Handler
      * Store event log data into Wordpress table as order
      * meta data.
      * 
-     * @param int $order_id Identifier of corresponding order
+     * @param string $order_id Identifier of corresponding order
      * @param WebhookEvent $event Webhook event sent from checkout solution
+     * @throws Exception Order not found
      */
-    private static function update_order(int $order_id, WebhookEvent $event): void
+    private static function update_order(string $order_id, WebhookEvent $event): void
     {
         $order = wc_get_order($order_id);
-        if (!$order) {
+
+        if (!$order instanceof WC_Order) {
             throw new Exception(esc_html('Order with ID ' . $order_id . ' has not been found.'));
         }
 
-        $stored_events_list = json_decode($order->get_meta('_fiserv_plugin_webhook_event'), true);
+        $stored_events_list = json_decode((string) $order->get_meta('_fiserv_plugin_webhook_event'), true);
         $events_list = [];
 
         if (is_array($stored_events_list)) {
@@ -103,8 +105,8 @@ final class WC_Fiserv_Webhook_Handler
             case TransactionStatus::DECLINED:
                 $wc_status = 'wc-cancelled';
                 break;
-
             default:
+                $wc_status = 'wc-pending';
                 break;
         }
 

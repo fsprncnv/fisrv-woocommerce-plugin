@@ -15,7 +15,7 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Payment_Gateway
     protected PreSelectedPaymentMethod $selected_method;
     protected string $default_title = 'yes';
     protected string $default_description;
-    private const USE_CACHE = false;
+    private bool $USE_CACHE = false;
 
     public function __construct()
     {
@@ -33,7 +33,10 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Payment_Gateway
         );
     }
 
-    protected function init_properties()
+    /**
+     * Initialize properties from options
+     */
+    protected function init_properties(): void
     {
         $this->enabled      = $this->get_option('enabled');
         $this->title        = $this->get_option('title');
@@ -41,7 +44,10 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Payment_Gateway
         $this->icon         = $this->get_option('icon');
     }
 
-    public function init_form_fields()
+    /**
+     * Initialize form text fields on gateway options page
+     */
+    public function init_form_fields(): void
     {
         $this->form_fields = [
             'enabled' => [
@@ -92,7 +98,7 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Payment_Gateway
         ];
     }
 
-    private function is_cached($order): bool | string
+    private function is_cached(WC_Order $order): bool | string
     {
         if (!$order->has_status('pending')) {
             return false;
@@ -108,12 +114,19 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Payment_Gateway
     }
 
 
+    /**
+     * @return array<string, string>
+     */
     public function process_payment($order_id): array
     {
         $order = wc_get_order($order_id);
 
+        if (!$order instanceof WC_Order) {
+            throw new Exception('Processing payment failed. Order is invalid.');
+        }
+
         try {
-            if ($cache = self::is_cached($order) && self::USE_CACHE) {
+            if ($cache = self::is_cached($order) && $this->USE_CACHE) {
                 $checkout_link = $cache;
             } else {
                 $checkout_link = WC_Fiserv_Checkout_Handler::create_checkout_link($order, $this->selected_method);

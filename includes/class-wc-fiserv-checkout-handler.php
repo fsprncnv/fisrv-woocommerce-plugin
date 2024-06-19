@@ -1,13 +1,11 @@
 <?php
 
 use Fiserv\Checkout\CheckoutClient;
-use Fiserv\Models\Basket;
 use Fiserv\Models\CheckoutClientRequest;
 use Fiserv\Models\Currency;
 use Fiserv\Models\LineItem;
 use Fiserv\Models\Locale;
 use Fiserv\Models\PreSelectedPaymentMethod;
-use Fiserv\Models\TransactionAmount;
 
 /**
  * Class that handles creation of redirection link
@@ -29,11 +27,11 @@ final class WC_Fiserv_Checkout_Handler
      *
      * @param WC_Order $order              The order that is being paid for.
      * @param string   $order_button_text  The text for the submit button.
-     * @param array    $available_gateways All available gateways.
+     * @param array<WC_Payment_Gateway>    $available_gateways All available gateways.
      *
-     * @return array    Passed (and modified) function params
+     * @return array<string, mixed>    Passed (and modified) function params
      */
-    public static function retry_payment($order, $order_button_text, $available_gateways): array
+    public static function retry_payment(WC_Order $order, string $order_button_text, array $available_gateways): array
     {
         if (!isset($_REQUEST['_wpnonce']) || !wp_verify_nonce($_REQUEST['_wpnonce'], self::$IPG_NONCE)) {
             WC_Fiserv_Logger::error($order, 'Security check: Nonce was invalid when checkout redirected back to failure URL.');
@@ -58,33 +56,13 @@ final class WC_Fiserv_Checkout_Handler
     }
 
     /**
-     * Retrieve a WC order from a given order key. The order key may be passed as
-     * query parameters.
-     * 
-     * @param string $order_key WP order key to retrieve order object from
-     * @return object Order from order key
-     * @return false If corresponding order does not exist 
-     */
-    public static function retrieve_order_from_key(string $order_key): object | false
-    {
-        $order_id = wc_get_order_id_by_order_key($order_key);
-        $order = wc_get_order($order_id);
-
-        if (!$order) {
-            throw new Exception(esc_html('Order ID ' . $order_id . ' not found'));
-        }
-
-        return $order;
-    }
-
-    /**
      * Verify that origin of incoming requests (such as passed query parameters)
      * are from trusted source (from plugin itself). This is done by checking WP nonces which is set
      * before checkout creation.
      * 
-     * @param object $order WC order object
+     * @param WC_Order $order WC order object
      */
-    private static function verify_nonce(object $order): void
+    private static function verify_nonce(WC_Order $order): void
     {
         if (!isset($_REQUEST['_wpnonce']) || !wp_verify_nonce($_REQUEST['_wpnonce'], self::$IPG_NONCE)) {
             WC_Fiserv_Logger::error($order, 'Security check: Nonce was invalid when checkout redirected back to failure URL.');
@@ -101,6 +79,11 @@ final class WC_Fiserv_Checkout_Handler
     public static function order_complete_callback(string $order_id): void
     {
         $order = wc_get_order($order_id);
+
+        if (!$order instanceof WC_Order) {
+            return;
+        }
+
         self::verify_nonce($order);
 
         $is_transaction_approved = $_GET['transaction_approved'];
@@ -117,8 +100,11 @@ final class WC_Fiserv_Checkout_Handler
     /**
      * Fill out text fields on billing section on checkout
      * with default values.
+     * 
+     * @param array<string, array> $fields
+     * @return array<string, array> 
      */
-    public static function fill_out_fields($fields)
+    public static function fill_out_fields(array $fields): array
     {
         $fields['billing']['billing_first_name']['default'] = 'Eartha';
         $fields['billing']['billing_last_name']['default'] = 'Kitt';
@@ -134,8 +120,12 @@ final class WC_Fiserv_Checkout_Handler
      * Inititalize configuraiton parameters of Fiserv SDK.
      * @todo This is subject to change, since Config API will change in coming
      * versions. 
+     * 
+     * @param string $api_key API key
+     * @param string $api_secret API secret
+     * @param string $store_id Store ID
      */
-    public static function init_fiserv_sdk($api_key, $api_secret, $store_id): void
+    public static function init_fiserv_sdk(string $api_key, string $api_secret, string $store_id): void
     {
         $plugin_data = get_plugin_data(__FILE__);
         $plugin_version = $plugin_data['Version'];
@@ -150,16 +140,17 @@ final class WC_Fiserv_Checkout_Handler
     }
 
     /**
-     * Get cart data from WC stub to be served to Checkout Solution.
-     * Block handling requests via SDK. Possible SDK exceptions are caught
-     * so that fail and loading state can be shown on view.
+     * Create a checkout link
+     * 
+     * @param WC_Order $order WC order
+     * @param PreSelectedPaymentMethod $method Selected payment method 
+     * 
+     * @return string URL of hosted payment page
      * 
      * @throws Exception Error thrown from Fiserv SDK (Request Errors). Error is caught by setting 
      * returned checkout link to '#' (no redirect)
-     * @return string URL of hosted payment page
-     * 
      */
-    public static function create_checkout_link(object $order, PreSelectedPaymentMethod $method): string
+    public static function create_checkout_link(WC_Order $order, PreSelectedPaymentMethod $method): string
     {
         try {
             /** @todo This is weird */
@@ -176,7 +167,6 @@ final class WC_Fiserv_Checkout_Handler
             $trace_id = $response->traceId;
 
             $order->update_meta_data('_fiserv_plugin_checkout_link', $checkout_link);
-            $order->update_meta_data('_fiserv_plugin_cache_retry', 0);
             $order->update_meta_data('_fiserv_plugin_checkout_id', $checkout_id);
             $order->update_meta_data('_fiserv_plugin_trace_id', $response->traceId);
             $order->save_meta_data();
@@ -193,10 +183,10 @@ final class WC_Fiserv_Checkout_Handler
      * Pass line items from WC to checkout
      * 
      * @param CheckoutClientRequest $req    Request object to modify
-     * @param object $order                 Woocommerce order object
+     * @param WC_Order $order               Woocommerce order object
      * @return CheckoutClientRequest        Modified request object
      */
-    private static function pass_basket(CheckoutClientRequest $req, object $order): CheckoutClientRequest
+    private static function pass_basket(CheckoutClientRequest $req, WC_Order $order): CheckoutClientRequest
     {
         $wc_items = $order->get_items();
 
@@ -216,10 +206,10 @@ final class WC_Fiserv_Checkout_Handler
      * Pass checkout data (totals, redirects, language etc.) to request object of checkout
      * 
      * @param CheckoutClientRequest $req    Request object to modify
-     * @param object $order                 Woocommerce order object
+     * @param WC_Order $order               Woocommerce order object
      * @return CheckoutClientRequest        Modified request object
      */
-    private static function pass_checkout_data(CheckoutClientRequest $req, object $order, PreSelectedPaymentMethod $method): CheckoutClientRequest
+    private static function pass_checkout_data(CheckoutClientRequest $req, WC_Order $order, PreSelectedPaymentMethod $method): CheckoutClientRequest
     {
         /** Locale */
         $wp_language = str_replace('-', '_', get_bloginfo('language'));
@@ -229,21 +219,21 @@ final class WC_Fiserv_Checkout_Handler
             $locale = Locale::de_DE;
         }
 
-        $req->checkoutSettings->locale = $locale ?? 'en_GB';
+        $req->checkoutSettings->locale = $locale ?? Locale::en_GB;
 
         /** Currency */
         $wp_currency = get_woocommerce_currency();
-        $req->transactionAmount->currency = Currency::tryFrom($wp_currency) ?? 'EUR';
+        $req->transactionAmount->currency = Currency::tryFrom($wp_currency) ?? Currency::EUR;
 
         /** WC order numbers, IDs */
-        $req->merchantTransactionId = $order->get_id();
-        $req->order->orderDetails->purchaseOrderNumber = $order->get_id();
+        $req->merchantTransactionId = strval($order->get_id());
+        $req->order->orderDetails->purchaseOrderNumber = strval($order->get_id());
 
         /** Order totals */
-        $req->transactionAmount->total = $order->get_total();
-        $req->transactionAmount->components->subtotal = $order->get_subtotal();
-        $req->transactionAmount->components->vatAmount = $order->get_total_tax();
-        $req->transactionAmount->components->shipping = $order->get_shipping_total();
+        $req->transactionAmount->total = floatval($order->get_total());
+        $req->transactionAmount->components->subtotal = floatval($order->get_subtotal());
+        $req->transactionAmount->components->vatAmount = floatval($order->get_total_tax());
+        $req->transactionAmount->components->shipping = floatval($order->get_shipping_total());
 
         /** Redirect URLs */
         $nonce = wp_create_nonce(self::$IPG_NONCE);
@@ -275,10 +265,10 @@ final class WC_Fiserv_Checkout_Handler
      * Pass billing data from WC billing form to request object of checkout
      * 
      * @param CheckoutClientRequest $req    Request object to modify
-     * @param object $order                 Woocommerce order object
+     * @param WC_Order $order               Woocommerce order object
      * @return CheckoutClientRequest        Modified request object
      */
-    private static function pass_billing_data(CheckoutClientRequest $req, object $order): CheckoutClientRequest
+    private static function pass_billing_data(CheckoutClientRequest $req, WC_Order $order): CheckoutClientRequest
     {
         $req->order->billing->person->firstName     = $order->get_billing_first_name();
         $req->order->billing->person->lastName      = $order->get_billing_last_name();
