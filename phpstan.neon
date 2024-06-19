@@ -2,3 +2,6 @@ parameters:
   level: 9
   excludePaths:
     - vendor/*
+  bootstrapFiles:
+          - vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php
+          #- vendor/php-stubs/woocommerce-stubs/woocommerce-packages-stubs.php

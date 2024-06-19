@@ -12,15 +12,13 @@ use Fiserv\Models\PreSelectedPaymentMethod;
  */
 abstract class WC_Fiserv_Payment_Gateway extends WC_Payment_Gateway
 {
-    protected static PreSelectedPaymentMethod $selected_method;
+    protected PreSelectedPaymentMethod $selected_method;
     protected string $default_title = 'yes';
     protected string $default_description;
     private const USE_CACHE = false;
 
     public function __construct()
     {
-        self::$selected_method = PreSelectedPaymentMethod::CARDS;
-
         $this->has_fields = false;
         $this->init_form_fields();
         $this->init_settings();
@@ -118,7 +116,7 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Payment_Gateway
             if ($cache = self::is_cached($order) && self::USE_CACHE) {
                 $checkout_link = $cache;
             } else {
-                $checkout_link = WC_Fiserv_Checkout_Handler::create_checkout_link($order, self::$selected_method);
+                $checkout_link = WC_Fiserv_Checkout_Handler::create_checkout_link($order, $this->selected_method);
             }
 
             return [

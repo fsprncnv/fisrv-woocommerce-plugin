@@ -28,7 +28,7 @@ const PLUGIN_SLUG = 'fiserv_checkout_for_woocommerce';
  *
  * @since 0.1.0
  */
-function fiserv_checkout_for_woocommerce_missing_wc_notice()
+function fiserv_checkout_for_woocommerce_missing_wc_notice(): void
 {
 	/* translators: %s WC download URL link. */
 	echo '<div class="error"><p><strong>' . sprintf(esc_html__('Fiserv Woocommerce Plugin requires WooCommerce to be installed and active. You can download %s here.', 'fiserv_checkout_for_woocommerce'), '<a href="https://woo.com/" target="_blank">WooCommerce</a>') . '</strong></p></div>';
@@ -109,7 +109,7 @@ if (!class_exists(PLUGIN_SLUG)) {
 		 *
 		 * @return \fiserv_checkout_for_woocommerce
 		 */
-		public static function instance()
+		public static function instance(): object
 		{
 			if (null === self::$instance) {
 				self::$instance = new self();
@@ -118,7 +118,7 @@ if (!class_exists(PLUGIN_SLUG)) {
 			return self::$instance;
 		}
 
-		public function payment_gateways_callback($methods)
+		public function payment_gateways_callback($methods): array
 		{
 			array_push(
 				$methods,
@@ -137,7 +137,7 @@ add_action('plugins_loaded',  PLUGIN_SLUG . '_init', 10);
  *
  * @since 0.1.0
  */
-function fiserv_checkout_for_woocommerce_init()
+function fiserv_checkout_for_woocommerce_init(): void
 {
 	load_plugin_textdomain(PLUGIN_SLUG, false, plugin_basename(dirname(__FILE__)) . '/languages');
 
