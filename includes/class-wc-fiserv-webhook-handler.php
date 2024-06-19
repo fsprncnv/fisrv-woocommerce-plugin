@@ -19,7 +19,7 @@ final class WC_Fiserv_Webhook_Handler
     /**
      * Receive event from Fiserv checkout solution
      * 
-     * @param WP_REST_Request $request Event data
+     * @param WP_REST_Request<WebhookEvent> $request Event data
      * @return WP_REST_Response Reponse acknowledging sent data
      * @return WP_Error 403 Code if request has failed
      */

@@ -101,8 +101,8 @@ final class WC_Fiserv_Checkout_Handler
      * Fill out text fields on billing section on checkout
      * with default values.
      * 
-     * @param array<string, mixed> $fields
-     * @return array<string, mixed> 
+     * @param array<string, array<string, array<string, string>>> $fields
+     * @return array<string, array<string, array<string, string>>> 
      */
     public static function fill_out_fields(array $fields): array
     {

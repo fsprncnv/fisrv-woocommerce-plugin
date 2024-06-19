@@ -15,7 +15,6 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Payment_Gateway
     protected PreSelectedPaymentMethod $selected_method;
     protected string $default_title = 'yes';
     protected string $default_description;
-    private bool $USE_CACHE = false;
 
     public function __construct()
     {
@@ -98,7 +97,7 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Payment_Gateway
         ];
     }
 
-    private function is_cached(WC_Order $order): bool | string
+    protected function is_cached(WC_Order $order): bool | string
     {
         if (!$order->has_status('pending')) {
             return false;
