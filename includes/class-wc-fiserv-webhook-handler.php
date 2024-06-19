@@ -57,52 +57,6 @@ final class WC_Fiserv_Webhook_Handler
     }
 
     /**
-     * Callback method for GET route.
-     * Response data is list of saved events.
-     * 
-     * @return WP_REST_Response Response data
-     */
-    public static function get_events_callback(WP_REST_Request $request): WP_REST_Response | WP_Error
-    {
-        $order_id = $request->get_param('wc_order_id');
-
-        $order = wc_get_order($order_id);
-
-        if (!$order) {
-            return new WP_Error('Given order ID not found.', ['status' => 404]);
-        }
-
-        $meta_value = $order->get_meta('_fiserv_plugin_webhook_event');
-
-        if (!$meta_value) {
-            return new WP_Error('Order has no saved events', ['status' => 404]);
-        }
-
-        $stored_events_list = json_decode($meta_value, true);
-
-        if (is_null($stored_events_list)) {
-            return new WP_Error('Could not parse webhook event.', '$meta_value', ['status' => 500]);
-        }
-
-        return new WP_REST_Response([
-            'wc_order_id' => $order_id,
-            'events' => $stored_events_list,
-        ]);
-    }
-
-    /**
-     * Register GET route at /wp-json/fiserv_woocommerce_plugin/v1/api.
-     * Display all entries of event log.
-     */
-    public static function register_get_events()
-    {
-        register_rest_route(self::$webhook_endpoint, '/events', [
-            'methods' => 'GET',
-            'callback' => [self::class, 'get_events_callback']
-        ]);
-    }
-
-    /**
      * Store event log data into Wordpress table as order
      * meta data.
      * 
@@ -168,18 +122,4 @@ final class WC_Fiserv_Webhook_Handler
 
         $order->save_meta_data();
     }
-
-    /**
-     * Map mapping ipg checkout solution transactionStatus values 
-     * to WC status
-     * @todo Subject to change
-     */
-    private static array $wc_fiserv_status_map_delete = [
-        'WAITING' =>            'wc-on-hold',
-        'PARTIAL' =>            'wc-processing',
-        'APPROVED' =>           'wc-completed',
-        'PROCESSING_FAILED' =>  'wc-failed',
-        'VALIDATION_FAILED' =>  'wc-failed',
-        'DECLINED' =>           'wc-cancelled',
-    ];
 }
