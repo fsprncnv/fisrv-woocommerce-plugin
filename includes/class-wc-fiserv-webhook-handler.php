@@ -19,14 +19,18 @@ final class WC_Fiserv_Webhook_Handler
     /**
      * Receive event from Fiserv checkout solution
      * 
-     * @param WP_REST_Request<WebhookEvent> $request Event data
+     * @param WP_REST_Request<array<string, mixed>> $request Event data
      * @return WP_REST_Response Reponse acknowledging sent data
      * @return WP_Error 403 Code if request has failed
      */
     public static function consume_events(WP_REST_Request $request): WP_REST_Response | WP_Error
     {
         $request_body = $request->get_body();
-        $order_id = strval($request->get_param('wc_order_id'));
+        $order_id = $request->get_param('wc_order_id');
+
+        if (!is_string($order_id)) {
+            throw new Exception('Query parameter (order ID) is malformed');
+        }
 
         try {
             $webhook_event = new WebhookEvent($request_body);
