@@ -50,7 +50,7 @@ RUN unzip -qq woocommerce.zip
 RUN rm -f woocommerce.zip
 
 ADD *.zip plugin.zip
-RUN unzip -qq plugin.zip -d fiserv/
+RUN unzip -qq plugin.zip -d fisrv/
 RUN rm -f plugin.zip
 
 RUN chown -R www-data:www-data /var/www

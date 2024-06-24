@@ -6,12 +6,12 @@
  *
  * @package    WooCommerce
  * @category   Payment Gateways
- * @author     Fiserv
+ * @author     fisrv
  * @since      1.0.0
  */
-final class WC_Fiserv_Logger
+final class WC_fisrv_Logger
 {
-    private const WC_LOG_SOURCE = 'fiserv-checkout-for-woocommerce';
+    private const WC_LOG_SOURCE = 'fisrv-checkout-for-woocommerce';
 
     /**
      * Log some message to WC admin page as info log
@@ -49,9 +49,9 @@ final class WC_Fiserv_Logger
             'source'                => self::WC_LOG_SOURCE,
             'wc_order_id'           => $order->get_id(),
             'wc_order_key'          => $order->get_order_key(),
-            'fiserv_link'           => $order->get_meta('_fiserv_plugin_checkout_link'),
-            'fiserv_checkout_id'    => $order->get_meta('_fiserv_plugin_checkout_id'),
-            'fiserv_trace_id'       => $order->get_meta('_fiserv_plugin_trace_id'),
+            'fisrv_link'           => $order->get_meta('_fisrv_plugin_checkout_link'),
+            'fisrv_checkout_id'    => $order->get_meta('_fisrv_plugin_checkout_id'),
+            'fisrv_trace_id'       => $order->get_meta('_fisrv_plugin_trace_id'),
         ];
     }
 }

@@ -1,20 +1,20 @@
 <?php
 
-use Fiserv\Models\PreSelectedPaymentMethod;
+use Fisrv\Models\PreSelectedPaymentMethod;
 
 /**
  * Custom Woocommerce payment gateway.
  *
  * @package    WooCommerce
  * @category   Payment Gateways
- * @author     Fiserv
+ * @author     fisrv
  * @since      1.0.0
  */
-abstract class WC_Fiserv_Payment_Gateway extends WC_Payment_Gateway
+abstract class WC_Fisrv_Payment_Gateway extends WC_Payment_Gateway
 {
     protected PreSelectedPaymentMethod $selected_method;
-    protected string $default_title = 'yes';
-    protected string $default_description;
+    protected string $default_title = 'Payment Method';
+    protected string $default_description = '';
 
     public function __construct()
     {
@@ -24,12 +24,6 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Payment_Gateway
         $this->init_properties();
 
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, [$this, 'process_admin_options']);
-
-        WC_Fiserv_Checkout_Handler::init_fiserv_sdk(
-            $this->get_option('api_key'),
-            $this->get_option('api_secret'),
-            $this->get_option('store_id'),
-        );
     }
 
     /**
@@ -91,7 +85,7 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Payment_Gateway
                 'title'         => 'Gateway Icon',
                 'type'          => 'text',
                 'description'   => 'Link of image asset',
-                'default'       => 'https://www.innoitus.com.au/wp-content/uploads/2017/12/fiserv-logo.png',
+                'default'       => '',
                 'desc_tip'      => true,
             ],
         ];
@@ -103,7 +97,7 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Payment_Gateway
             return false;
         }
 
-        $cache = $order->get_meta('_fiserv_plugin_checkout_link', true);
+        $cache = $order->get_meta('_fisrv_plugin_checkout_link', true);
 
         if (!is_string($cache)) {
             return false;
@@ -124,24 +118,11 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Payment_Gateway
             throw new Exception('Processing payment failed. Order is invalid.');
         }
 
-        try {
-            $checkout_link = WC_Fiserv_Checkout_Handler::create_checkout_link($order, $this->selected_method);
+        $checkout_link = WC_Fisrv_Checkout_Handler::create_checkout_link($order, $this->selected_method, $this);
 
-            return [
-                'result' => 'success',
-                'redirect' => $checkout_link,
-            ];
-        } catch (Throwable $th) {
-            $message = 'Failed creating Fiserv Checkout - ' . $th->getMessage();
-            wc_add_notice($message, 'error');
-
-            WC_Fiserv_Logger::error($order, $message);
-            $order->update_status('wc-failed', $message);
-
-            return [
-                'result' => 'failure',
-                'redirect' => wc_get_checkout_url(),
-            ];
-        }
+        return [
+            'result' => 'success',
+            'redirect' => $checkout_link,
+        ];
     }
 }

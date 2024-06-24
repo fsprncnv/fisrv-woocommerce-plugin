@@ -1,11 +1,11 @@
 <?php
 
-use Fiserv\Checkout\CheckoutClient;
-use Fiserv\Models\CheckoutClientRequest;
-use Fiserv\Models\Currency;
-use Fiserv\Models\LineItem;
-use Fiserv\Models\Locale;
-use Fiserv\Models\PreSelectedPaymentMethod;
+use Fisrv\Checkout\CheckoutClient;
+use Fisrv\Models\CheckoutClientRequest;
+use Fisrv\Models\Currency;
+use Fisrv\Models\LineItem;
+use Fisrv\Models\Locale;
+use Fisrv\Models\PreSelectedPaymentMethod;
 
 /**
  * Class that handles creation of redirection link
@@ -13,10 +13,10 @@ use Fiserv\Models\PreSelectedPaymentMethod;
  *
  * @package    WooCommerce
  * @category   Payment Gateways
- * @author     Fiserv
+ * @author     fisrv
  * @since      1.0.0
  */
-final class WC_Fiserv_Checkout_Handler
+final class WC_Fisrv_Checkout_Handler
 {
     private static bool $REQUEST_FAILED = false;
     private static string $IPG_NONCE = 'ipg-nonce';
@@ -34,7 +34,7 @@ final class WC_Fiserv_Checkout_Handler
     public static function retry_payment(WC_Order $order, string $order_button_text, array $available_gateways): array
     {
         if (!isset($_REQUEST['_wpnonce']) || !wp_verify_nonce($_REQUEST['_wpnonce'], self::$IPG_NONCE)) {
-            WC_Fiserv_Logger::error($order, 'Security check: Nonce was invalid when checkout redirected back to failure URL.');
+            WC_fisrv_Logger::error($order, 'Security check: Nonce was invalid when checkout redirected back to failure URL.');
             die();
         }
 
@@ -46,7 +46,7 @@ final class WC_Fiserv_Checkout_Handler
 
         wc_add_notice('Payment has failed: ' . $ipg_message, 'error');
         wc_print_notices();
-        WC_Fiserv_Logger::error($order, 'Payment validation failed, retrying on checkout page: ' . $ipg_message . ' -- ' . $ipg_code);
+        WC_fisrv_Logger::error($order, 'Payment validation failed, retrying on checkout page: ' . $ipg_message . ' -- ' . $ipg_code);
 
         return [
             'order'              => $order,
@@ -65,7 +65,7 @@ final class WC_Fiserv_Checkout_Handler
     private static function verify_nonce(WC_Order $order): void
     {
         if (!isset($_REQUEST['_wpnonce']) || !wp_verify_nonce($_REQUEST['_wpnonce'], self::$IPG_NONCE)) {
-            WC_Fiserv_Logger::error($order, 'Security check: Nonce was invalid when checkout redirected back to failure URL.');
+            WC_fisrv_Logger::error($order, 'Security check: Nonce was invalid when checkout redirected back to failure URL.');
             die();
         }
     }
@@ -92,7 +92,7 @@ final class WC_Fiserv_Checkout_Handler
             $has_completed = $order->payment_complete();
             if ($has_completed) {
                 $order->update_status('wc-completed', 'Order has completed');
-                WC_Fiserv_Logger::log($order, 'Order completed with card payment.');
+                WC_fisrv_Logger::log($order, 'Order completed with card payment.');
             }
         }
     }
@@ -117,7 +117,7 @@ final class WC_Fiserv_Checkout_Handler
     }
 
     /**
-     * Inititalize configuraiton parameters of Fiserv SDK.
+     * Inititalize configuraiton parameters of fisrv SDK.
      * @todo This is subject to change, since Config API will change in coming
      * versions. 
      * 
@@ -125,7 +125,7 @@ final class WC_Fiserv_Checkout_Handler
      * @param string $api_secret API secret
      * @param string $store_id Store ID
      */
-    public static function init_fiserv_sdk(string $api_key, string $api_secret, string $store_id): void
+    public static function init_fisrv_sdk(string $api_key, string $api_secret, string $store_id): void
     {
         $plugin_data = get_plugin_data(__FILE__);
         $plugin_version = $plugin_data['Version'];
@@ -147,12 +147,18 @@ final class WC_Fiserv_Checkout_Handler
      * 
      * @return string URL of hosted payment page
      * 
-     * @throws Exception Error thrown from Fiserv SDK (Request Errors). Error is caught by setting 
+     * @throws Exception Error thrown from fisrv SDK (Request Errors). Error is caught by setting 
      * returned checkout link to '#' (no redirect)
      */
-    public static function create_checkout_link(WC_Order $order, PreSelectedPaymentMethod $method): string
+    public static function create_checkout_link(WC_Order $order, PreSelectedPaymentMethod $method, WC_Fisrv_Payment_Gateway $gateway): string
     {
         try {
+            WC_Fisrv_Checkout_Handler::init_fisrv_sdk(
+                $gateway->get_option('api_key'),
+                $gateway->get_option('api_secret'),
+                $gateway->get_option('store_id'),
+            );
+
             /** @todo This is weird */
             $request = self::$client->createBasicCheckoutRequest(0, '', '');
 
@@ -166,15 +172,21 @@ final class WC_Fiserv_Checkout_Handler
             $checkout_link = $response->checkout->redirectionUrl;
             $trace_id = $response->traceId;
 
-            $order->update_meta_data('_fiserv_plugin_checkout_link', $checkout_link);
-            $order->update_meta_data('_fiserv_plugin_checkout_id', $checkout_id);
-            $order->update_meta_data('_fiserv_plugin_trace_id', $response->traceId);
+            $order->update_meta_data('_fisrv_plugin_checkout_link', $checkout_link);
+            $order->update_meta_data('_fisrv_plugin_checkout_id', $checkout_id);
+            $order->update_meta_data('_fisrv_plugin_trace_id', $response->traceId);
             $order->save_meta_data();
-            $order->add_order_note('Fiserv checkout link ' . $checkout_link . ' created with checkout ID ' . $checkout_id . ' and trace ID ' . $trace_id . '.');
+            $order->add_order_note('fisrv checkout link ' . $checkout_link . ' created with checkout ID ' . $checkout_id . ' and trace ID ' . $trace_id . '.');
 
             return $checkout_link;
         } catch (Throwable $th) {
             self::$REQUEST_FAILED = true;
+            
+            if (str_starts_with($th->getMessage(), '401')) {
+                // throw new Exception('Pay method ' . $method->value . ' failed. Please check on settings page if API credentials are set correctly.');
+                throw $th;
+            }
+
             throw $th;
         }
     }
@@ -260,7 +272,7 @@ final class WC_Fiserv_Checkout_Handler
         $req->checkoutSettings->webHooksUrl = add_query_arg([
             '_wpnonce' => $nonce,
             'wc_order_id' => $order->get_id(),
-        ], WC_Fiserv_Webhook_Handler::$webhook_endpoint . '/events');
+        ], WC_fisrv_Webhook_Handler::$webhook_endpoint . '/events');
         $req->checkoutSettings->preSelectedPaymentMethod = $method;
 
         return $req;

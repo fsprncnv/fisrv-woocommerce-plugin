@@ -66,7 +66,7 @@ Compatibility: WordPress 5.6 or higher
 
 == Screenshots ==
 
-1. Checkout page: Fiserv payment methods
+1. Checkout page: fisrv payment methods
 
 == Frequently Asked Questions ==
 
@@ -74,7 +74,7 @@ Compatibility: WordPress 5.6 or higher
 Make sure to check compatibility of PHP, Wordpress and WooCommerce.
 Also, ensure to disable Block layout.
 
-* Contact Fiserv Support
+* Contact fisrv Support
 
 Visit the FAQ:
 
@@ -83,17 +83,6 @@ Contact information:
 
 == Changelog ==
 
-** 0.0.1 **
+** 0.0.5 **
 
 * Initial version
-
-** 0.0.2 **
-
-* Improve web hook handling 
-* Improve stability and quality of request client
-* Pass detailed order summary from shop to checkout
-
-** 0.0.3 **
-
-* Improve code quality, type safety
-* Add dedicated payment gateways per supported APM
