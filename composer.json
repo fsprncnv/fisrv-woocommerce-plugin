@@ -1,48 +1,59 @@
 {
-	"name": "extension/fisrv-woocommerce-plugin",
-	"description": "WooCommerce plugin integration with Fisrv",
-	"version": "0.0.1",
-	"minimum-stability": "dev",
-	"license": "MIT",
-	"autoload": {
-		"classmap": [
-			"includes/"
-		]
-	},
-	"require": {
-		"fisrv/php-client": "*"
-	},
-	"require-dev": {
-		"phpunit/phpunit": "^9.0",
-		"automattic/jetpack-autoloader": "^2",
-		"wp-coding-standards/wpcs": "3.0",
-		"php-stubs/wordpress-stubs": "^6.5",
-		"phpstan/phpstan": "*",
-		"php-stubs/woocommerce-stubs": "*",
-		"friendsofphp/php-cs-fixer": "dev-master"
-	},
-	"config": {
-		"allow-plugins": {
-			"automattic/jetpack-autoloader": true,
-			"dealerdirect/phpcodesniffer-composer-installer": true
-		}
-	},
-	"repositories": {
-		"80": {
-			"type": "composer",
-			"url": "https://gitlab.mherrm.de/api/v4/group/80/-/packages/composer/packages.json"
-		}
-	},
-	"archive": {
-		"exclude": [ ".gitlab-ci.yml", ".gitignore", "/*.*", "/.*", "!/*.php", ".idea", "tests", "docker"]
-	},
-	"scripts": {
-			"build": [
-				"@composer --no-plugins --no-interaction install --no-scripts --no-dev",
-				"@composer --no-plugins --no-interaction archive"
-			]
-		},
-		"scripts-descriptions": {
-		"build": "Build project artifact."
-	}
+  "name": "extension/fisrv-woocommerce-plugin",
+  "description": "WooCommerce plugin integration with Fisrv",
+  "version": "0.0.1",
+  "minimum-stability": "dev",
+  "license": "GNU General Public License v3.0",
+  "autoload": {
+    "classmap": [
+      "includes/"
+    ]
+  },
+  "require": {
+    "fisrv/php-client": "*"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "*",
+    "automattic/jetpack-autoloader": "^2",
+    "php-stubs/wordpress-stubs": "^6.5",
+    "phpstan/phpstan": "*",
+    "php-stubs/woocommerce-stubs": "*",
+    "friendsofphp/php-cs-fixer": "*"
+  },
+  "config": {
+    "allow-plugins": {
+      "automattic/jetpack-autoloader": true,
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
+  },
+  "repositories": {
+    "80": {
+      "type": "composer",
+      "url": "https://gitlab.mherrm.de/api/v4/group/80/-/packages/composer/packages.json"
+    }
+  },
+  "archive": {
+    "exclude": [
+      ".gitlab-ci.yml",
+      ".gitignore",
+      "/*.*",
+      "/.*",
+      "!/*.php",
+      ".idea",
+      "tests",
+      "docker"
+    ]
+  },
+  "scripts": {
+    "build": [
+      "@composer --no-plugins --no-interaction install --no-scripts --no-dev",
+      "@composer --no-plugins --no-interaction archive"
+    ]
+  },
+  "format": [
+    "vendor/bin/php-cs-fixer fix --dry-run --diff"
+  ],
+  "scripts-descriptions": {
+    "build": "Build project artifact."
+  }
 }
