@@ -1,7 +1,7 @@
 {
 	"name": "extension/fisrv-woocommerce-plugin",
 	"description": "WooCommerce plugin integration with Fisrv",
-	"version": "0.0.4",
+	"version": "0.0.1",
 	"minimum-stability": "dev",
 	"license": "MIT",
 	"autoload": {

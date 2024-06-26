@@ -4,7 +4,8 @@
  * Plugin Name: Fisrv Checkout for Woocommerce
  * Version: 0.0.1
  * Description: Official Fisrv Checkout Woocommerce plugin
- * Author: fisrv
+ * Author: Fisrv
+ * Author URI: https://developer.fiserv.com/
  * License: GNU General Public License v3.0
  * License URI: http://www.gnu.org/licenses/gpl-3.0.html
  * Text Domain: fisrv-checkout-for-woocommerce
