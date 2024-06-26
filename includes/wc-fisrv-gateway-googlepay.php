@@ -6,7 +6,7 @@ class WC_Fisrv_Gateway_Googlepay extends WC_Fisrv_Payment_Gateway
 {
     public function __construct()
     {
-        $this->selected_method = PreSelectedPaymentMethod::GPAY;
+        $this->selected_method = PreSelectedPaymentMethod::GOOGLEPAY;
         $this->id = 'fisrv-gateway-gpay';
 
         $this->method_title = 'Google Pay - Fisrv Checkout';

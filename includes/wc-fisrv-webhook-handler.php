@@ -135,7 +135,7 @@ final class WC_Fisrv_Webhook_Handler
 
         $order->update_status($wc_status, __('Transaction status changed', WC_Fisrv_Util::SLUG));
         $order->add_order_note(sprintf(__('Fisrv checkout has updated order to %s', WC_Fisrv_Util::SLUG), $wc_status_unprefixed));
-        WC_Fisrv_Util::log($order, sprintf(__('Order %1$s changed to status %2$s', WC_Fisrv_Util::SLUG), $order->get_id(), $order->get_status));
+        WC_Fisrv_Util::log($order, sprintf(__('Order %1$s changed to status %2$s', WC_Fisrv_Util::SLUG), $order->get_id(), $order->get_status()));
 
         $order->save_meta_data();
     }
