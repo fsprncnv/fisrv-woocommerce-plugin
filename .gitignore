@@ -5,7 +5,7 @@ Thumbs.db
 
 # IDE files
 .idea
-.vscode/*
+.vscode/
 project.xml
 project.properties
 .project
@@ -42,6 +42,7 @@ dist/
 # Project files
 node_modules/
 vendor/
+.php-cs-fixer.cache
 
 # TypeScript files
 tsconfig.tsbuildinfo
@@ -66,3 +67,4 @@ contributors.html
 composer.lock
 
 auth.json
+wp-cli.phar

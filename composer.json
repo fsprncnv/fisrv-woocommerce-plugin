@@ -1,6 +1,6 @@
 {
-	"name": "extension/fiserv-woocommerce-plugin",
-	"description": "WooCommerce plugin integration with Fiserv",
+	"name": "extension/fisrv-woocommerce-plugin",
+	"description": "WooCommerce plugin integration with Fisrv",
 	"version": "0.0.4",
 	"minimum-stability": "dev",
 	"license": "MIT",
@@ -18,7 +18,8 @@
 		"wp-coding-standards/wpcs": "3.0",
 		"php-stubs/wordpress-stubs": "^6.5",
 		"phpstan/phpstan": "*",
-		"php-stubs/woocommerce-stubs": "*"
+		"php-stubs/woocommerce-stubs": "*",
+		"friendsofphp/php-cs-fixer": "dev-master"
 	},
 	"config": {
 		"allow-plugins": {

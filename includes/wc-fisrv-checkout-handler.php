@@ -18,8 +18,8 @@ use Fisrv\Models\PreSelectedPaymentMethod;
  */
 final class WC_Fisrv_Checkout_Handler
 {
-    private static bool $REQUEST_FAILED = false;
     private static string $IPG_NONCE = 'ipg-nonce';
+
     private static CheckoutClient $client;
 
     /**
@@ -33,25 +33,22 @@ final class WC_Fisrv_Checkout_Handler
      */
     public static function retry_payment(WC_Order $order, string $order_button_text, array $available_gateways): array
     {
-        if (!isset($_REQUEST['_wpnonce']) || !wp_verify_nonce($_REQUEST['_wpnonce'], self::$IPG_NONCE)) {
-            WC_fisrv_Logger::error($order, 'Security check: Nonce was invalid when checkout redirected back to failure URL.');
-            die();
-        }
+        self::verify_nonce($order);
 
-        $order_button_text = 'Retry payment';
-        $order->update_status('wc-pending', 'Retrying payment');
+        $order_button_text = __('Retry payment', WC_Fisrv_Util::SLUG);
+        $order->update_status('wc-pending', __('Retrying payment', WC_Fisrv_Util::SLUG));
 
-        $ipg_message = $_GET['message'] ?? "Internal error";
-        $ipg_code = $_GET['code'] ?? "No code provided";
+        $ipg_message = $_GET['message'] ?? __('Internal error', WC_Fisrv_Util::SLUG);
+        $ipg_code = $_GET['code'] ?? __('No code provided', WC_Fisrv_Util::SLUG);
 
-        wc_add_notice('Payment has failed: ' . $ipg_message, 'error');
+        wc_add_notice(sprintf(__('Payment has failed: %s', WC_Fisrv_Util::SLUG), $ipg_message), 'error');
         wc_print_notices();
-        WC_fisrv_Logger::error($order, 'Payment validation failed, retrying on checkout page: ' . $ipg_message . ' -- ' . $ipg_code);
+        WC_Fisrv_Util::error($order, sprintf(__('Payment validation failed, retrying on checkout page: %1$s -- %2$s', WC_Fisrv_Util::SLUG), $ipg_message, $ipg_code));
 
         return [
-            'order'              => $order,
+            'order' => $order,
             'available_gateways' => $available_gateways,
-            'order_button_text'  => $order_button_text,
+            'order_button_text' => $order_button_text,
         ];
     }
 
@@ -59,13 +56,13 @@ final class WC_Fisrv_Checkout_Handler
      * Verify that origin of incoming requests (such as passed query parameters)
      * are from trusted source (from plugin itself). This is done by checking WP nonces which is set
      * before checkout creation.
-     * 
+     *
      * @param WC_Order $order WC order object
      */
     private static function verify_nonce(WC_Order $order): void
     {
         if (!isset($_REQUEST['_wpnonce']) || !wp_verify_nonce($_REQUEST['_wpnonce'], self::$IPG_NONCE)) {
-            WC_fisrv_Logger::error($order, 'Security check: Nonce was invalid when checkout redirected back to failure URL.');
+            WC_Fisrv_Util::error($order, __('Security check: Nonce was invalid when checkout redirected back to failure URL.', WC_Fisrv_Util::SLUG));
             die();
         }
     }
@@ -73,7 +70,7 @@ final class WC_Fisrv_Checkout_Handler
     /**
      * This is called when order is complete on thank you page.
      * Set order status and payment to completed
-     * 
+     *
      * @param string $order_id WC order ID
      */
     public static function order_complete_callback(string $order_id): void
@@ -91,43 +88,22 @@ final class WC_Fisrv_Checkout_Handler
         if ($is_transaction_approved) {
             $has_completed = $order->payment_complete();
             if ($has_completed) {
-                $order->update_status('wc-completed', 'Order has completed');
-                WC_fisrv_Logger::log($order, 'Order completed with card payment.');
+                $order->update_status('wc-completed', __('Order has completed', WC_Fisrv_Util::SLUG));
+                WC_Fisrv_Util::log($order, __('Order completed with card payment.', WC_Fisrv_Util::SLUG));
             }
         }
     }
 
     /**
-     * Fill out text fields on billing section on checkout
-     * with default values.
-     * 
-     * @param array<string, array<string, array<string, string>>> $fields
-     * @return array<string, array<string, array<string, string>>> 
-     */
-    public static function fill_out_fields(array $fields): array
-    {
-        $fields['billing']['billing_first_name']['default'] = 'Eartha';
-        $fields['billing']['billing_last_name']['default'] = 'Kitt';
-        $fields['billing']['billing_address_1']['default'] = 'Oskar Schindler Strasse';
-        $fields['billing']['billing_postcode']['default'] = '60359';
-        $fields['billing']['billing_city']['default'] = 'Frankfurt';
-        $fields['billing']['billing_phone']['default'] = '0162345678';
-        $fields['billing']['billing_email']['default'] = 'earth.kitt@dev.com';
-        return $fields;
-    }
-
-    /**
      * Inititalize configuraiton parameters of fisrv SDK.
-     * @todo This is subject to change, since Config API will change in coming
-     * versions. 
-     * 
+     *
      * @param string $api_key API key
      * @param string $api_secret API secret
      * @param string $store_id Store ID
      */
     public static function init_fisrv_sdk(string $api_key, string $api_secret, string $store_id): void
     {
-        $plugin_data = get_plugin_data(__FILE__);
+        $plugin_data = get_plugin_data(__DIR__ . '..//fisrv-checkout-for-woocommerce.php');
         $plugin_version = $plugin_data['Version'];
 
         self::$client = new CheckoutClient([
@@ -141,13 +117,13 @@ final class WC_Fisrv_Checkout_Handler
 
     /**
      * Create a checkout link
-     * 
+     *
      * @param WC_Order $order WC order
-     * @param PreSelectedPaymentMethod $method Selected payment method 
-     * 
+     * @param PreSelectedPaymentMethod $method Selected payment method
+     *
      * @return string URL of hosted payment page
-     * 
-     * @throws Exception Error thrown from fisrv SDK (Request Errors). Error is caught by setting 
+     *
+     * @throws Exception Error thrown from fisrv SDK (Request Errors). Error is caught by setting
      * returned checkout link to '#' (no redirect)
      */
     public static function create_checkout_link(WC_Order $order, PreSelectedPaymentMethod $method, WC_Fisrv_Payment_Gateway $gateway): string
@@ -176,15 +152,12 @@ final class WC_Fisrv_Checkout_Handler
             $order->update_meta_data('_fisrv_plugin_checkout_id', $checkout_id);
             $order->update_meta_data('_fisrv_plugin_trace_id', $response->traceId);
             $order->save_meta_data();
-            $order->add_order_note('fisrv checkout link ' . $checkout_link . ' created with checkout ID ' . $checkout_id . ' and trace ID ' . $trace_id . '.');
+            $order->add_order_note(sprintf(__('Fisrv checkout link %1$s created with checkout ID %2$s and trace ID %3$s.', WC_Fisrv_Util::SLUG), $checkout_link, $checkout_id, $trace_id));
 
             return $checkout_link;
         } catch (Throwable $th) {
-            self::$REQUEST_FAILED = true;
-            
             if (str_starts_with($th->getMessage(), '401')) {
-                // throw new Exception('Pay method ' . $method->value . ' failed. Please check on settings page if API credentials are set correctly.');
-                throw $th;
+                throw new Exception(sprintf(__('Payment method %s failed. Please check on settings page if API credentials are set correctly.', WC_Fisrv_Util::SLUG), $method->value));
             }
 
             throw $th;
@@ -193,7 +166,7 @@ final class WC_Fisrv_Checkout_Handler
 
     /**
      * Pass line items from WC to checkout
-     * 
+     *
      * @param CheckoutClientRequest $req    Request object to modify
      * @param WC_Order $order               Woocommerce order object
      * @return CheckoutClientRequest        Modified request object
@@ -206,22 +179,23 @@ final class WC_Fisrv_Checkout_Handler
             $item_data = $item->get_data();
 
             $req->order->basket->lineItems[] = new LineItem([
-                'itemIdentifier'    => $item->get_id(),
-                'name'              => $item->get_name(),
-                'price'             => $item_data['total'],
-                'quantity'          => $item->get_quantity(),
-                'shippingCost'      => 0,
-                'valueAddedTax'     => 0,
-                'miscellaneousFee'  => 0,
-                'total'             => $item_data['total'],
+                'itemIdentifier' => $item->get_id(),
+                'name' => $item->get_name(),
+                'price' => $item_data['total'],
+                'quantity' => $item->get_quantity(),
+                'shippingCost' => 0,
+                'valueAddedTax' => 0,
+                'miscellaneousFee' => 0,
+                'total' => $item_data['total'],
             ]);
         }
+
         return $req;
     }
 
     /**
      * Pass checkout data (totals, redirects, language etc.) to request object of checkout
-     * 
+     *
      * @param CheckoutClientRequest $req    Request object to modify
      * @param WC_Order $order               Woocommerce order object
      * @return CheckoutClientRequest        Modified request object
@@ -272,7 +246,7 @@ final class WC_Fisrv_Checkout_Handler
         $req->checkoutSettings->webHooksUrl = add_query_arg([
             '_wpnonce' => $nonce,
             'wc_order_id' => $order->get_id(),
-        ], WC_fisrv_Webhook_Handler::$webhook_endpoint . '/events');
+        ], WC_Fisrv_Webhook_Handler::$webhook_endpoint . '/events');
         $req->checkoutSettings->preSelectedPaymentMethod = $method;
 
         return $req;
@@ -280,40 +254,22 @@ final class WC_Fisrv_Checkout_Handler
 
     /**
      * Pass billing data from WC billing form to request object of checkout
-     * 
+     *
      * @param CheckoutClientRequest $req    Request object to modify
      * @param WC_Order $order               Woocommerce order object
      * @return CheckoutClientRequest        Modified request object
      */
     private static function pass_billing_data(CheckoutClientRequest $req, WC_Order $order): CheckoutClientRequest
     {
-        $req->order->billing->person->firstName     = $order->get_billing_first_name();
-        $req->order->billing->person->lastName      = $order->get_billing_last_name();
-        $req->order->billing->contact->email        = $order->get_billing_email();
-        $req->order->billing->address->address1     = $order->get_billing_address_1();
-        $req->order->billing->address->address2     = $order->get_billing_address_2();
-        $req->order->billing->address->city         = $order->get_billing_city();
-        $req->order->billing->address->country      = $order->get_billing_country();
-        $req->order->billing->address->postalCode   = $order->get_billing_postcode();
+        $req->order->billing->person->firstName = $order->get_billing_first_name();
+        $req->order->billing->person->lastName = $order->get_billing_last_name();
+        $req->order->billing->contact->email = $order->get_billing_email();
+        $req->order->billing->address->address1 = $order->get_billing_address_1();
+        $req->order->billing->address->address2 = $order->get_billing_address_2();
+        $req->order->billing->address->city = $order->get_billing_city();
+        $req->order->billing->address->country = $order->get_billing_country();
+        $req->order->billing->address->postalCode = $order->get_billing_postcode();
 
         return $req;
     }
-
-    /**
-     * Getter for requestFailed flag
-     * 
-     * @return bool True if request has failed
-     */
-    public function get_request_failed(): bool
-    {
-        return self::$REQUEST_FAILED;
-    }
-
-    /**
-     * Valid
-     * 5579346132831154
-     * 
-     * Invalid
-     * 4182917993774394
-     */
 }

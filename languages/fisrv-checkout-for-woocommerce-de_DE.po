@@ -1,0 +1,124 @@
+# Copyright (C) 2024 fisrv
+# This file is distributed under the GNU General Public License v3.0.
+msgid ""
+msgstr ""
+"Project-Id-Version: Fisrv Checkout for Woocommerce 0.0.1\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/fisrv-checkout-"
+"for-woocommerce\n"
+"POT-Creation-Date: 2024-06-26T08:43:20+00:00\n"
+"PO-Revision-Date: 2024-06-26 14:20+0200\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: de_DE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.4.4\n"
+"X-Domain: fisrv-checkout-for-woocommerce\n"
+
+#. Plugin Name of the plugin
+#: C:\Users\princen.vijayakumar\Local
+#: Sites\fiserv-wp-dev\app\public\wp-content\plugins\fisrv-checkout-for-woocommerce\fisrv-checkout-for-woocommerce.php
+msgid "Fisrv Checkout for Woocommerce"
+msgstr "Fisrv Checkout für Woocommerce"
+
+#. Description of the plugin
+#: C:\Users\princen.vijayakumar\Local
+#: Sites\fiserv-wp-dev\app\public\wp-content\plugins\fisrv-checkout-for-woocommerce\fisrv-checkout-for-woocommerce.php
+msgid "Official Fisrv Checkout Woocommerce plugin"
+msgstr "Offizielles Fisrv Checkout Woocommerce Plugin"
+
+#: includes\wc-fisrv-gateway-googlepay.php
+msgid "Pay with Google Pay via Fisrv"
+msgstr "Bezahlen mit Google Pay über Fisrv"
+
+msgid "Pay with credit card via Fisrv"
+msgstr "Bezahlen mit Kreditkarte über Fisrv"
+
+msgid "Pay with Apple Pay via Fisrv"
+msgstr "Bezahlen mit Apple Pay über Fisrv"
+
+#: includes\wc-fisrv-payment-gateway.php
+msgid "Enable Payment Gateway"
+msgstr "Zahlungs-Gateway aktivieren"
+
+msgid "Acquire API Key from Developer Portal"
+msgstr "API-Key vom Entwicklerportal erwerben"
+
+msgid "Acquire API Secret from Developer Portal"
+msgstr "API-Secret vom Entwicklerportal erwerben"
+
+msgid "Your Store ID for Checkout"
+msgstr "Ihre Store-ID für den Checkout"
+
+msgid "Custom name of gateway"
+msgstr "Personalisierter Name für Zahlungs-Gateway"
+
+msgid "Custom description of gateway"
+msgstr "Personalisierte Beschreibung für Zahlungs-Gateway"
+
+msgid "Link of image asset"
+msgstr "Link zur Bilddatei"
+
+msgid "Processing payment failed. Order is invalid."
+msgstr "Zahlung ist fehlgeschlagen. Bestellung ist ungültig."
+
+#: includes\wc-fisrv-webhook-handler.php
+msgid "Query parameter (order ID) is malformed"
+msgstr "Query-Parameter (Order-ID) "
+
+msgid "Order with ID %s has not been found."
+msgstr "Order mit ID %s wurde nicht gefunden."
+
+msgid ""
+"Attempted to change status of order that has been processed already. Prior "
+"status: %1$s Attempted status change: %2$s"
+msgstr ""
+"Es wurde versucht, den Status einer Bestellung zu ändern, die bereits "
+"bearbeitet wurde. Vorheriger Status: %1$s Versuchte Statusänderung: %2$s"
+
+msgid "Order %1$s changed to status %2$s"
+msgstr "Auftrag %1$s auf Status %2$s geändert"
+
+msgid "Transaction status changed"
+msgstr "Transaktionsstatus geändert"
+
+msgid "Fisrv checkout has updated order to %s"
+msgstr "Fisrv checkout hat die Bestellung auf %s aktualisiert"
+
+#: includes\wc-fisrv-checkout-handler.php
+msgid ""
+"Security check: Nonce was invalid when checkout redirected back to failure "
+"URL."
+msgstr ""
+"Sicherheitsprüfung: Nonce war ungültig, als der Checkout auf die Fehler-URL "
+"zurückgeleitet wurde."
+
+msgid "Payment validation failed, retrying on checkout page: %1$s -- %2$s"
+msgstr ""
+"Zahlungsüberprüfung fehlgeschlagen, erneuter Versuch auf der Checkout-Seite: "
+"%1$s -- %2$s"
+
+msgid "Payment has failed: %s"
+msgstr "Die Zahlung ist fehlgeschlagen: %s"
+
+msgid "Order completed with card payment."
+msgstr "Bestellung mit Kartenzahlung abgeschlossen."
+
+msgid ""
+"Fisrv checkout link %1$s created with checkout ID %2$s and trace ID %3&s."
+msgstr ""
+"Fisrv-Checkout-Link %1$s erstellt mit Checkout-ID %2$s und Trace-ID %3&s."
+
+msgid ""
+"Payment method %s failed. Please check on settings page if API credentials "
+"are set correctly."
+msgstr ""
+"Zahlungsmethode %s fehlgeschlagen. Bitte überprüfen Sie auf der "
+"Einstellungsseite, ob die API-Anmeldeinformationen korrekt eingestellt sind."
+
+msgid "Order has completed"
+msgstr "Auftrag ist abgeschlossen"
+
+msgid "Retrying payment"
+msgstr "Erneuter Versuch der Zahlung"

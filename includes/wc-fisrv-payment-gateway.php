@@ -13,7 +13,9 @@ use Fisrv\Models\PreSelectedPaymentMethod;
 abstract class WC_Fisrv_Payment_Gateway extends WC_Payment_Gateway
 {
     protected PreSelectedPaymentMethod $selected_method;
-    protected string $default_title = 'Payment Method';
+
+    protected string $default_title = '';
+
     protected string $default_description = '';
 
     public function __construct()
@@ -31,10 +33,10 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Payment_Gateway
      */
     protected function init_properties(): void
     {
-        $this->enabled      = $this->get_option('enabled');
-        $this->title        = $this->get_option('title');
-        $this->description  = $this->get_option('description');
-        $this->icon         = $this->get_option('icon');
+        $this->enabled = $this->get_option('enabled');
+        $this->title = $this->get_option('title');
+        $this->description = $this->get_option('description');
+        $this->icon = $this->get_option('icon');
     }
 
     /**
@@ -44,68 +46,52 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Payment_Gateway
     {
         $this->form_fields = [
             'enabled' => [
-                'title'         => 'Enable/Disable',
-                'type'          => 'checkbox',
-                'label'         => 'Enable Payment Gateway',
-                'default'       => 'yes'
+                'title' => 'Enable/Disable',
+                'type' => 'checkbox',
+                'label' => __('Enable Payment Gateway', WC_Fisrv_Util::SLUG),
+                'default' => 'yes'
             ],
             'api_key' => [
-                'title'         => 'API Key',
-                'type'          => 'text',
-                'description'   => 'Acquire API Key from Developer Portal',
-                'desc_tip'      => true,
+                'title' => 'API Key',
+                'type' => 'text',
+                'description' => __('Acquire API Key from Developer Portal', WC_Fisrv_Util::SLUG),
+                'desc_tip' => true,
             ],
             'api_secret' => [
-                'title'         => 'API Secret',
-                'type'          => 'password',
-                'description'   => 'Acquire API Secret from Developer Portal',
-                'desc_tip'      => true,
+                'title' => 'API Secret',
+                'type' => 'password',
+                'description' => __('Acquire API Secret from Developer Portal', WC_Fisrv_Util::SLUG),
+                'desc_tip' => true,
             ],
             'store_id' => [
-                'title'         => 'Store ID',
-                'type'          => 'text',
-                'description'   => 'Your Store ID for Checkout',
-                'desc_tip'      => true,
+                'title' => 'Store ID',
+                'type' => 'text',
+                'description' => __('Your Store ID for Checkout', WC_Fisrv_Util::SLUG),
+                'desc_tip' => true,
             ],
             'title' => [
-                'title'         => 'Gateway Name',
-                'type'          => 'text',
-                'description'   => 'Custom name of gateway',
-                'default'       => $this->default_title,
-                'desc_tip'      => true,
+                'title' => 'Gateway Name',
+                'type' => 'text',
+                'description' => __('Custom name of gateway', WC_Fisrv_Util::SLUG),
+                'default' => $this->default_title,
+                'desc_tip' => true,
             ],
             'description' => [
-                'title'         => 'Gateway Description',
-                'type'          => 'text',
-                'description'   => 'Custom description of gateway',
-                'default'       => $this->default_description,
-                'desc_tip'      => true,
+                'title' => 'Gateway Description',
+                'type' => 'text',
+                'description' => __('Custom description of gateway', WC_Fisrv_Util::SLUG),
+                'default' => $this->default_description,
+                'desc_tip' => true,
             ],
             'icon' => [
-                'title'         => 'Gateway Icon',
-                'type'          => 'text',
-                'description'   => 'Link of image asset',
-                'default'       => '',
-                'desc_tip'      => true,
+                'title' => 'Gateway Icon',
+                'type' => 'text',
+                'description' => __('Link of image asset', WC_Fisrv_Util::SLUG),
+                'default' => '',
+                'desc_tip' => true,
             ],
         ];
     }
-
-    protected function is_cached(WC_Order $order): bool | string
-    {
-        if (!$order->has_status('pending')) {
-            return false;
-        }
-
-        $cache = $order->get_meta('_fisrv_plugin_checkout_link', true);
-
-        if (!is_string($cache)) {
-            return false;
-        }
-
-        return $cache;
-    }
-
 
     /**
      * @return array<string, string>
@@ -115,7 +101,7 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Payment_Gateway
         $order = wc_get_order($order_id);
 
         if (!$order instanceof WC_Order) {
-            throw new Exception('Processing payment failed. Order is invalid.');
+            throw new Exception(__('Processing payment failed. Order is invalid.', WC_Fisrv_Util::SLUG));
         }
 
         $checkout_link = WC_Fisrv_Checkout_Handler::create_checkout_link($order, $this->selected_method, $this);

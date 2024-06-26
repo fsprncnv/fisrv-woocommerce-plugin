@@ -9,13 +9,13 @@
  * @author     fisrv
  * @since      1.0.0
  */
-final class WC_fisrv_Logger
+final class WC_Fisrv_Util
 {
-    private const WC_LOG_SOURCE = 'fisrv-checkout-for-woocommerce';
+    public const SLUG = 'fisrv-checkout-for-woocommerce';
 
     /**
      * Log some message to WC admin page as info log
-     * 
+     *
      * @param string $message Message to log
      * @param WC_Order $order Order that failed
      */
@@ -27,7 +27,7 @@ final class WC_fisrv_Logger
 
     /**
      * Log some message to WC admin page as error log
-     * 
+     *
      * @param string $message Message to log
      * @param WC_Order $order Order that failed
      */
@@ -40,18 +40,18 @@ final class WC_fisrv_Logger
     /**
      * Create generic message template containing log context from order
      *
-     * @param WC_Order $order Order that failed 
+     * @param WC_Order $order Order that failed
      * @return array<string, mixed>
      */
     private static function create_log_context(WC_Order $order): array
     {
         return [
-            'source'                => self::WC_LOG_SOURCE,
-            'wc_order_id'           => $order->get_id(),
-            'wc_order_key'          => $order->get_order_key(),
-            'fisrv_link'           => $order->get_meta('_fisrv_plugin_checkout_link'),
-            'fisrv_checkout_id'    => $order->get_meta('_fisrv_plugin_checkout_id'),
-            'fisrv_trace_id'       => $order->get_meta('_fisrv_plugin_trace_id'),
+            'source' => self::SLUG,
+            'wc_order_id' => $order->get_id(),
+            'wc_order_key' => $order->get_order_key(),
+            'fisrv_link' => $order->get_meta('_fisrv_plugin_checkout_link'),
+            'fisrv_checkout_id' => $order->get_meta('_fisrv_plugin_checkout_id'),
+            'fisrv_trace_id' => $order->get_meta('_fisrv_plugin_trace_id'),
         ];
     }
 }

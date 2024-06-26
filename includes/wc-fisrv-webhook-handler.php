@@ -12,13 +12,13 @@ use Fisrv\Models\WebhookEvent\WebhookEvent;
  * @author     fisrv
  * @since      1.0.0
  */
-final class WC_fisrv_Webhook_Handler
+final class WC_Fisrv_Webhook_Handler
 {
     public static string $webhook_endpoint = '/fisrv_woocommerce_plugin/v1';
 
     /**
      * Receive event from fisrv checkout solution
-     * 
+     *
      * @param WP_REST_Request<array<string, mixed>> $request Event data
      * @return WP_REST_Response Reponse acknowledging sent data
      * @return WP_Error 403 Code if request has failed
@@ -29,7 +29,7 @@ final class WC_fisrv_Webhook_Handler
         $order_id = $request->get_param('wc_order_id');
 
         if (!is_string($order_id)) {
-            throw new Exception('Query parameter (order ID) is malformed');
+            throw new Exception(__('Query parameter (order ID) is malformed', WC_Fisrv_Util::SLUG));
         }
 
         try {
@@ -63,7 +63,7 @@ final class WC_fisrv_Webhook_Handler
     /**
      * Store event log data into Wordpress table as order
      * meta data.
-     * 
+     *
      * @param string $order_id Identifier of corresponding order
      * @param WebhookEvent $event Webhook event sent from checkout solution
      * @throws Exception Order not found
@@ -73,7 +73,7 @@ final class WC_fisrv_Webhook_Handler
         $order = wc_get_order($order_id);
 
         if (!$order instanceof WC_Order) {
-            throw new Exception(esc_html('Order with ID ' . $order_id . ' has not been found.'));
+            throw new Exception(esc_html(sprintf(__('Order with ID %s has not been found.', WC_Fisrv_Util::SLUG), $order_id)));
         }
 
         $stored_events_list = json_decode(strval($order->get_meta('_fisrv_plugin_webhook_event')), true);
@@ -95,40 +95,47 @@ final class WC_fisrv_Webhook_Handler
         switch ($ipgTransactionStatus) {
             case TransactionStatus::WAITING:
                 $wc_status = 'wc-on-hold';
+
                 break;
             case TransactionStatus::PARTIAL:
                 $wc_status = 'wc-processing';
+
                 break;
             case TransactionStatus::APPROVED:
                 $wc_status = 'wc-completed';
-                WC_fisrv_Logger::log($order, 'Order completed');
+                WC_Fisrv_Util::log($order, 'Order completed');
                 $order->payment_complete();
+
                 break;
             case TransactionStatus::PROCESSING_FAILED:
                 $wc_status = 'wc-failed';
+
                 break;
             case TransactionStatus::VALIDATION_FAILED:
                 $wc_status = 'wc-failed';
+
                 break;
             case TransactionStatus::DECLINED:
                 $wc_status = 'wc-cancelled';
+
                 break;
             default:
                 $wc_status = 'wc-pending';
+
                 break;
         }
 
         $wc_status_unprefixed = substr($wc_status, 3);
 
         if ($order->has_status('completed') || $order->has_status('cancelled')) {
-            WC_fisrv_Logger::log($order, 'Attempted to change status of order that has been processed already. Prior status: ' . $order->get_status() . ' Attempted status change: ' . $wc_status_unprefixed);
+            WC_Fisrv_Util::log($order, sprintf(__('Attempted to change status of order that has been processed already. Prior status: %1$s Attempted status change: %2$s', WC_Fisrv_Util::SLUG), $order->get_status(), $wc_status_unprefixed));
+
             return;
         }
 
-
-        $order->update_status($wc_status, 'Transaction status changed');
-        $order->add_order_note('fisrv checkout has updated order to ' . $wc_status_unprefixed);
-        WC_fisrv_Logger::log($order, 'Order ' . $order->get_id() . ' changed to status ' . $order->get_status());
+        $order->update_status($wc_status, __('Transaction status changed', WC_Fisrv_Util::SLUG));
+        $order->add_order_note(sprintf(__('Fisrv checkout has updated order to %s', WC_Fisrv_Util::SLUG), $wc_status_unprefixed));
+        WC_Fisrv_Util::log($order, sprintf(__('Order %1$s changed to status %2$s', WC_Fisrv_Util::SLUG), $order->get_id(), $order->get_status));
 
         $order->save_meta_data();
     }
