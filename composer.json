@@ -33,12 +33,14 @@
     }
   },
   "archive": {
+    "name": "fisrv-checkout-for-woocommerce",
     "exclude": [
       ".gitlab-ci.yml",
       ".gitignore",
       "/*.*",
       "/.*",
       "!/*.php",
+      "!/readme.txt",
       ".idea",
       "tests",
       "docker"
