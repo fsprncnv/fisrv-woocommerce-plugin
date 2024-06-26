@@ -48,11 +48,11 @@
     "build": [
       "@composer --no-plugins --no-interaction install --no-scripts --no-dev",
       "@composer --no-plugins --no-interaction archive"
+    ],
+    "format": [
+      "vendor/bin/php-cs-fixer fix --dry-run --diff"
     ]
   },
-  "format": [
-    "vendor/bin/php-cs-fixer fix --dry-run --diff"
-  ],
   "scripts-descriptions": {
     "build": "Build project artifact."
   }
