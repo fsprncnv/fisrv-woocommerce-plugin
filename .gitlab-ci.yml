@@ -21,3 +21,6 @@ build:
 
 docker:
   extends: .base_docker
+
+release:
+  extends: .base_release
