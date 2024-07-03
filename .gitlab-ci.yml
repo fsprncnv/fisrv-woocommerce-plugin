@@ -1,12 +1,12 @@
 include:
-  - project: 'default/base'
-    ref: 'main'
-    file: '.php.gitlab-ci.yml'
+  - project: "default/base"
+    ref: "main"
+    file: ".php.gitlab-ci.yml"
 
 variables:
   IMAGE_TAG: $CI_REGISTRY_IMAGE:latest
   DOCKERFILE: "docker/Dockerfile"
-  SKIP_PHPUNIT: 'true'
+  SKIP_PHPUNIT: "true"
   MYSQL_DATABASE: "wordpress"
   MYSQL_ROOT_PASSWORD: "wordpress"
   MYSQL_USER: "wordpress"
@@ -21,3 +21,6 @@ build:
 
 docker:
   extends: .base_docker
+
+release:
+  extends: .base_release
