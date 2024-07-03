@@ -29,7 +29,7 @@ final class WC_Fisrv_Webhook_Handler
         $order_id = $request->get_param('wc_order_id');
 
         if (!is_string($order_id)) {
-            throw new Exception(__('Query parameter (order ID) is malformed', WC_Fisrv_Util::SLUG));
+            throw new Exception(__('Query parameter (order ID) is malformed', 'fisrv-checkout-for-woocommerce'));
         }
 
         try {
@@ -73,7 +73,7 @@ final class WC_Fisrv_Webhook_Handler
         $order = wc_get_order($order_id);
 
         if (!$order instanceof WC_Order) {
-            throw new Exception(esc_html(sprintf(__('Order with ID %s has not been found.', WC_Fisrv_Util::SLUG), $order_id)));
+            throw new Exception(esc_html(sprintf(__('Order with ID %s has not been found.', 'fisrv-checkout-for-woocommerce'), $order_id)));
         }
 
         $stored_events_list = json_decode(strval($order->get_meta('_fisrv_plugin_webhook_event')), true);
@@ -103,7 +103,7 @@ final class WC_Fisrv_Webhook_Handler
                 break;
             case TransactionStatus::APPROVED:
                 $wc_status = 'wc-completed';
-                WC_Fisrv_Util::log($order, 'Order completed');
+                WC_Fisrv_Logger::log($order, 'Order completed');
                 $order->payment_complete();
 
                 break;
@@ -128,14 +128,14 @@ final class WC_Fisrv_Webhook_Handler
         $wc_status_unprefixed = substr($wc_status, 3);
 
         if ($order->has_status('completed') || $order->has_status('cancelled')) {
-            WC_Fisrv_Util::log($order, sprintf(__('Attempted to change status of order that has been processed already. Prior status: %1$s Attempted status change: %2$s', WC_Fisrv_Util::SLUG), $order->get_status(), $wc_status_unprefixed));
+            WC_Fisrv_Logger::log($order, sprintf(__('Attempted to change status of order that has been processed already. Prior status: %1$s Attempted status change: %2$s', 'fisrv-checkout-for-woocommerce'), $order->get_status(), $wc_status_unprefixed));
 
             return;
         }
 
-        $order->update_status($wc_status, __('Transaction status changed', WC_Fisrv_Util::SLUG));
-        $order->add_order_note(sprintf(__('Fisrv checkout has updated order to %s', WC_Fisrv_Util::SLUG), $wc_status_unprefixed));
-        WC_Fisrv_Util::log($order, sprintf(__('Order %1$s changed to status %2$s', WC_Fisrv_Util::SLUG), $order->get_id(), $order->get_status()));
+        $order->update_status($wc_status, __('Transaction status changed', 'fisrv-checkout-for-woocommerce'));
+        $order->add_order_note(sprintf(__('Fisrv checkout has updated order to %s', 'fisrv-checkout-for-woocommerce'), $wc_status_unprefixed));
+        WC_Fisrv_Logger::log($order, sprintf(__('Order %1$s changed to status %2$s', 'fisrv-checkout-for-woocommerce'), $order->get_id(), $order->get_status()));
 
         $order->save_meta_data();
     }

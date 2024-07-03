@@ -35,15 +35,15 @@ final class WC_Fisrv_Checkout_Handler
     {
         self::verify_nonce($order);
 
-        $order_button_text = __('Retry payment', WC_Fisrv_Util::SLUG);
-        $order->update_status('wc-pending', __('Retrying payment', WC_Fisrv_Util::SLUG));
+        $order_button_text = __('Retry payment', 'fisrv-checkout-for-woocommerce');
+        $order->update_status('wc-pending', __('Retrying payment', 'fisrv-checkout-for-woocommerce'));
 
-        $ipg_message = $_GET['message'] ?? __('Internal error', WC_Fisrv_Util::SLUG);
-        $ipg_code = $_GET['code'] ?? __('No code provided', WC_Fisrv_Util::SLUG);
+        $ipg_message = $_GET['message'] ?? __('Internal error', 'fisrv-checkout-for-woocommerce');
+        $ipg_code = $_GET['code'] ?? __('No code provided', 'fisrv-checkout-for-woocommerce');
 
-        wc_add_notice(sprintf(__('Payment has failed: %s', WC_Fisrv_Util::SLUG), $ipg_message), 'error');
+        wc_add_notice(sprintf(__('Payment has failed: %s', 'fisrv-checkout-for-woocommerce'), $ipg_message), 'error');
         wc_print_notices();
-        WC_Fisrv_Util::error($order, sprintf(__('Payment validation failed, retrying on checkout page: %1$s -- %2$s', WC_Fisrv_Util::SLUG), $ipg_message, $ipg_code));
+        WC_Fisrv_Logger::error($order, sprintf(__('Payment validation failed, retrying on checkout page: %1$s -- %2$s', 'fisrv-checkout-for-woocommerce'), $ipg_message, $ipg_code));
 
         return [
             'order' => $order,
@@ -62,7 +62,7 @@ final class WC_Fisrv_Checkout_Handler
     private static function verify_nonce(WC_Order $order): void
     {
         if (!isset($_REQUEST['_wpnonce']) || !wp_verify_nonce($_REQUEST['_wpnonce'], self::$IPG_NONCE)) {
-            WC_Fisrv_Util::error($order, __('Security check: Nonce was invalid when checkout redirected back to failure URL.', WC_Fisrv_Util::SLUG));
+            WC_Fisrv_Logger::error($order, __('Security check: Nonce was invalid when checkout redirected back to failure URL.', 'fisrv-checkout-for-woocommerce'));
             die();
         }
     }
@@ -88,8 +88,8 @@ final class WC_Fisrv_Checkout_Handler
         if ($is_transaction_approved) {
             $has_completed = $order->payment_complete();
             if ($has_completed) {
-                $order->update_status('wc-completed', __('Order has completed', WC_Fisrv_Util::SLUG));
-                WC_Fisrv_Util::log($order, __('Order completed with card payment.', WC_Fisrv_Util::SLUG));
+                $order->update_status('wc-completed', __('Order has completed', 'fisrv-checkout-for-woocommerce'));
+                WC_Fisrv_Logger::log($order, __('Order completed with card payment.', 'fisrv-checkout-for-woocommerce'));
             }
         }
     }
@@ -152,12 +152,12 @@ final class WC_Fisrv_Checkout_Handler
             $order->update_meta_data('_fisrv_plugin_checkout_id', $checkout_id);
             $order->update_meta_data('_fisrv_plugin_trace_id', $response->traceId);
             $order->save_meta_data();
-            $order->add_order_note(sprintf(__('Fisrv checkout link %1$s created with checkout ID %2$s and trace ID %3$s.', WC_Fisrv_Util::SLUG), $checkout_link, $checkout_id, $trace_id));
+            $order->add_order_note(sprintf(__('Fisrv checkout link %1$s created with checkout ID %2$s and trace ID %3$s.', 'fisrv-checkout-for-woocommerce'), $checkout_link, $checkout_id, $trace_id));
 
             return $checkout_link;
         } catch (Throwable $th) {
             if (str_starts_with($th->getMessage(), '401')) {
-                throw new Exception(sprintf(__('Payment method %s failed. Please check on settings page if API credentials are set correctly.', WC_Fisrv_Util::SLUG), $method->value));
+                throw new Exception(sprintf(__('Payment method %s failed. Please check on settings page if API credentials are set correctly.', 'fisrv-checkout-for-woocommerce'), $method->value));
             }
 
             throw $th;

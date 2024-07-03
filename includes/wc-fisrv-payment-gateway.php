@@ -48,45 +48,45 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Payment_Gateway
             'enabled' => [
                 'title' => 'Enable/Disable',
                 'type' => 'checkbox',
-                'label' => __('Enable Payment Gateway', WC_Fisrv_Util::SLUG),
+                'label' => __('Enable Payment Gateway', 'fisrv-checkout-for-woocommerce'),
                 'default' => 'yes'
             ],
             'api_key' => [
                 'title' => 'API Key',
                 'type' => 'text',
-                'description' => __('Acquire API Key from Developer Portal', WC_Fisrv_Util::SLUG),
+                'description' => __('Acquire API Key from Developer Portal', 'fisrv-checkout-for-woocommerce'),
                 'desc_tip' => true,
             ],
             'api_secret' => [
                 'title' => 'API Secret',
                 'type' => 'password',
-                'description' => __('Acquire API Secret from Developer Portal', WC_Fisrv_Util::SLUG),
+                'description' => __('Acquire API Secret from Developer Portal', 'fisrv-checkout-for-woocommerce'),
                 'desc_tip' => true,
             ],
             'store_id' => [
                 'title' => 'Store ID',
                 'type' => 'text',
-                'description' => __('Your Store ID for Checkout', WC_Fisrv_Util::SLUG),
+                'description' => __('Your Store ID for Checkout', 'fisrv-checkout-for-woocommerce'),
                 'desc_tip' => true,
             ],
             'title' => [
                 'title' => 'Gateway Name',
                 'type' => 'text',
-                'description' => __('Custom name of gateway', WC_Fisrv_Util::SLUG),
+                'description' => __('Custom name of gateway', 'fisrv-checkout-for-woocommerce'),
                 'default' => $this->default_title,
                 'desc_tip' => true,
             ],
             'description' => [
                 'title' => 'Gateway Description',
                 'type' => 'text',
-                'description' => __('Custom description of gateway', WC_Fisrv_Util::SLUG),
+                'description' => __('Custom description of gateway', 'fisrv-checkout-for-woocommerce'),
                 'default' => $this->default_description,
                 'desc_tip' => true,
             ],
             'icon' => [
                 'title' => 'Gateway Icon',
                 'type' => 'text',
-                'description' => __('Link of image asset', WC_Fisrv_Util::SLUG),
+                'description' => __('Link of image asset', 'fisrv-checkout-for-woocommerce'),
                 'default' => '',
                 'desc_tip' => true,
             ],
@@ -101,7 +101,7 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Payment_Gateway
         $order = wc_get_order($order_id);
 
         if (!$order instanceof WC_Order) {
-            throw new Exception(__('Processing payment failed. Order is invalid.', WC_Fisrv_Util::SLUG));
+            throw new Exception(__('Processing payment failed. Order is invalid.', 'fisrv-checkout-for-woocommerce'));
         }
 
         $checkout_link = WC_Fisrv_Checkout_Handler::create_checkout_link($order, $this->selected_method, $this);

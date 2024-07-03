@@ -49,7 +49,7 @@
   "scripts": {
     "build": [
       "@composer --no-plugins --no-interaction install --no-scripts --no-dev",
-      "@composer --no-plugins --no-interaction archive"
+      "@composer --no-plugins --no-interaction archive --format=zip"
     ],
     "format": [
       "vendor/bin/php-cs-fixer fix --dry-run --diff"

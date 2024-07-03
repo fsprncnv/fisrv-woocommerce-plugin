@@ -9,9 +9,9 @@
  * @author     fisrv
  * @since      1.0.0
  */
-final class WC_Fisrv_Util
+final class WC_Fisrv_Logger
 {
-    public const SLUG = 'fisrv-checkout-for-woocommerce';
+    public const SOURCE = 'fisrv-checkout-for-woocommerce';
 
     /**
      * Log some message to WC admin page as info log
@@ -46,7 +46,7 @@ final class WC_Fisrv_Util
     private static function create_log_context(WC_Order $order): array
     {
         return [
-            'source' => self::SLUG,
+            'source' => self::SOURCE,
             'wc_order_id' => $order->get_id(),
             'wc_order_key' => $order->get_order_key(),
             'fisrv_link' => $order->get_meta('_fisrv_plugin_checkout_link'),

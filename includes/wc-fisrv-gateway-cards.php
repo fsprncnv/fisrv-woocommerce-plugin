@@ -10,7 +10,7 @@ class WC_Fisrv_Gateway_Cards extends WC_Fisrv_Payment_Gateway
         $this->id = 'fisrv-gateway-cards';
 
         $this->method_title = 'Credit card - Fisrv Checkout';
-        $this->method_description = __('Pay with credit card via Fisrv', WC_Fisrv_Util::SLUG);
+        $this->method_description = __('Pay with credit card via Fisrv', 'fisrv-checkout-for-woocommerce');
 
         $this->default_title = 'Credit card';
 
