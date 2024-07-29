@@ -12,131 +12,134 @@ use Fisrv\Models\WebhookEvent\WebhookEvent;
  * @author     fisrv
  * @since      1.0.0
  */
-final class WC_Fisrv_Webhook_Handler
-{
-    public static string $webhook_endpoint = '/fisrv_woocommerce_plugin/v1';
+final class WC_Fisrv_Webhook_Handler {
 
-    /**
-     * Receive event from fisrv checkout solution
-     *
-     * @param WP_REST_Request<array<string, mixed>> $request Event data
-     * @return WP_REST_Response Reponse acknowledging sent data
-     * @return WP_Error 403 Code if request has failed
-     */
-    public static function consume_events(WP_REST_Request $request): WP_REST_Response | WP_Error
-    {
-        $request_body = $request->get_body();
-        $order_id = $request->get_param('wc_order_id');
+	public static string $webhook_endpoint = '/fisrv_woocommerce_plugin/v1';
 
-        if (!is_string($order_id)) {
-            throw new Exception(__('Query parameter (order ID) is malformed', 'fisrv-checkout-for-woocommerce'));
-        }
+	/**
+	 * Receive event from fisrv checkout solution
+	 *
+	 * @param WP_REST_Request<array<string, mixed>> $request Event data
+	 * @return WP_REST_Response Reponse acknowledging sent data
+	 * @return WP_Error 403 Code if request has failed
+	 */
+	public static function consume_events( WP_REST_Request $request ): WP_REST_Response|WP_Error {
+		$request_body = $request->get_body();
+		$order_id     = $request->get_param( 'wc_order_id' );
 
-        try {
-            $webhook_event = new WebhookEvent($request_body);
-            self::update_order($order_id, $webhook_event);
+		if ( ! is_string( $order_id ) ) {
+			throw new Exception( __( 'Query parameter (order ID) is malformed', 'fisrv-checkout-for-woocommerce' ) );
+		}
 
-            $response = new WP_REST_Response([
-                'wc_order_id' => $order_id,
-                'events' => $webhook_event,
-            ]);
-            $response->set_status(200);
+		try {
+			$webhook_event = new WebhookEvent( $request_body );
+			self::update_order( $order_id, $webhook_event );
 
-            return $response;
-        } catch (Exception $e) {
-            return new WP_Error('Webhook handling has failed', $e->getMessage(), ['status' => 403]);
-        }
-    }
+			$response = new WP_REST_Response(
+				array(
+					'wc_order_id' => $order_id,
+					'events'      => $webhook_event,
+				)
+			);
+			$response->set_status( 200 );
 
-    /**
-     * Register POST route at /wp-json/fisrv_woocommerce_plugin/v1/api.
-     * Receive from events from fisrv checkout solution
-     */
-    public static function register_consume_events(): void
-    {
-        register_rest_route(self::$webhook_endpoint, '/events', [
-            'methods' => 'POST',
-            'callback' => [self::class, 'consume_events']
-        ]);
-    }
+			return $response;
+		} catch ( Exception $e ) {
+			return new WP_Error( 'Webhook handling has failed', $e->getMessage(), array( 'status' => 403 ) );
+		}
+	}
 
-    /**
-     * Store event log data into Wordpress table as order
-     * meta data.
-     *
-     * @param string $order_id Identifier of corresponding order
-     * @param WebhookEvent $event Webhook event sent from checkout solution
-     * @throws Exception Order not found
-     */
-    private static function update_order(string $order_id, WebhookEvent $event): void
-    {
-        $order = wc_get_order($order_id);
+	/**
+	 * Register POST route at /wp-json/fisrv_woocommerce_plugin/v1/api.
+	 * Receive from events from fisrv checkout solution
+	 */
+	public static function register_consume_events(): void {
+		register_rest_route(
+			self::$webhook_endpoint,
+			'/events',
+			array(
+				'methods'  => 'POST',
+				'callback' => array( self::class, 'consume_events' ),
+			)
+		);
+	}
 
-        if (!$order instanceof WC_Order) {
-            throw new Exception(esc_html(sprintf(__('Order with ID %s has not been found.', 'fisrv-checkout-for-woocommerce'), $order_id)));
-        }
+	/**
+	 * Store event log data into WordPress table as order
+	 * meta data.
+	 *
+	 * @param string $order_id Identifier of corresponding order
+	 * @param WebhookEvent $event Webhook event sent from checkout solution
+	 * @throws Exception Order not found
+	 */
+	private static function update_order( string $order_id, WebhookEvent $event ): void {
+		$order = wc_get_order( $order_id );
 
-        $stored_events_list = json_decode(strval($order->get_meta('_fisrv_plugin_webhook_event')), true);
-        $events_list = [];
+		if ( ! $order instanceof WC_Order ) {
+			throw new Exception( esc_html( sprintf( __( 'Order with ID %s has not been found.', 'fisrv-checkout-for-woocommerce' ), $order_id ) ) );
+		}
 
-        if (is_array($stored_events_list)) {
-            $events_list = $stored_events_list;
-        }
+		$stored_events_list = json_decode( strval( $order->get_meta( '_fisrv_plugin_webhook_event' ) ), true );
+		$events_list        = array();
 
-        array_unshift($events_list, $event);
-        $event_list_json = json_encode($events_list);
+		if ( is_array( $stored_events_list ) ) {
+			$events_list = $stored_events_list;
+		}
 
-        if (is_string($event_list_json)) {
-            $order->update_meta_data('_fisrv_plugin_webhook_event', $event_list_json);
-        }
+		array_unshift( $events_list, $event );
+		$event_list_json = json_encode( $events_list );
 
-        $ipgTransactionStatus = $event->transactionStatus;
+		if ( is_string( $event_list_json ) ) {
+			$order->update_meta_data( '_fisrv_plugin_webhook_event', $event_list_json );
+		}
 
-        switch ($ipgTransactionStatus) {
-            case TransactionStatus::WAITING:
-                $wc_status = 'wc-on-hold';
+		$ipgTransactionStatus = $event->transactionStatus;
 
-                break;
-            case TransactionStatus::PARTIAL:
-                $wc_status = 'wc-processing';
+		switch ( $ipgTransactionStatus ) {
+			case TransactionStatus::WAITING:
+				$wc_status = 'wc-on-hold';
 
-                break;
-            case TransactionStatus::APPROVED:
-                $wc_status = 'wc-completed';
-                WC_Fisrv_Logger::log($order, 'Order completed');
-                $order->payment_complete();
+				break;
+			case TransactionStatus::PARTIAL:
+				$wc_status = 'wc-processing';
 
-                break;
-            case TransactionStatus::PROCESSING_FAILED:
-                $wc_status = 'wc-failed';
+				break;
+			case TransactionStatus::APPROVED:
+				$wc_status = 'wc-completed';
+				WC_Fisrv_Logger::log( $order, 'Order completed' );
+				$order->payment_complete();
 
-                break;
-            case TransactionStatus::VALIDATION_FAILED:
-                $wc_status = 'wc-failed';
+				break;
+			case TransactionStatus::PROCESSING_FAILED:
+				$wc_status = 'wc-failed';
 
-                break;
-            case TransactionStatus::DECLINED:
-                $wc_status = 'wc-cancelled';
+				break;
+			case TransactionStatus::VALIDATION_FAILED:
+				$wc_status = 'wc-failed';
 
-                break;
-            default:
-                $wc_status = 'wc-pending';
+				break;
+			case TransactionStatus::DECLINED:
+				$wc_status = 'wc-cancelled';
 
-                break;
-        }
+				break;
+			default:
+				$wc_status = 'wc-pending';
 
-        $wc_status_unprefixed = substr($wc_status, 3);
+				break;
+		}
 
-        if ($order->has_status('completed') || $order->has_status('cancelled')) {
-            WC_Fisrv_Logger::log($order, sprintf(__('Attempted to change status of order that has been processed already. Prior status: %1$s Attempted status change: %2$s', 'fisrv-checkout-for-woocommerce'), $order->get_status(), $wc_status_unprefixed));
+		$wc_status_unprefixed = substr( $wc_status, 3 );
 
-            return;
-        }
+		if ( $order->has_status( 'completed' ) || $order->has_status( 'cancelled' ) ) {
+			WC_Fisrv_Logger::log( $order, sprintf( __( 'Attempted to change status of order that has been processed already. Prior status: %1$s Attempted status change: %2$s', 'fisrv-checkout-for-woocommerce' ), $order->get_status(), $wc_status_unprefixed ) );
 
-        $order->update_status($wc_status, __('Transaction status changed', 'fisrv-checkout-for-woocommerce'));
-        $order->add_order_note(sprintf(__('Fisrv checkout has updated order to %s', 'fisrv-checkout-for-woocommerce'), $wc_status_unprefixed));
-        WC_Fisrv_Logger::log($order, sprintf(__('Order %1$s changed to status %2$s', 'fisrv-checkout-for-woocommerce'), $order->get_id(), $order->get_status()));
+			return;
+		}
 
-        $order->save_meta_data();
-    }
+		$order->update_status( $wc_status, __( 'Transaction status changed', 'fisrv-checkout-for-woocommerce' ) );
+		$order->add_order_note( sprintf( __( 'Fisrv checkout has updated order to %s', 'fisrv-checkout-for-woocommerce' ), $wc_status_unprefixed ) );
+		WC_Fisrv_Logger::log( $order, sprintf( __( 'Order %1$s changed to status %2$s', 'fisrv-checkout-for-woocommerce' ), $order->get_id(), $order->get_status() ) );
+
+		$order->save_meta_data();
+	}
 }

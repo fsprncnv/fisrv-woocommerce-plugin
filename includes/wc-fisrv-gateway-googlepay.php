@@ -2,18 +2,17 @@
 
 use Fisrv\Models\PreSelectedPaymentMethod;
 
-class WC_Fisrv_Gateway_Googlepay extends WC_Fisrv_Payment_Gateway
-{
-    public function __construct()
-    {
-        $this->selected_method = PreSelectedPaymentMethod::GOOGLEPAY;
-        $this->id = 'fisrv-gateway-gpay';
+class WC_Fisrv_Gateway_Googlepay extends WC_Fisrv_Payment_Gateway {
 
-        $this->method_title = 'Google Pay - Fisrv Checkout';
-        $this->method_description = __('Pay with Google Pay via Fisrv', 'fisrv-checkout-for-woocommerce');
+	public function __construct() {
+		$this->selected_method = PreSelectedPaymentMethod::GOOGLEPAY;
+		$this->id              = 'fisrv-gateway-gpay';
 
-        $this->default_title = 'Google Pay';
+		$this->method_title       = 'Google Pay - Fisrv Checkout';
+		$this->method_description = __( 'Pay with Google Pay via Fisrv', 'fisrv-checkout-for-woocommerce' );
 
-        parent::__construct();
-    }
+		$this->default_title = 'Google Pay';
+
+		parent::__construct();
+	}
 }

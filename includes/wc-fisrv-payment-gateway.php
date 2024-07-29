@@ -10,105 +10,101 @@ use Fisrv\Models\PreSelectedPaymentMethod;
  * @author     fisrv
  * @since      1.0.0
  */
-abstract class WC_Fisrv_Payment_Gateway extends WC_Payment_Gateway
-{
-    protected PreSelectedPaymentMethod $selected_method;
+abstract class WC_Fisrv_Payment_Gateway extends WC_Payment_Gateway {
 
-    protected string $default_title = '';
+	protected PreSelectedPaymentMethod $selected_method;
 
-    protected string $default_description = '';
+	protected string $default_title = '';
 
-    public function __construct()
-    {
-        $this->has_fields = false;
-        $this->init_form_fields();
-        $this->init_settings();
-        $this->init_properties();
+	protected string $default_description = '';
 
-        add_action('woocommerce_update_options_payment_gateways_' . $this->id, [$this, 'process_admin_options']);
-    }
+	public function __construct() {
+		$this->has_fields = false;
+		$this->init_form_fields();
+		$this->init_settings();
+		$this->init_properties();
 
-    /**
-     * Initialize properties from options
-     */
-    protected function init_properties(): void
-    {
-        $this->enabled = $this->get_option('enabled');
-        $this->title = $this->get_option('title');
-        $this->description = $this->get_option('description');
-        $this->icon = $this->get_option('icon');
-    }
+		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
+	}
 
-    /**
-     * Initialize form text fields on gateway options page
-     */
-    public function init_form_fields(): void
-    {
-        $this->form_fields = [
-            'enabled' => [
-                'title' => 'Enable/Disable',
-                'type' => 'checkbox',
-                'label' => __('Enable Payment Gateway', 'fisrv-checkout-for-woocommerce'),
-                'default' => 'yes'
-            ],
-            'api_key' => [
-                'title' => 'API Key',
-                'type' => 'text',
-                'description' => __('Acquire API Key from Developer Portal', 'fisrv-checkout-for-woocommerce'),
-                'desc_tip' => true,
-            ],
-            'api_secret' => [
-                'title' => 'API Secret',
-                'type' => 'password',
-                'description' => __('Acquire API Secret from Developer Portal', 'fisrv-checkout-for-woocommerce'),
-                'desc_tip' => true,
-            ],
-            'store_id' => [
-                'title' => 'Store ID',
-                'type' => 'text',
-                'description' => __('Your Store ID for Checkout', 'fisrv-checkout-for-woocommerce'),
-                'desc_tip' => true,
-            ],
-            'title' => [
-                'title' => 'Gateway Name',
-                'type' => 'text',
-                'description' => __('Custom name of gateway', 'fisrv-checkout-for-woocommerce'),
-                'default' => $this->default_title,
-                'desc_tip' => true,
-            ],
-            'description' => [
-                'title' => 'Gateway Description',
-                'type' => 'text',
-                'description' => __('Custom description of gateway', 'fisrv-checkout-for-woocommerce'),
-                'default' => $this->default_description,
-                'desc_tip' => true,
-            ],
-            'icon' => [
-                'title' => 'Gateway Icon',
-                'type' => 'text',
-                'description' => __('Link of image asset', 'fisrv-checkout-for-woocommerce'),
-                'default' => '',
-                'desc_tip' => true,
-            ],
-        ];
-    }
+	/**
+	 * Initialize properties from options
+	 */
+	protected function init_properties(): void {
+		$this->enabled     = $this->get_option( 'enabled' );
+		$this->title       = $this->get_option( 'title' );
+		$this->description = $this->get_option( 'description' );
+		$this->icon        = $this->get_option( 'icon' );
+	}
 
-    /**
-     * @return array<string, string>
-     */
-    public function process_payment($order_id): array
-    {
-        $order = wc_get_order($order_id);
+	/**
+	 * Initialize form text fields on gateway options page
+	 */
+	public function init_form_fields(): void {
+		$this->form_fields = array(
+			'enabled'     => array(
+				'title'   => 'Enable/Disable',
+				'type'    => 'checkbox',
+				'label'   => __( 'Enable Payment Gateway', 'fisrv-checkout-for-woocommerce' ),
+				'default' => 'yes',
+			),
+			'api_key'     => array(
+				'title'       => 'API Key',
+				'type'        => 'text',
+				'description' => __( 'Acquire API Key from Developer Portal', 'fisrv-checkout-for-woocommerce' ),
+				'desc_tip'    => true,
+			),
+			'api_secret'  => array(
+				'title'       => 'API Secret',
+				'type'        => 'password',
+				'description' => __( 'Acquire API Secret from Developer Portal', 'fisrv-checkout-for-woocommerce' ),
+				'desc_tip'    => true,
+			),
+			'store_id'    => array(
+				'title'       => 'Store ID',
+				'type'        => 'text',
+				'description' => __( 'Your Store ID for Checkout', 'fisrv-checkout-for-woocommerce' ),
+				'desc_tip'    => true,
+			),
+			'title'       => array(
+				'title'       => 'Gateway Name',
+				'type'        => 'text',
+				'description' => __( 'Custom name of gateway', 'fisrv-checkout-for-woocommerce' ),
+				'default'     => $this->default_title,
+				'desc_tip'    => true,
+			),
+			'description' => array(
+				'title'       => 'Gateway Description',
+				'type'        => 'text',
+				'description' => __( 'Custom description of gateway', 'fisrv-checkout-for-woocommerce' ),
+				'default'     => $this->default_description,
+				'desc_tip'    => true,
+			),
+			'icon'        => array(
+				'title'       => 'Gateway Icon',
+				'type'        => 'text',
+				'description' => __( 'Link of image asset', 'fisrv-checkout-for-woocommerce' ),
+				'default'     => '',
+				'desc_tip'    => true,
+			),
+		);
+	}
 
-        if (!$order instanceof WC_Order) {
-            throw new Exception(__('Processing payment failed. Order is invalid.', 'fisrv-checkout-for-woocommerce'));
-        }
+	/**
+	 * @return array<string, string>
+	 */
+	public function process_payment( $order_id ): array {
+		$order = wc_get_order( $order_id );
 
-        $checkout_link = WC_Fisrv_Checkout_Handler::create_checkout_link($order, $this->selected_method, $this);
+		if ( ! $order instanceof WC_Order ) {
+			throw new Exception( __( 'Processing payment failed. Order is invalid.', 'fisrv-checkout-for-woocommerce' ) );
+		}
 
-        return [
-            'result' => 'success',
-            'redirect' => $checkout_link,
-        ];
-    }
+		$checkout_link = WC_Fisrv_Checkout_Handler::create_checkout_link( $order, $this->selected_method, $this );
+
+		return array(
+			'result'   => 'success',
+			'redirect' => $checkout_link,
+		);
+	}
 }
