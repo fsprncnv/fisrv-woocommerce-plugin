@@ -13,12 +13,13 @@
     "fisrv/php-client": "@stable"
   },
   "require-dev": {
-    "phpunit/phpunit": "*",
-    "automattic/jetpack-autoloader": "^2",
-    "php-stubs/wordpress-stubs": "^6.5",
-    "phpstan/phpstan": "*",
-    "php-stubs/woocommerce-stubs": "*",
-    "friendsofphp/php-cs-fixer": "*"
+    "phpunit/phpunit": "@stable",
+    "automattic/jetpack-autoloader": "@stable",
+    "php-stubs/wordpress-stubs": "@stable",
+    "phpstan/phpstan": "@stable",
+    "php-stubs/woocommerce-stubs": "@stable",
+    "friendsofphp/php-cs-fixer": "@stable",
+    "wp-coding-standards/wpcs": "3.0"
   },
   "config": {
     "allow-plugins": {
@@ -35,15 +36,11 @@
   "archive": {
     "name": "fisrv-checkout-for-woocommerce",
     "exclude": [
-      ".gitlab-ci.yml",
-      ".gitignore",
       "/*.*",
       "/.*",
       "!/*.php",
       "!/readme.txt",
-      ".idea",
-      "tests",
-      "docker"
+      "!/composer.json"
     ]
   },
   "scripts": {

@@ -18,8 +18,8 @@ defined('ABSPATH') || exit;
 
 require_once plugin_dir_path(__FILE__) . '/vendor/autoload.php';
 
-const PLUGIN_SLUG = 'fisrv_checkout_for_woocommerce';
-const VERSION = '0.0.1';
+const FISRV_PLUGIN_VERSION = '0.0.1';
+
 /**
  * WooCommerce fallback notice.
  *
@@ -28,10 +28,10 @@ const VERSION = '0.0.1';
 function fisrv_checkout_for_woocommerce_missing_wc_notice(): void
 {
     /* translators: %s WC download URL link. */
-    echo '<div class="error"><p><strong>' . sprintf(esc_html__('Fisrv Woocommerce Plugin requires WooCommerce to be installed and active. You can download %s here.', 'fisrv_checkout_for_woocommerce'), '<a href="https://woo.com/" target="_blank">WooCommerce</a>') . '</strong></p></div>';
+    echo '<div class="error"><p><strong>' . sprintf(esc_html__('Fisrv Woocommerce Plugin requires WooCommerce to be installed and active. You can download %s here.', 'fisrv-checkout-for-woocommerce'), '<a href="https://woo.com/" target="_blank">WooCommerce</a>') . '</strong></p></div>';
 }
 
-register_activation_hook(__FILE__, PLUGIN_SLUG . '_activate');
+register_activation_hook(__FILE__, 'fisrv_checkout_for_woocommerce_activate');
 
 /**
  * Activation hook.
@@ -41,13 +41,13 @@ register_activation_hook(__FILE__, PLUGIN_SLUG . '_activate');
 function fisrv_checkout_for_woocommerce_activate(): void
 {
     if (!class_exists('WooCommerce')) {
-        add_action('admin_notices', PLUGIN_SLUG . '_missing_wc_notice');
+        add_action('admin_notices', 'fisrv_checkout_for_woocommerce_missing_wc_notice');
 
         return;
     }
 }
 
-if (!class_exists(PLUGIN_SLUG)) {
+if (!class_exists('fisrv_checkout_for_woocommerce')) {
     /**
      * The fisrv_checkout_for_woocommerce class.
      */
@@ -82,7 +82,7 @@ if (!class_exists(PLUGIN_SLUG)) {
          */
         public function __clone()
         {
-            wc_doing_it_wrong(__FUNCTION__, __('Cloning is forbidden.', PLUGIN_SLUG), VERSION);
+            wc_doing_it_wrong(__FUNCTION__, __('Cloning is forbidden.', 'fisrv-checkout-for-woocommerce'), FISRV_PLUGIN_VERSION);
         }
 
         /**
@@ -90,7 +90,7 @@ if (!class_exists(PLUGIN_SLUG)) {
          */
         public function __wakeup()
         {
-            wc_doing_it_wrong(__FUNCTION__, __('Unserializing instances of this class is forbidden.', PLUGIN_SLUG), VERSION);
+            wc_doing_it_wrong(__FUNCTION__, __('Unserializing instances of this class is forbidden.', 'fisrv-checkout-for-woocommerce'), FISRV_PLUGIN_VERSION);
         }
 
         /**
@@ -129,7 +129,7 @@ if (!class_exists(PLUGIN_SLUG)) {
     }
 }
 
-add_action('plugins_loaded',  PLUGIN_SLUG . '_init', 10);
+add_action('plugins_loaded', 'fisrv_checkout_for_woocommerce_init', 10);
 
 /**
  * Initialize the plugin.
@@ -141,7 +141,7 @@ function fisrv_checkout_for_woocommerce_init(): void
     load_plugin_textdomain('fisrv-checkout-for-woocommerce', false, plugin_basename(dirname(__FILE__)) . '/languages');
 
     if (!class_exists('WooCommerce')) {
-        add_action('admin_notices', PLUGIN_SLUG . '_missing_wc_notice');
+        add_action('admin_notices', 'fisrv_checkout_for_woocommerce_missing_wc_notice');
 
         return;
     }

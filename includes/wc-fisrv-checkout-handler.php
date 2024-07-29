@@ -38,8 +38,8 @@ final class WC_Fisrv_Checkout_Handler
         $order_button_text = __('Retry payment', 'fisrv-checkout-for-woocommerce');
         $order->update_status('wc-pending', __('Retrying payment', 'fisrv-checkout-for-woocommerce'));
 
-        $ipg_message = $_GET['message'] ?? __('Internal error', 'fisrv-checkout-for-woocommerce');
-        $ipg_code = $_GET['code'] ?? __('No code provided', 'fisrv-checkout-for-woocommerce');
+        $ipg_message = sanitize_text_field($_GET['message']) ?? __('Internal error', 'fisrv-checkout-for-woocommerce');
+        $ipg_code = sanitize_text_field($_GET['code']) ?? __('No code provided', 'fisrv-checkout-for-woocommerce');
 
         wc_add_notice(sprintf(__('Payment has failed: %s', 'fisrv-checkout-for-woocommerce'), $ipg_message), 'error');
         wc_print_notices();
@@ -61,7 +61,7 @@ final class WC_Fisrv_Checkout_Handler
      */
     private static function verify_nonce(WC_Order $order): void
     {
-        if (!isset($_REQUEST['_wpnonce']) || !wp_verify_nonce($_REQUEST['_wpnonce'], self::$IPG_NONCE)) {
+        if (!wp_verify_nonce(self::$IPG_NONCE)) {
             WC_Fisrv_Logger::error($order, __('Security check: Nonce was invalid when checkout redirected back to failure URL.', 'fisrv-checkout-for-woocommerce'));
             die();
         }
@@ -83,9 +83,7 @@ final class WC_Fisrv_Checkout_Handler
 
         self::verify_nonce($order);
 
-        $is_transaction_approved = $_GET['transaction_approved'];
-
-        if ($is_transaction_approved) {
+        if (sanitize_text_field($_GET['transaction_approved'])) {
             $has_completed = $order->payment_complete();
             if ($has_completed) {
                 $order->update_status('wc-completed', __('Order has completed', 'fisrv-checkout-for-woocommerce'));
@@ -140,7 +138,7 @@ final class WC_Fisrv_Checkout_Handler
 
             $request = self::pass_checkout_data($request, $order, $method);
             $request = self::pass_billing_data($request, $order);
-            $request = self::pass_basket($request, $order);
+            // $request = self::pass_basket($request, $order);
 
             $response = self::$client->createCheckout($request);
 
@@ -236,7 +234,7 @@ final class WC_Fisrv_Checkout_Handler
 
         $req->checkoutSettings->redirectBackUrls->failureUrl = add_query_arg([
             '_wpnonce' => $nonce,
-            'transaction_failed' => true,
+            'transaction_approved' => false,
             'wc_order_id' => $order->get_id(),
         ], $order->get_checkout_payment_url());
 
