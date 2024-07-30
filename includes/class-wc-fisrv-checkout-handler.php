@@ -146,8 +146,9 @@ final class WC_Fisrv_Checkout_Handler {
 			return $checkout_link;
 		} catch ( Throwable $th ) {
 			if ( str_starts_with( $th->getMessage(), '401' ) ) {
+				$method_value = $method->value;
 				/* translators: %s: Method value */
-				throw new Exception( sprintf( esc_html__( 'Payment method %s failed. Please check on settings page if API credentials are set correctly.', 'fisrv-checkout-for-woocommerce' ), esc_html__( $method->value ) ) );
+				throw new Exception( sprintf( esc_html__( 'Payment method %s failed. Please check on settings page if API credentials are set correctly.', 'fisrv-checkout-for-woocommerce' ), $method_value ) );
 			}
 
 			throw $th;
@@ -158,7 +159,7 @@ final class WC_Fisrv_Checkout_Handler {
 	 * Pass line items from WC to checkout
 	 *
 	 * @param CheckoutClientRequest $req    Request object to modify
-	 * @param WC_Order              $order               WooCommerce order object
+	 * @param WC_Order              $order	WooCommerce order object
 	 * @return CheckoutClientRequest        Modified request object
 	 */
 	private static function pass_basket( CheckoutClientRequest $req, WC_Order $order ): CheckoutClientRequest {
