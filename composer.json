@@ -36,11 +36,15 @@
   "archive": {
     "name": "fisrv-checkout-for-woocommerce",
     "exclude": [
+      ".gitlab-ci.yml",
+      ".gitignore",
       "/*.*",
       "/.*",
       "!/*.php",
       "!/readme.txt",
-      "!/composer.json"
+      ".idea",
+      "tests",
+      "docker"
     ]
   },
   "scripts": {
