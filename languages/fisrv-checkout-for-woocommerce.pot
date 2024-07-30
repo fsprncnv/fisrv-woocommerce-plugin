@@ -2,7 +2,7 @@
 # This file is distributed under the GNU General Public License v3.0.
 msgid ""
 msgstr ""
-"Project-Id-Version: Fisrv Checkout for Woocommerce 0.0.1\n"
+"Project-Id-Version: Fisrv Checkout for WooCommerce 0.0.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/fisrv-checkout-for-woocommerce\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,12 +16,12 @@ msgstr ""
 
 #. Plugin Name of the plugin
 #: C:\Users\princen.vijayakumar\Local Sites\fiserv-wp-dev\app\public\wp-content\plugins\fisrv-checkout-for-woocommerce\fisrv-checkout-for-woocommerce.php
-msgid "Fisrv Checkout for Woocommerce"
+msgid "Fisrv Checkout for WooCommerce"
 msgstr ""
 
 #. Description of the plugin
 #: C:\Users\princen.vijayakumar\Local Sites\fiserv-wp-dev\app\public\wp-content\plugins\fisrv-checkout-for-woocommerce\fisrv-checkout-for-woocommerce.php
-msgid "Official Fisrv Checkout Woocommerce plugin"
+msgid "Official Fisrv Checkout WooCommerce plugin"
 msgstr ""
 
 #: includes\wc-fisrv-gateway-googlepay.php

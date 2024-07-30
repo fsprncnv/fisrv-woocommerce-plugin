@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Plugin Name: Fisrv Checkout for Woocommerce
+ * Plugin Name: Fisrv Checkout for WooCommerce
  * Version: 0.0.1
- * Description: Official Fisrv Checkout Woocommerce plugin
+ * Description: Official Fisrv Checkout WooCommerce plugin
  * Author: Fisrv
  * Author URI: https://developer.fiserv.com/
  * License: GNU General Public License v3.0
@@ -28,7 +28,7 @@ const FISRV_PLUGIN_VERSION = '0.0.1';
 function fisrv_checkout_for_woocommerce_missing_wc_notice(): void
 {
     /* translators: %s WC download URL link. */
-    echo '<div class="error"><p><strong>' . sprintf(esc_html__('Fisrv Woocommerce Plugin requires WooCommerce to be installed and active. You can download %s here.', 'fisrv-checkout-for-woocommerce'), '<a href="https://woo.com/" target="_blank">WooCommerce</a>') . '</strong></p></div>';
+    echo '<div class="error"><p><strong>' . sprintf(esc_html__('Fisrv WooCommerce Plugin requires WooCommerce to be installed and active. You can download %s here.', 'fisrv-checkout-for-woocommerce'), '<a href="https://woo.com/" target="_blank">WooCommerce</a>') . '</strong></p></div>';
 }
 
 register_activation_hook(__FILE__, 'fisrv_checkout_for_woocommerce_activate');

@@ -1,8 +1,8 @@
 {
-  "name": "extension/fisrv-woocommerce-plugin",
-  "description": "WooCommerce plugin integration with Fisrv",
+  "name": "extension/fisrv-checkout-for-woocommerce",
+  "description": "Fisrv payment plugin for WooCommerce",
   "version": "0.0.2",
-  "minimum-stability": "stable",
+  "minimum-stability": "dev",
   "license": "GNU General Public License v3.0",
   "autoload": {
     "classmap": [
@@ -10,7 +10,7 @@
     ]
   },
   "require": {
-    "fisrv/php-client": "@stable"
+    "fisrv/php-client": "dev-main"
   },
   "require-dev": {
     "phpunit/phpunit": "@stable",
