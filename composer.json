@@ -13,12 +13,10 @@
     "fisrv/php-client": "dev-main"
   },
   "require-dev": {
-    "phpunit/phpunit": "@stable",
     "automattic/jetpack-autoloader": "@stable",
     "php-stubs/wordpress-stubs": "@stable",
     "phpstan/phpstan": "@stable",
     "php-stubs/woocommerce-stubs": "@stable",
-    "friendsofphp/php-cs-fixer": "@stable",
     "wp-coding-standards/wpcs": "3.0"
   },
   "config": {
@@ -52,9 +50,7 @@
       "@composer --no-plugins --no-interaction install --no-scripts --no-dev",
       "@composer --no-plugins --no-interaction archive --format=zip"
     ],
-    "format": [
-      "vendor/bin/php-cs-fixer fix --dry-run --diff"
-    ]
+    "format": []
   },
   "scripts-descriptions": {
     "build": "Build project artifact."

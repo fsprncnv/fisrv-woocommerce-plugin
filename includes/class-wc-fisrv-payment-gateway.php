@@ -12,7 +12,6 @@ use Fisrv\Models\PreSelectedPaymentMethod;
  */
 abstract class WC_Fisrv_Payment_Gateway extends WC_Payment_Gateway {
 
-
 	protected PreSelectedPaymentMethod $selected_method;
 
 	protected string $default_title = '';

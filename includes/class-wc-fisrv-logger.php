@@ -16,7 +16,7 @@ final class WC_Fisrv_Logger {
 	/**
 	 * Log some message to WC admin page as info log
 	 *
-	 * @param string $message Message to log
+	 * @param string   $message Message to log
 	 * @param WC_Order $order Order that failed
 	 */
 	public static function log( WC_Order $order, string $message ): void {
@@ -27,7 +27,7 @@ final class WC_Fisrv_Logger {
 	/**
 	 * Log some message to WC admin page as error log
 	 *
-	 * @param string $message Message to log
+	 * @param string   $message Message to log
 	 * @param WC_Order $order Order that failed
 	 */
 	public static function error( WC_Order $order, string $message ): void {

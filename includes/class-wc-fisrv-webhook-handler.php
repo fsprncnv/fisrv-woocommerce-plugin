@@ -14,7 +14,6 @@ use Fisrv\Models\WebhookEvent\WebhookEvent;
  */
 final class WC_Fisrv_Webhook_Handler {
 
-
 	public static string $webhook_endpoint = '/fisrv_woocommerce_plugin/v1';
 
 	/**
@@ -69,7 +68,7 @@ final class WC_Fisrv_Webhook_Handler {
 	 * Store event log data into WordPress table as order
 	 * meta data.
 	 *
-	 * @param string $order_id Identifier of corresponding order
+	 * @param string       $order_id Identifier of corresponding order
 	 * @param WebhookEvent $event Webhook event sent from checkout solution
 	 * @throws Exception Order not found
 	 */

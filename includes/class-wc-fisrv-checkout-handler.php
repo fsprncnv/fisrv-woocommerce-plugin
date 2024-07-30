@@ -18,7 +18,6 @@ use Fisrv\Models\PreSelectedPaymentMethod;
  */
 final class WC_Fisrv_Checkout_Handler {
 
-
 	const FISRV_NONCE = 'fisrv-nonce';
 
 	private static CheckoutClient $client;
@@ -26,20 +25,26 @@ final class WC_Fisrv_Checkout_Handler {
 	/**
 	 * Triggered right before the Pay for Order form, after validation of the order and customer.
 	 *
-	 * @param WC_Order $order              The order that is being paid for.
-	 * @param string   $order_button_text  The text for the submit button.
-	 * @param array<WC_Payment_Gateway>    $available_gateways All available gateways.
+	 * @param WC_Order                  $order              The order that is being paid for.
+	 * @param string                    $order_button_text  The text for the submit button.
+	 * @param array<WC_Payment_Gateway> $available_gateways All available gateways.
 	 *
-	 * @return array<string, mixed>    Passed (and modified) function params
+	 * @return array<string, mixed> | false   Passed (and modified) function params
 	 */
-	public static function retry_payment( WC_Order $order, string $order_button_text, array $available_gateways ): array {
-		self::verify_nonce( $order );
+	public static function retry_payment( WC_Order $order, string $order_button_text, array $available_gateways ): array|false {
 
 		$order_button_text = esc_html__( 'Retry payment', 'fisrv-checkout-for-woocommerce' );
 		$order->update_status( 'wc-pending', esc_html__( 'Retrying payment', 'fisrv-checkout-for-woocommerce' ) );
 
-		$fisrv_error_message = sanitize_text_field( wp_unslash( $_GET['message'] ) ) ?? esc_html__( 'Internal error', 'fisrv-checkout-for-woocommerce' );
-		$fisrv_error_code    = sanitize_text_field( wp_unslash( $_GET['code'] ) ) ?? esc_html__( 'No code provided', 'fisrv-checkout-for-woocommerce' );
+		if ( check_admin_referer( self::FISRV_NONCE ) ) {
+			$fisrv_error_message = sanitize_text_field( wp_unslash( $_GET['message'] ) );
+			$fisrv_error_code    = sanitize_text_field( wp_unslash( $_GET['code'] ) );
+		} else {
+			return false;
+		}
+
+		$fisrv_error_message = '' === $fisrv_error_message ? esc_html__( 'Internal error', 'fisrv-checkout-for-woocommerce' ) : $fisrv_error_message;
+		$fisrv_error_code    = '' === $fisrv_error_code ? esc_html__( 'No code provided', 'fisrv-checkout-for-woocommerce' ) : $fisrv_error_code;
 
 		/* translators: %s: Fisrv error message */
 		wc_add_notice( sprintf( esc_html__( 'Payment has failed: %s', 'fisrv-checkout-for-woocommerce' ), $fisrv_error_message ), 'error' );
@@ -55,20 +60,6 @@ final class WC_Fisrv_Checkout_Handler {
 	}
 
 	/**
-	 * Verify that origin of incoming requests (such as passed query parameters)
-	 * are from trusted source (from plugin itself). This is done by checking WP nonces which is set
-	 * before checkout creation.
-	 *
-	 * @param WC_Order $order WC order object
-	 */
-	private static function verify_nonce( WC_Order $order ): void {
-		if ( ! isset( $_REQUEST['_wpnonce'] ) || ! wp_verify_nonce( $_REQUEST['_wpnonce'], self::FISRV_NONCE ) ) {
-			WC_Fisrv_Logger::error( $order, __( 'Security check: Nonce was invalid when checkout redirected back to failure URL.', 'fisrv-checkout-for-woocommerce' ) );
-			die();
-		}
-	}
-
-	/**
 	 * This is called when order is complete on thank you page.
 	 * Set order status and payment to completed
 	 *
@@ -81,13 +72,13 @@ final class WC_Fisrv_Checkout_Handler {
 			return;
 		}
 
-		self::verify_nonce( $order );
-
-		if ( sanitize_text_field( $_GET['transaction_approved'] ) ) {
-			$has_completed = $order->payment_complete();
-			if ( $has_completed ) {
-				$order->update_status( 'wc-completed', __( 'Order has completed', 'fisrv-checkout-for-woocommerce' ) );
-				WC_Fisrv_Logger::log( $order, __( 'Order completed with card payment.', 'fisrv-checkout-for-woocommerce' ) );
+		if ( check_admin_referer( self::FISRV_NONCE ) ) {
+			if ( sanitize_text_field( $_GET['transaction_approved'] ) ) {
+				$has_completed = $order->payment_complete();
+				if ( $has_completed ) {
+					$order->update_status( 'wc-completed', __( 'Order has completed', 'fisrv-checkout-for-woocommerce' ) );
+					WC_Fisrv_Logger::log( $order, __( 'Order completed with card payment.', 'fisrv-checkout-for-woocommerce' ) );
+				}
 			}
 		}
 	}
@@ -117,7 +108,7 @@ final class WC_Fisrv_Checkout_Handler {
 	/**
 	 * Create a checkout link
 	 *
-	 * @param WC_Order $order WC order
+	 * @param WC_Order                 $order WC order
 	 * @param PreSelectedPaymentMethod $method Selected payment method
 	 *
 	 * @return string URL of hosted payment page
@@ -127,13 +118,12 @@ final class WC_Fisrv_Checkout_Handler {
 	 */
 	public static function create_checkout_link( WC_Order $order, PreSelectedPaymentMethod $method, WC_Fisrv_Payment_Gateway $gateway ): string {
 		try {
-			WC_Fisrv_Checkout_Handler::init_fisrv_sdk(
+			self::init_fisrv_sdk(
 				$gateway->get_option( 'api_key' ),
 				$gateway->get_option( 'api_secret' ),
 				$gateway->get_option( 'store_id' ),
 			);
 
-			/** @todo This is weird */
 			$request = self::$client->createBasicCheckoutRequest( 0, '', '' );
 
 			$request = self::pass_checkout_data( $request, $order, $method );
@@ -157,7 +147,7 @@ final class WC_Fisrv_Checkout_Handler {
 		} catch ( Throwable $th ) {
 			if ( str_starts_with( $th->getMessage(), '401' ) ) {
 				/* translators: %s: Method value */
-				throw new Exception( sprintf( esc_html__( 'Payment method %s failed. Please check on settings page if API credentials are set correctly.', 'fisrv-checkout-for-woocommerce' ), $method->value ) );
+				throw new Exception( sprintf( esc_html__( 'Payment method %s failed. Please check on settings page if API credentials are set correctly.', 'fisrv-checkout-for-woocommerce' ), esc_html__( $method->value ) ) );
 			}
 
 			throw $th;
@@ -168,7 +158,7 @@ final class WC_Fisrv_Checkout_Handler {
 	 * Pass line items from WC to checkout
 	 *
 	 * @param CheckoutClientRequest $req    Request object to modify
-	 * @param WC_Order $order               WooCommerce order object
+	 * @param WC_Order              $order               WooCommerce order object
 	 * @return CheckoutClientRequest        Modified request object
 	 */
 	private static function pass_basket( CheckoutClientRequest $req, WC_Order $order ): CheckoutClientRequest {
@@ -198,7 +188,7 @@ final class WC_Fisrv_Checkout_Handler {
 	 * Pass checkout data (totals, redirects, language etc.) to request object of checkout
 	 *
 	 * @param CheckoutClientRequest $req    Request object to modify
-	 * @param WC_Order $order               WooCommerce order object
+	 * @param WC_Order              $order               WooCommerce order object
 	 * @return CheckoutClientRequest        Modified request object
 	 */
 	private static function pass_checkout_data( CheckoutClientRequest $req, WC_Order $order, PreSelectedPaymentMethod $method ): CheckoutClientRequest {
@@ -265,7 +255,7 @@ final class WC_Fisrv_Checkout_Handler {
 	 * Pass billing data from WC billing form to request object of checkout
 	 *
 	 * @param CheckoutClientRequest $req    Request object to modify
-	 * @param WC_Order $order               WooCommerce order object
+	 * @param WC_Order              $order               WooCommerce order object
 	 * @return CheckoutClientRequest        Modified request object
 	 */
 	private static function pass_billing_data( CheckoutClientRequest $req, WC_Order $order ): CheckoutClientRequest {
