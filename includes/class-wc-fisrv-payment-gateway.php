@@ -99,12 +99,18 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Payment_Gateway {
 		if ( ! $order instanceof WC_Order ) {
 			throw new Exception( esc_html__( 'Processing payment failed. Order is invalid.', 'fisrv-checkout-for-woocommerce' ) );
 		}
+		
+		try {
+			$checkout_link = WC_Fisrv_Checkout_Handler::create_checkout_link( $order, $this->selected_method, $this );
+			return array(
+				'result'   => 'success',
+				'redirect' => $checkout_link,
+			);
+		} catch (\Throwable $th) {
+			return array(
+				'result'   => 'failure',
+			);
+		}
 
-		$checkout_link = WC_Fisrv_Checkout_Handler::create_checkout_link( $order, $this->selected_method, $this );
-
-		return array(
-			'result'   => 'success',
-			'redirect' => $checkout_link,
-		);
 	}
 }
