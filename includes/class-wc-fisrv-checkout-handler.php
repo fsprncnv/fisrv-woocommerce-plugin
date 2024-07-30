@@ -116,7 +116,7 @@ final class WC_Fisrv_Checkout_Handler {
 	 * @throws Exception Error thrown from fisrv SDK (Request Errors). Error is caught by setting
 	 * returned checkout link to '#' (no redirect)
 	 */
-	public static function create_checkout_link( WC_Order $order, PreSelectedPaymentMethod $method, WC_Fisrv_Payment_Gateway $gateway ): string {
+	public static function create_checkout_link( WC_Order $order, PreSelectedPaymentMethod $method, WC_Fisrv_Payment_Gateway $gateway ): string | WP_Error {
 		try {
 			self::init_fisrv_sdk(
 				$gateway->get_option( 'api_key' ),
@@ -146,9 +146,8 @@ final class WC_Fisrv_Checkout_Handler {
 			return $checkout_link;
 		} catch ( Throwable $th ) {
 			if ( str_starts_with( $th->getMessage(), '401' ) ) {
-				$method_value = $method->value;
 				/* translators: %s: Method value */
-				throw new Exception( sprintf( esc_html__( 'Payment method %s failed. Please check on settings page if API credentials are set correctly.', 'fisrv-checkout-for-woocommerce' ), $method_value ) );
+				return new WP_Error( 'Payment Error', sprintf( esc_html__( 'Payment method %s failed. Please check on settings page if API credentials are set correctly.', 'fisrv-checkout-for-woocommerce' ), $method->value ) );
 			}
 
 			throw $th;
