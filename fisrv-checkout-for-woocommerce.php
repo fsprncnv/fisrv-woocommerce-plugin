@@ -2,7 +2,7 @@
 
 /**
  * Plugin Name: Fisrv Checkout for WooCommerce
- * Version: 0.0.1
+ * Version: 0.0.2
  * Description: Official Fisrv Checkout WooCommerce plugin
  * Author: Fisrv
  * Author URI: https://developer.fiserv.com/
@@ -18,7 +18,7 @@ defined('ABSPATH') || exit;
 
 require_once plugin_dir_path(__FILE__) . '/vendor/autoload.php';
 
-const FISRV_PLUGIN_VERSION = '0.0.1';
+const FISRV_PLUGIN_VERSION = '0.0.2';
 
 /**
  * WooCommerce fallback notice.
