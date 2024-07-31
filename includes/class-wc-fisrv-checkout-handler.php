@@ -164,19 +164,17 @@ final class WC_Fisrv_Checkout_Handler {
 	private static function pass_basket( CheckoutClientRequest $req, WC_Order $order ): CheckoutClientRequest {
 		$wc_items = $order->get_items();
 
-		foreach ( $wc_items as $item ) {
-			$item_data = $item->get_data();
-
+		foreach ( $wc_items as $item) {
 			$req->order->basket->lineItems[] = new LineItem(
 				array(
 					'itemIdentifier'   => $item->get_id(),
 					'name'             => $item->get_name(),
-					'price'            => $item_data['total'],
+					'price'            => $order->get_item_total($item),
+					'total'            => $order->get_line_total($item),
 					'quantity'         => $item->get_quantity(),
 					'shippingCost'     => 0,
 					'valueAddedTax'    => 0,
 					'miscellaneousFee' => 0,
-					'total'            => $item_data['total'],
 				)
 			);
 		}
