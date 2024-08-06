@@ -1,4 +1,4 @@
-=== Fisrv Checkout for WooCommerce === 
+=== Fiserv Checkout for WooCommerce === 
 Tags: WooCommerce, payment 
 Requires at least: 5.4
 Tested up to: 6.6
@@ -7,17 +7,17 @@ License URI: http://www.gnu.org/licenses/gpl-3.0.html
 Stable tag: 1.0.0
 Requires PHP: 8.1
 
-This is the official Fisrv plugin for WooCommerce powered by our Checkout solution.
+This is the official Fiserv plugin for WooCommerce powered by our Checkout solution.
 
 == Description ==
 
-Fisrv WooCommerce plugin has been developed in combination with our Checkout solution. It will allow you quickly and easily start accepting payments (e.g.: credit cards, Google Pay,Apple Pay & more) from your WordPress checkout’s webshop.
+Fiserv WooCommerce plugin has been developed in combination with our Checkout solution. It will allow you quickly and easily start accepting payments (e.g.: credit cards, Google Pay,Apple Pay & more) from your WordPress checkout’s webshop.
 
 ## What does this plugin do
 
 ### Features:
 
-- Accept payments via the Fisrv Checkout solution
+- Accept payments via the Fiserv Checkout solution
 - Wide range of payment methods e.g.: credit cards, Google Pay, Apple Pay & more
 - Allow a payment selection to be performed directly in your checkout’s webshop
 - Customize the style of the payment selection field in your webshop’s checkout.
@@ -33,7 +33,7 @@ Fisrv WooCommerce plugin has been developed in combination with our Checkout sol
 == Installation ==
 
 ## Quick installation 
-Search for 'Fisrv Checkout' in the Plugin Directory and add plugin. Make sure to deactivate Block layout
+Search for 'Fiserv Checkout' in the Plugin Directory and add plugin. Make sure to deactivate Block layout
 
 ## Manual installation 
 By uploading ZIP file from WordPress administration environment
@@ -57,7 +57,7 @@ To revert to the classic WooCommerce checkout and disable WooCommerce Blocks, fo
 1. Log in to your WooCommerce dashboard as an admin. 
 2. Navigate to Settings page of WooCommerce
 3. Go to the 'Payments' panel
-4. Under our Payment Methods (Fisrv), go to 'Manage'
+4. Under our Payment Methods (Fiserv), go to 'Manage'
 5. Apply your API key and secret in the settings fields respectively. To get API Credentials, follow the link below
 
 ## Get API Credentials
@@ -70,7 +70,7 @@ Compatibility: WordPress 5.6 or higher
 
 = I can't install the plugin = Make sure to check compatibility of PHP, WordPress and WooCommerce. Also, ensure to disable Block layout.
 
-* Contact Fisrv Support
+* Contact Fiserv Support
 
 Visit the FAQ:
 
