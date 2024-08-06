@@ -141,7 +141,7 @@ final class WC_Fisrv_Checkout_Handler {
 			$order->update_meta_data( '_fisrv_plugin_trace_id', $response->traceId );
 			$order->save_meta_data();
 			/* translators: %1$s: Checkout link %2$s: Checkout ID %3$s: Checkout trace ID */
-			$order->add_order_note( sprintf( esc_html__( 'Fisrv checkout link %1$s created with checkout ID %2$s and trace ID %3$s.', 'fisrv-checkout-for-woocommerce' ), $checkout_link, $checkout_id, $trace_id ) );
+			$order->add_order_note( sprintf( esc_html__( 'Fiserv checkout link %1$s created with checkout ID %2$s and trace ID %3$s.', 'fisrv-checkout-for-woocommerce' ), $checkout_link, $checkout_id, $trace_id ) );
 
 			return $checkout_link;
 		} catch ( Throwable $th ) {

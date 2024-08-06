@@ -2,11 +2,11 @@
 # This file is distributed under the GNU General Public License v3.0.
 msgid ""
 msgstr ""
-"Project-Id-Version: Fisrv Checkout for WooCommerce 0.0.2\n"
+"Project-Id-Version: Fiserv Checkout for WooCommerce 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/fisrv-checkout-"
 "for-woocommerce\n"
 "POT-Creation-Date: 2024-06-26T08:43:20+00:00\n"
-"PO-Revision-Date: 2024-06-26 14:20+0200\n"
+"PO-Revision-Date: 2024-08-06 14:59+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de_DE\n"
@@ -19,24 +19,24 @@ msgstr ""
 #. Plugin Name of the plugin
 #: C:\Users\princen.vijayakumar\Local
 #: Sites\fiserv-wp-dev\app\public\wp-content\plugins\fisrv-checkout-for-woocommerce\fisrv-checkout-for-woocommerce.php
-msgid "Fisrv Checkout for WooCommerce"
-msgstr "Fisrv Checkout for WooCommerce"
+msgid "Fiserv Checkout for WooCommerce"
+msgstr "Fiserv Checkout for WooCommerce"
 
 #. Description of the plugin
 #: C:\Users\princen.vijayakumar\Local
 #: Sites\fiserv-wp-dev\app\public\wp-content\plugins\fisrv-checkout-for-woocommerce\fisrv-checkout-for-woocommerce.php
-msgid "Official Fisrv Checkout WooCommerce plugin"
-msgstr "Offizielles Fisrv Checkout WooCommerce Plugin"
+msgid "Official Fiserv Checkout WooCommerce plugin"
+msgstr "Offizielles Fiserv Checkout WooCommerce Plugin"
 
 #: includes\wc-fisrv-gateway-googlepay.php
-msgid "Pay with Google Pay via Fisrv"
-msgstr "Bezahlen mit Google Pay über Fisrv"
+msgid "Pay with Google Pay via Fiserv"
+msgstr "Bezahlen mit Google Pay über Fiserv"
 
-msgid "Pay with credit card via Fisrv"
-msgstr "Bezahlen mit Kreditkarte über Fisrv"
+msgid "Pay with credit card via Fiserv"
+msgstr "Bezahlen mit Kreditkarte über Fiserv"
 
-msgid "Pay with Apple Pay via Fisrv"
-msgstr "Bezahlen mit Apple Pay über Fisrv"
+msgid "Pay with Apple Pay via Fiserv"
+msgstr "Bezahlen mit Apple Pay über Fiserv"
 
 #: includes\wc-fisrv-payment-gateway.php
 msgid "Enable Payment Gateway"
@@ -65,7 +65,7 @@ msgstr "Zahlung ist fehlgeschlagen. Bestellung ist ungültig."
 
 #: includes\wc-fisrv-webhook-handler.php
 msgid "Query parameter (order ID) is malformed"
-msgstr "Query-Parameter (Order-ID) "
+msgstr "Query-Parameter (Order-ID)"
 
 msgid "Order with ID %s has not been found."
 msgstr "Order mit ID %s wurde nicht gefunden."
@@ -83,8 +83,8 @@ msgstr "Auftrag %1$s auf Status %2$s geändert"
 msgid "Transaction status changed"
 msgstr "Transaktionsstatus geändert"
 
-msgid "Fisrv checkout has updated order to %s"
-msgstr "Fisrv checkout hat die Bestellung auf %s aktualisiert"
+msgid "Fiserv checkout has updated order to %s"
+msgstr "Fiserv checkout hat die Bestellung auf %s aktualisiert"
 
 #: includes\wc-fisrv-checkout-handler.php
 msgid ""
@@ -106,9 +106,9 @@ msgid "Order completed with card payment."
 msgstr "Bestellung mit Kartenzahlung abgeschlossen."
 
 msgid ""
-"Fisrv checkout link %1$s created with checkout ID %2$s and trace ID %3&s."
+"Fiserv checkout link %1$s created with checkout ID %2$s and trace ID %3&s."
 msgstr ""
-"Fisrv-Checkout-Link %1$s erstellt mit Checkout-ID %2$s und Trace-ID %3&s."
+"Fiserv-Checkout-Link %1$s erstellt mit Checkout-ID %2$s und Trace-ID %3&s."
 
 msgid ""
 "Payment method %s failed. Please check on settings page if API credentials "

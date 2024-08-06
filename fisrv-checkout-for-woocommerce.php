@@ -1,10 +1,10 @@
 <?php
 
 /**
- * Plugin Name: Fisrv Checkout for WooCommerce
- * Version: 0.0.2
- * Description: Official Fisrv Checkout WooCommerce plugin
- * Author: Fisrv
+ * Plugin Name: Fiserv Checkout for WooCommerce
+ * Version: 1.0.0
+ * Description: Official Fiserv Checkout WooCommerce plugin
+ * Author: Fiserv
  * Author URI: https://developer.fiserv.com/
  * License: GNU General Public License v3.0
  * License URI: http://www.gnu.org/licenses/gpl-3.0.html
@@ -18,7 +18,7 @@ defined('ABSPATH') || exit;
 
 require_once plugin_dir_path(__FILE__) . '/vendor/autoload.php';
 
-const FISRV_PLUGIN_VERSION = '0.0.2';
+const FISRV_PLUGIN_VERSION = '1.0.0';
 
 /**
  * WooCommerce fallback notice.
@@ -28,7 +28,7 @@ const FISRV_PLUGIN_VERSION = '0.0.2';
 function fisrv_checkout_for_woocommerce_missing_wc_notice(): void
 {
     /* translators: %s WC download URL link. */
-    echo '<div class="error"><p><strong>' . sprintf(esc_html__('Fisrv WooCommerce Plugin requires WooCommerce to be installed and active. You can download %s here.', 'fisrv-checkout-for-woocommerce'), '<a href="https://woo.com/" target="_blank">WooCommerce</a>') . '</strong></p></div>';
+    echo '<div class="error"><p><strong>' . sprintf(esc_html__('Fiserv WooCommerce Plugin requires WooCommerce to be installed and active. You can download %s here.', 'fisrv-checkout-for-woocommerce'), '<a href="https://woo.com/" target="_blank">WooCommerce</a>') . '</strong></p></div>';
 }
 
 register_activation_hook(__FILE__, 'fisrv_checkout_for_woocommerce_activate');

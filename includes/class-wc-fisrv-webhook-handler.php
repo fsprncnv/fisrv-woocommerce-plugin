@@ -140,7 +140,7 @@ final class WC_Fisrv_Webhook_Handler {
 
 		$order->update_status( $wc_status, __( 'Transaction status changed', 'fisrv-checkout-for-woocommerce' ) );
 		/* translators: %s: Staus without prefix */
-		$order->add_order_note( sprintf( __( 'Fisrv checkout has updated order to %s', 'fisrv-checkout-for-woocommerce' ), $wc_status_unprefixed ) );
+		$order->add_order_note( sprintf( __( 'Fiserv checkout has updated order to %s', 'fisrv-checkout-for-woocommerce' ), $wc_status_unprefixed ) );
 		/* translators: %1$s: Order ID %2$s: Order status */
 		WC_Fisrv_Logger::log( $order, sprintf( __( 'Order %1$s changed to status %2$s', 'fisrv-checkout-for-woocommerce' ), $order->get_id(), $order->get_status() ) );
 

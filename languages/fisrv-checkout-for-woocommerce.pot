@@ -2,7 +2,7 @@
 # This file is distributed under the GNU General Public License v3.0.
 msgid ""
 msgstr ""
-"Project-Id-Version: Fisrv Checkout for WooCommerce 0.0.2\n"
+"Project-Id-Version: Fiserv Checkout for WooCommerce 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/fisrv-checkout-for-woocommerce\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,24 +16,24 @@ msgstr ""
 
 #. Plugin Name of the plugin
 #: C:\Users\princen.vijayakumar\Local Sites\fiserv-wp-dev\app\public\wp-content\plugins\fisrv-checkout-for-woocommerce\fisrv-checkout-for-woocommerce.php
-msgid "Fisrv Checkout for WooCommerce"
+msgid "Fiserv Checkout for WooCommerce"
 msgstr ""
 
 #. Description of the plugin
 #: C:\Users\princen.vijayakumar\Local Sites\fiserv-wp-dev\app\public\wp-content\plugins\fisrv-checkout-for-woocommerce\fisrv-checkout-for-woocommerce.php
-msgid "Official Fisrv Checkout WooCommerce plugin"
+msgid "Official Fiserv Checkout WooCommerce plugin"
 msgstr ""
 
 #: includes\wc-fisrv-gateway-googlepay.php
-msgid "Pay with Google Pay via Fisrv"
+msgid "Pay with Google Pay via Fiserv"
 msgstr ""
 
 #: 
-msgid "Pay with credit card via Fisrv"
+msgid "Pay with credit card via Fiserv"
 msgstr ""
 
 #: 
-msgid "Pay with Apple Pay via Fisrv"
+msgid "Pay with Apple Pay via Fiserv"
 msgstr ""
 
 
@@ -93,7 +93,7 @@ msgid "Transaction status changed"
 msgstr ""
 
 #: 
-msgid "Fisrv checkout has updated order to %s"
+msgid "Fiserv checkout has updated order to %s"
 msgstr ""
 
 
@@ -115,7 +115,7 @@ msgid "Order completed with card payment."
 msgstr ""
 
 #: 
-msgid "Fisrv checkout link %1$s created with checkout ID %2$s and trace ID %3&s."
+msgid "Fiserv checkout link %1$s created with checkout ID %2$s and trace ID %3&s."
 msgstr ""
 
 #: 
