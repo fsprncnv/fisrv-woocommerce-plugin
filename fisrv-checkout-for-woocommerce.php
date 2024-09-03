@@ -120,8 +120,9 @@ if (!class_exists('fisrv_checkout_for_woocommerce')) {
             array_push(
                 $methods,
                 WC_Fisrv_Gateway_Applepay::class,
+                WC_Fisrv_Gateway_Googlepay::class,
                 WC_Fisrv_Gateway_Cards::class,
-                WC_Fisrv_Gateway_Googlepay::class
+                WC_Fisrv_Payment_Generic::class
             );
 
             return $methods;
