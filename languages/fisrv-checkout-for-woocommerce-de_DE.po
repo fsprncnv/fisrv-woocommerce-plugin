@@ -122,3 +122,7 @@ msgstr "Auftrag ist abgeschlossen"
 
 msgid "Retrying payment"
 msgstr "Erneuter Versuch der Zahlung"
+
+#:
+msgid "Select specific method on payment page"
+msgstr "Wählen Sie eine Zahlmethode bei Zahlung aus"
