@@ -10,7 +10,7 @@
     ]
   },
   "require": {
-    "fisrv/php-client": "@stable"
+    "fisrv/php-client": "dev-main"
   },
   "require-dev": {
     "automattic/jetpack-autoloader": "@stable",
