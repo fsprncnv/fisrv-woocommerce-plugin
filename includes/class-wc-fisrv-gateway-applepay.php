@@ -14,6 +14,7 @@ class WC_Fisrv_Gateway_Applepay extends WC_Fisrv_Payment_Gateway
 		$this->method_description = __('Pay with Apple Pay via Fiserv', 'fisrv-checkout-for-woocommerce');
 
 		$this->default_title = 'Apple Pay';
+		$this->supported_methods = ['applepay'];
 
 		parent::__construct();
 	}

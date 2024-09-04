@@ -14,6 +14,7 @@ class WC_Fisrv_Gateway_Cards extends WC_Fisrv_Payment_Gateway
 		$this->method_description = __('Pay with credit card via Fiserv', 'fisrv-checkout-for-woocommerce');
 
 		$this->default_title = 'Credit card';
+		$this->supported_methods = ['visa', 'mastercard', 'amex'];
 
 		parent::__construct();
 	}

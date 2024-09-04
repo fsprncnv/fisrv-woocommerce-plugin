@@ -19,6 +19,8 @@ class WC_Fisrv_Payment_Gateway extends WC_Payment_Gateway
 
 	protected string $default_description = '';
 
+	protected array $supported_methods = [];
+
 	public function __construct()
 	{
 		$this->has_fields = false;
@@ -28,14 +30,53 @@ class WC_Fisrv_Payment_Gateway extends WC_Payment_Gateway
 
 		add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
 		add_filter('woocommerce_gateway_icon', [$this, 'custom_payment_gateway_icons'], 10, 2);
+		add_filter("woocommerce_generate_custom_icon_html", [$this, 'custom_icon_field'], 1, 4);
+		add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, [$this, 'custom_save_icon_value'], 10, 1);
+		add_filter('woocommerce_locate_template', [$this, 'custom_woocommerce_locate_template'], 10, 3);
+	}
+
+	public function custom_save_icon_value($settings)
+	{
+		return $settings;
+	}
+
+	/**
+	 * 
+	 * @param string $field_html The markup of the field being generated (initiated as an empty string).
+	 * @param string $key The key of the field.
+	 * @param array  $data The attributes of the field as an associative array.
+	 * @param WC_Settings_API $wc_settings The current WC_Settings_API object.
+	 */
+	public function custom_icon_field(string $field_html, string $key, array $data, WC_Settings_API $wc_settings)
+	{
+		$html_identifier = "woocommerce_{$wc_settings->id}_{$key}";
+		// $variable_icon = esc_attr($wc_settings->get_option('icon', $this->get_default_icon()));
+		$variable_icon = "uh";
+
+		$field_html = '<tr valign="top">
+			<th scope="row" class="titledesc">
+				<label for="' . $html_identifier . '">Gateway Icon <span class="woocommerce-help-tip" tabindex="0" aria-label="Custom name of gateway"></span></label>
+			</th>
+			<td class="forminp">
+				<fieldset>
+					<legend class="screen-reader-text"><span>Gateway Name</span></legend>
+					<input class="input-text regular-input " type="text" 
+					name="' . $html_identifier . '" id="' . $html_identifier . '" style="" value="' . $variable_icon . '" placeholder="">
+				</fieldset>
+			</td>
+		</tr>';
+
+		return $field_html;
 	}
 
 	public function is_available(): bool
 	{
+		$generic_gateway = WC()->payment_gateways()->payment_gateways()['fisrv-gateway-generic'];
+
 		return !in_array('', [
-			$this->get_option('api_key'),
-			$this->get_option('api_secret'),
-			$this->get_option('store_id')
+			$generic_gateway->get_option('api_key'),
+			$generic_gateway->get_option('api_secret'),
+			$generic_gateway->get_option('store_id')
 		]) && parent::is_available();
 	}
 
@@ -46,17 +87,41 @@ class WC_Fisrv_Payment_Gateway extends WC_Payment_Gateway
 	{
 		$this->title = $this->get_option('title');
 		$this->description = $this->get_option('description');
-		$this->icon = $this->get_option('icon');
+		// $this->icon = $this->get_option('icon', $this->get_default_icon());
 	}
 
 	function custom_payment_gateway_icons($icon, $gateway_id)
 	{
-		if ($gateway_id !== $this->id || $gateway_id === 'fisrv-gateway-generic') {
+		if (!str_starts_with($gateway_id, 'fisrv')) {
 			return $icon;
 		}
 
-		$plugin_path = untrailingslashit(plugin_dir_url(__FILE__));
-		return '<img stlye="" src="' . WC_HTTPS::force_https_url("$plugin_path/../assets/$this->id.png") . '" alt="' . esc_attr($this->title) . '" />';
+		$icon_html = '<div style="margin-left: auto;">';
+		$gateway = WC()->payment_gateways()->payment_gateways()[$gateway_id];
+
+		foreach ($gateway->supported_methods as $supported_method) {
+			$is_png = in_array($supported_method, ['paypal']);
+			$image_src = "https://woocommerce.com/wp-content/plugins/wccom-plugins/payment-gateway-suggestions/images/" . ($is_png ? '72x72' : 'icons') . "/{$supported_method}." . ($is_png ? 'png' : 'svg');
+			$icon_html .= '<img style="height: 2rem; margin-right: 0.1rem" src="' . WC_HTTPS::force_https_url($image_src) . '" alt="' . esc_attr($this->title) . '" />';
+		}
+		$icon_html .= '</div>';
+
+		return $icon_html;
+	}
+
+	public function custom_woocommerce_locate_template($template, $template_name, $template_path)
+	{
+		if (!str_starts_with($this->id, 'fisrv')) {
+			return $template;
+		}
+
+		$custom_template_path = plugin_dir_path(__FILE__) . '../templates/checkout/payment-method.php';
+
+		if ($template_name === 'checkout/payment-method.php') {
+			return $custom_template_path;
+		}
+
+		return $template;
 	}
 
 	/**
@@ -64,25 +129,41 @@ class WC_Fisrv_Payment_Gateway extends WC_Payment_Gateway
 	 */
 	public function init_form_fields(): void
 	{
-		$this->form_fields = array(
-			'api_key' => array(
-				'title' => 'API Key',
-				'type' => 'text',
-				'description' => esc_html__('Acquire API Key from Developer Portal', 'fisrv-checkout-for-woocommerce'),
-				'desc_tip' => true,
-			),
-			'api_secret' => array(
-				'title' => 'API Secret',
-				'type' => 'password',
-				'description' => esc_html__('Acquire API Secret from Developer Portal', 'fisrv-checkout-for-woocommerce'),
-				'desc_tip' => true,
-			),
-			'store_id' => array(
-				'title' => 'Store ID',
-				'type' => 'text',
-				'description' => esc_html__('Your Store ID for Checkout', 'fisrv-checkout-for-woocommerce'),
-				'desc_tip' => true,
-			),
+		($this->id === 'fisrv-gateway-generic') ?
+			$this->form_fields = [
+				'api_key' => array(
+					'title' => 'API Key',
+					'type' => 'text',
+					'description' => esc_html__('Acquire API Key from Developer Portal', 'fisrv-checkout-for-woocommerce'),
+					'desc_tip' => true,
+				),
+				'api_secret' => array(
+					'title' => 'API Secret',
+					'type' => 'password',
+					'description' => esc_html__('Acquire API Secret from Developer Portal', 'fisrv-checkout-for-woocommerce'),
+					'desc_tip' => true,
+				),
+				'store_id' => array(
+					'title' => 'Store ID',
+					'type' => 'text',
+					'description' => esc_html__('Your Store ID for Checkout', 'fisrv-checkout-for-woocommerce'),
+					'desc_tip' => true,
+				),
+			]
+			:
+			$this->form_fields = [
+				'icon' => array(
+					'title' => 'Gateway Icon',
+					'description' => esc_html__('Link of image asset', 'fisrv-checkout-for-woocommerce'),
+					// 'default' => $this->get_default_icon(),
+					'type' => 'custom_icon',
+					'desc_tip' => true,
+				),
+			];
+
+
+
+		$this->form_fields += array(
 			'title' => array(
 				'title' => 'Gateway Name',
 				'type' => 'text',
@@ -95,13 +176,6 @@ class WC_Fisrv_Payment_Gateway extends WC_Payment_Gateway
 				'type' => 'text',
 				'description' => esc_html__('Custom description of gateway', 'fisrv-checkout-for-woocommerce'),
 				'default' => $this->default_description,
-				'desc_tip' => true,
-			),
-			'icon' => array(
-				'title' => 'Gateway Icon',
-				'type' => 'text',
-				'description' => esc_html__('Link of image asset', 'fisrv-checkout-for-woocommerce'),
-				'default' => '',
 				'desc_tip' => true,
 			),
 			'fail_page' => array(
@@ -130,7 +204,7 @@ class WC_Fisrv_Payment_Gateway extends WC_Payment_Gateway
 		}
 
 		try {
-			$checkout_link = WC_Fisrv_Checkout_Handler::create_checkout_link($order, $this->selected_method, $this);
+			$checkout_link = WC_Fisrv_Checkout_Handler::create_checkout_link($order, $this->selected_method);
 			return array(
 				'result' => 'success',
 				'redirect' => $checkout_link,

@@ -124,13 +124,19 @@ final class WC_Fisrv_Checkout_Handler
 	 * @throws Exception Error thrown from fisrv SDK (Request Errors). Error is caught by setting
 	 * returned checkout link to '#' (no redirect)
 	 */
-	public static function create_checkout_link(WC_Order $order, ?PreSelectedPaymentMethod $method, WC_Fisrv_Payment_Gateway $gateway): string
+	public static function create_checkout_link(WC_Order $order, ?PreSelectedPaymentMethod $method): string
 	{
 		try {
+			$generic_gateway = WC()->payment_gateways()->payment_gateways()['fisrv-gateway-generic'];
+
+			if (!$generic_gateway instanceof WC_Fisrv_Payment_Gateway) {
+				throw new Exception('Could not retrieve payment settings');
+			}
+
 			self::init_fisrv_sdk(
-				$gateway->get_option('api_key'),
-				$gateway->get_option('api_secret'),
-				$gateway->get_option('store_id'),
+				$generic_gateway->get_option('api_key'),
+				$generic_gateway->get_option('api_secret'),
+				$generic_gateway->get_option('store_id'),
 			);
 
 			$request = self::$client->createBasicCheckoutRequest(0, '', '');
