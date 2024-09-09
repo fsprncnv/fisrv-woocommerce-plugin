@@ -92,13 +92,15 @@ final class WC_Fisrv_Checkout_Handler
 
 	/**
 	 * Inititalize configuraiton parameters of fisrv SDK.
-	 *
-	 * @param string $api_key API key
-	 * @param string $api_secret API secret
-	 * @param string $store_id Store ID
 	 */
-	public static function init_fisrv_sdk(string $api_key, string $api_secret, string $store_id): void
+	public static function init_api_credentials(): void
 	{
+		$gateway = WC()->payment_gateways()->payment_gateways()['fisrv-gateway-generic'];
+
+		if (!($gateway instanceof WC_Fisrv_Payment_Gateway)) {
+			throw new Exception('Could not retrieve payment settings');
+		}
+
 		$plugin_data = get_plugin_data(__DIR__ . '..//fisrv-checkout-for-woocommerce.php');
 		$plugin_version = $plugin_data['Version'];
 
@@ -106,9 +108,9 @@ final class WC_Fisrv_Checkout_Handler
 			array(
 				'user' => 'WooCommercePlugin/' . $plugin_version,
 				'is_prod' => false,
-				'api_key' => $api_key,
-				'api_secret' => $api_secret,
-				'store_id' => $store_id,
+				'api_key' => $gateway->get_option('api_key'),
+				'api_secret' => $gateway->get_option('api_secret'),
+				'store_id' => $gateway->get_option('store_id'),
 			)
 		);
 	}
@@ -127,24 +129,12 @@ final class WC_Fisrv_Checkout_Handler
 	public static function create_checkout_link(WC_Order $order, ?PreSelectedPaymentMethod $method): string
 	{
 		try {
-			$generic_gateway = WC()->payment_gateways()->payment_gateways()['fisrv-gateway-generic'];
-
-			if (!$generic_gateway instanceof WC_Fisrv_Payment_Gateway) {
-				throw new Exception('Could not retrieve payment settings');
-			}
-
-			self::init_fisrv_sdk(
-				$generic_gateway->get_option('api_key'),
-				$generic_gateway->get_option('api_secret'),
-				$generic_gateway->get_option('store_id'),
-			);
+			self::init_api_credentials();
 
 			$request = self::$client->createBasicCheckoutRequest(0, '', '');
-
 			$request = self::pass_checkout_data($request, $order, $method);
 			$request = self::pass_billing_data($request, $order);
 			$request = self::pass_basket($request, $order);
-
 
 			$response = self::$client->createCheckout($request);
 
@@ -170,29 +160,22 @@ final class WC_Fisrv_Checkout_Handler
 		}
 	}
 
-	public static function refund_checkout(WC_Order $order, $amount): ?PaymentsClientResponse
+	public static function refund_checkout(WC_Order $order, $amount): PaymentsClientResponse
 	{
-		try {
-			$response = self::$client->refundCheckout(new PaymentsClientRequest([
-				'transactionAmount' => [
-					'total' => $amount,
-					'currency' => get_woocommerce_currency(),
-				],
-			]), $order->get_meta('_fisrv_plugin_checkout_id'));
+		self::init_api_credentials();
+		$response = self::$client->refundCheckout(new PaymentsClientRequest([
+			'transactionAmount' => [
+				'total' => $amount,
+				'currency' => get_woocommerce_currency(),
+			],
+		]), $order->get_meta('_fisrv_plugin_checkout_id'));
 
-			return $response;
-		} catch (ErrorResponse $e) {
-			WC_Fisrv_Logger::log($order, 'Refund has failed on API client (or server) level: ' . $e->getMessage());
-			return $response;
-		} catch (\Throwable $th) {
-			WC_Fisrv_Logger::log($order, 'Refund has failed on backend level: ' . $th->getMessage());
-		}
-
-		return null;
+		return $response;
 	}
 
-	public static function get_health_report(WC_Fisrv_Payment_Gateway $gateway): string
+	public static function get_health_report(): string
 	{
+		$gateway = WC()->payment_gateways()->payment_gateways()['fisrv-gateway-generic'];
 		$paymentsClient = new PaymentsClient([
 			'is_prod' => true,
 			'api_key' => $gateway->get_option('api_key'),
@@ -207,10 +190,10 @@ final class WC_Fisrv_Checkout_Handler
 			WC_Fisrv_Logger::generic_log('API health check reported following error response: ' . json_encode($report));
 		}
 
-		return (json_encode([
+		return json_encode([
 			'status' => $status ?? "You're all set!",
 			'code' => $report->httpCode
-		]));
+		]);
 	}
 
 	/**

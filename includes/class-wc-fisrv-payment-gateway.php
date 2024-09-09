@@ -1,5 +1,7 @@
 <?php
 
+use Fisrv\Exception\ErrorResponse;
+use Fisrv\Models\PaymentsClientResponse;
 use Fisrv\Models\PreSelectedPaymentMethod;
 
 /**
@@ -27,6 +29,10 @@ class WC_Fisrv_Payment_Gateway extends WC_Payment_Gateway
 		$this->init_form_fields();
 		$this->init_settings();
 		$this->init_properties();
+		$this->supports = [
+			'products',
+			'refunds'
+		];
 
 		add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
 		add_filter('woocommerce_gateway_icon', [$this, 'custom_payment_gateway_icons'], 10, 2);
@@ -229,16 +235,20 @@ class WC_Fisrv_Payment_Gateway extends WC_Payment_Gateway
 			$response = WC_Fisrv_Checkout_Handler::refund_checkout($order, $amount);
 
 			if (isset($response->error)) {
-				$order->add_order_note('Refund failed due to ' . ($response->error->title ?? 'server error') . '. Check debug logs for detailed report.'($reason !== '') ? (' Refund reason given: ' . $reason) : '');
+				$order->add_order_note("Refund failed due to {($response->error->title ?? 'server error')}. Check debug logs for detailed report." . (($reason !== '') ? (" Refund reason given: $reason") : ''));
 				return false;
 			}
 
-			$order->add_order_note('Refunded order via Fiserv Gateway. Transaction ID: ' . $response->ipgTransactionId . 'Trace ID: ' . $response->traceId . ($reason !== '') ? (' Refund reason given: ' . $reason) : '');
+			$order->add_order_note("Order refunded via Fiserv Gateway. Refunded amount: {$response->approvedAmount->total} {$response->approvedAmount->currency->value} Transaction ID: {$response->ipgTransactionId}" . (($reason !== '') ? (" Refund reason given: $reason") : ''));
 
 			return true;
+		} catch (ErrorResponse $e) {
+			WC_Fisrv_Logger::log($order, 'Refund has failed on API client (or server) level: ' . $e->getMessage());
 		} catch (\Throwable $th) {
-			return false;
+			WC_Fisrv_Logger::log($order, 'Refund has failed on backend level: ' . $th->getMessage());
 		}
+
+		return false;
 	}
 
 	/**
