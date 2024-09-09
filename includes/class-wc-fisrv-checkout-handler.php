@@ -107,7 +107,7 @@ final class WC_Fisrv_Checkout_Handler
 		self::$client = new CheckoutClient(
 			array(
 				'user' => 'WooCommercePlugin/' . $plugin_version,
-				'is_prod' => false,
+				'is_prod' => $gateway->get_option('is_prod'),
 				'api_key' => $gateway->get_option('api_key'),
 				'api_secret' => $gateway->get_option('api_secret'),
 				'store_id' => $gateway->get_option('store_id'),
@@ -173,11 +173,11 @@ final class WC_Fisrv_Checkout_Handler
 		return $response;
 	}
 
-	public static function get_health_report(): string
+	public static function get_health_report(): array
 	{
 		$gateway = WC()->payment_gateways()->payment_gateways()['fisrv-gateway-generic'];
 		$paymentsClient = new PaymentsClient([
-			'is_prod' => true,
+			'is_prod' => $gateway->get_option('is_prod'),
 			'api_key' => $gateway->get_option('api_key'),
 			'api_secret' => $gateway->get_option('api_secret'),
 			'store_id' => $gateway->get_option('store_id'),
@@ -186,14 +186,14 @@ final class WC_Fisrv_Checkout_Handler
 		$report = $paymentsClient->reportHealthCheck();
 
 		if ($report->httpCode != 200) {
-			$status = $report->error->message;
+			$message = $report->error->message;
 			WC_Fisrv_Logger::generic_log('API health check reported following error response: ' . json_encode($report));
 		}
 
-		return json_encode([
-			'status' => $status ?? "You're all set!",
-			'code' => $report->httpCode
-		]);
+		return [
+			'status' => $report->error->code ?? 'ok',
+			'message' => $message ?? "You're all set!"
+		];
 	}
 
 	/**

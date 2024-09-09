@@ -75,6 +75,9 @@ if (!class_exists('fisrv_checkout_for_woocommerce')) {
 
             /** Register webhook consumer */
             add_action('rest_api_init', [WC_Fisrv_Webhook_Handler::class, 'register_consume_events']);
+
+            /** Register health check endpoint */
+            add_action('rest_api_init', [WC_Fisrv_Health_Check::class, 'register_health_report']);
         }
 
         /**
