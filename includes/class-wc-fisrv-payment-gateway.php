@@ -26,7 +26,7 @@ class WC_Fisrv_Payment_Gateway extends WC_Payment_Gateway
 	{
 		$this->has_fields = false;
 		$this->init_form_fields();
-		$this->init_settings();
+		// $this->init_settings();
 		$this->init_properties();
 		$this->supports = [
 			'products',
@@ -38,8 +38,9 @@ class WC_Fisrv_Payment_Gateway extends WC_Payment_Gateway
 		add_filter("woocommerce_generate_custom_icon_html", [$this, 'custom_icon_settings_field'], 1, 4);
 		add_filter("woocommerce_generate_healthcheck_html", [$this, 'healthcheck_settings_field'], 1, 4);
 		add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, [$this, 'custom_save_icon_value'], 10, 1);
-		add_filter('woocommerce_locate_template', [$this, 'custom_woocommerce_locate_template'], 10, 3);
+		// add_filter('woocommerce_locate_template', [$this, 'custom_woocommerce_locate_template'], 10, 3);
 	}
+
 
 	public function custom_save_icon_value($settings)
 	{
@@ -164,6 +165,30 @@ class WC_Fisrv_Payment_Gateway extends WC_Payment_Gateway
 		]) && parent::is_available();
 	}
 
+	public function update_option($key, $value = '')
+	{
+		parent::update_option($key, $value);
+
+		if ($key === 'enabled' && $value === 'yes') {
+			if ($this->id === 'fisrv-gateway-generic') {
+				$this->disable_gateway(new WC_Fisrv_Gateway_Applepay());
+				$this->disable_gateway(new WC_Fisrv_Gateway_Googlepay());
+				$this->disable_gateway(new WC_Fisrv_Gateway_Cards());
+				wc_add_notice(__('Disabled specific gateways since generic gateway was enabled.', 'fisrv-checkout-for-woocommerce'));
+			} else {
+				$this->disable_gateway(new WC_Fisrv_Payment_Generic());
+				wc_add_notice(__('Disabled generic gateway since specific gateways were enabled.', 'fisrv-checkout-for-woocommerce'));
+			}
+		}
+	}
+
+	private function disable_gateway(WC_Payment_Gateway $gateway): void
+	{
+		if ($gateway->get_option('enabled') === 'yes') {
+			$gateway->update_option('enabled', 'no');
+		}
+	}
+
 	/**
 	 * Initialize properties from options
 	 */
@@ -190,9 +215,16 @@ class WC_Fisrv_Payment_Gateway extends WC_Payment_Gateway
 
 		foreach ($gateway->supported_methods as $supported_method) {
 			$is_png = in_array($supported_method, ['paypal']);
-			$image_src = "https://woocommerce.com/wp-content/plugins/wccom-plugins/payment-gateway-suggestions/images/" . ($is_png ? '72x72' : 'icons') . "/{$supported_method}." . ($is_png ? 'png' : 'svg');
-			$icon_html .= '<img style="height: ' . $height . '; margin-right: 0.1rem" src="' . WC_HTTPS::force_https_url($image_src) . '" alt="' . esc_attr($this->title) . '" />';
+
+			if ($supported_method === 'creditcard') {
+				$image_src = "https://logowik.com/content/uploads/images/credit-card2790.jpg";
+			} else {
+				$image_src = "https://woocommerce.com/wp-content/plugins/wccom-plugins/payment-gateway-suggestions/images/" . ($is_png ? '72x72' : 'icons') . "/{$supported_method}." . ($is_png ? 'png' : 'svg');
+			}
+
+			$icon_html .= '<img style="border-radius: 10%; height: ' . $height . '; margin-right: 5px" src="' . WC_HTTPS::force_https_url($image_src) . '" alt="' . esc_attr($this->title) . '" />';
 		}
+
 		$icon_html .= '</div>';
 		return $icon_html;
 	}
