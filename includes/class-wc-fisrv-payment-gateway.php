@@ -280,6 +280,30 @@ class WC_Fisrv_Payment_Gateway extends WC_Payment_Gateway
 					'type' => 'healthcheck',
 					'description' => esc_html__('Get current status of Fiserv API and your configuration', 'fisrv-checkout-for-woocommerce'),
 					'desc_tip' => true,
+				),
+				'autocomplete' => array(
+					'title' => 'Auto-complete Orders',
+					'type' => 'checkbox',
+					'description' => esc_html__('Skip processing order status and set to complete status directly', 'fisrv-checkout-for-woocommerce'),
+					'desc_tip' => true,
+				),
+				'enable_tokens' => array(
+					'title' => 'Enable Transaction Tokens',
+					'type' => 'checkbox',
+					'description' => esc_html__('If enabled, a successful payment of a user will be tokenized and can be optionally used on sub-sequent payment', 'fisrv-checkout-for-woocommerce'),
+					'desc_tip' => true,
+				),
+				'transaction_type' => array(
+					'title' => 'Transaction Type',
+					'type' => 'select',
+					'description' => esc_html__('Set transaction type. Currently, only SALE transactions are available.', 'fisrv-checkout-for-woocommerce'),
+					'desc_tip' => true,
+					'default' => 'sale',
+					'options' => array(
+						'SALE' => 'Sale',
+						'PRE-AUTH' => 'Pre-authorization',
+						'ZERO-AUTH' => 'Zero-authorization',
+					),
 				)
 			];
 		}
@@ -355,7 +379,7 @@ class WC_Fisrv_Payment_Gateway extends WC_Payment_Gateway
 		}
 
 		try {
-			$response = WC_Fisrv_Checkout_Handler::refund_checkout($order, $amount);
+			$response = WC_Fisrv_Checkout_Handler::refund_checkout($this, $order, $amount);
 
 			if (isset($response->error)) {
 				$order->add_order_note("Refund failed due to {($response->error->title ?? 'server error')}. Check debug logs for detailed report." . (($reason !== '') ? (" Refund reason given: $reason") : ''));
