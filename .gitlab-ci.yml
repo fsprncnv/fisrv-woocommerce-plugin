@@ -19,6 +19,9 @@ validate:
 build:
   extends: .base_build
 
+test:
+  extends: .base_test
+
 docker:
   extends: .base_docker
 
