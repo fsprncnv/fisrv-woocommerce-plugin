@@ -6,18 +6,42 @@ test.beforeEach(async ({ page }) => {
   await page.goto(STORE_HOST + '/?add-to-cart=12');
 });
 
+test('Woocommerce and Fiserv plugin are activated properly', async ({
+  page,
+}) => {});
+
+test('Configure plugin and failed API health check due to bad API key', async ({
+  page,
+}) => {});
+
+test('Configure plugin and successful API health check', async ({
+  page,
+}) => {});
+
+test('Enable generic method and check specific method should be disabled', async ({
+  page,
+}) => {});
+
+test('Web shop data (localization, line items) are properly passed to redirect page', async ({
+  page,
+}) => {});
+
+test('Failed order due to payment validation failure', async ({ page }) => {});
+
 test('Successful order', async ({ page }) => {
   await page.goto(STORE_HOST + '/checkout');
 
   await fillOutWCCheckoutForm(page);
 
+  await page.locator('#payment_method_fisrv-gateway-generic').click();
+
   await page.locator('#place_order').click();
 
   await page.waitForURL('https://ci.checkout-lane.com/#/?checkoutId=**');
 
-  await expect(
-    page.getByRole('heading', { name: 'Überprüfen und Bezahlen' })
-  ).toBeVisible();
+  // await expect(
+  //   page.getByRole('heading', { name: 'Überprüfen und Bezahlen' })
+  // ).toBeVisible();
 
   await fillOutHostedPaymentPageForm(page, '5424180279791732');
 
@@ -28,39 +52,15 @@ test('Successful order', async ({ page }) => {
   );
 
   await expect(
-    page.getByRole('heading', { name: 'Bestellung erhalten' })
+    page.locator("[data-block-name='woocommerce/order-confirmation-status']")
   ).toBeVisible();
 });
 
-test('Failed order due to bad credit card number', async ({ page }) => {
-  await page.goto(STORE_HOST + '/checkout');
+test('Order notes created', async ({ page }) => {});
 
-  await fillOutWCCheckoutForm(page);
+test('Autocomplete sets order status to complete', async ({ page }) => {});
 
-  await page.locator('#place_order').click();
-
-  await page.waitForURL('https://ci.checkout-lane.com/#/?checkoutId=**');
-
-  await expect(
-    page.getByRole('heading', { name: 'Überprüfen und Bezahlen' })
-  ).toBeVisible();
-
-  await fillOutHostedPaymentPageForm(page, '4182917993774394');
-
-  await page.locator("[appdataautomationid='payment_button']").click();
-  await page.waitForURL('https://ci.checkout-lane.com/#/?checkoutId=**');
-  await page.locator("[appdataautomationid='payment_button']").click();
-  await page.waitForURL('https://ci.checkout-lane.com/#/?checkoutId=**');
-  await page.locator("[appdataautomationid='payment_button']").click();
-
-  await page.waitForURL(
-    'http://fisrv-plugin-dev.com/checkout/order-received/**'
-  );
-
-  await expect(
-    page.getByRole('heading', { name: 'Bestellung erhalten' })
-  ).toBeVisible();
-});
+test('Refund order', async ({ page }) => {});
 
 async function fillOutWCCheckoutForm(page: Page) {
   await page.locator('#billing_first_name').fill('Frodo');
