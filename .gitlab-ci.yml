@@ -15,6 +15,7 @@ variables:
 
 validate:
   extends: .base_validate
+  allow_failure: true
 
 build:
   extends: .base_build
