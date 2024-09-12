@@ -5,6 +5,7 @@ services:
     image: mariadb:11
     container_name: fisrv-woocommerce-db
     command: '--default-authentication-plugin=mysql_native_password'
+    mem_limit: "100M"
     restart: always
     environment:
       - MYSQL_ROOT_PASSWORD=somewordpress
@@ -15,9 +16,10 @@ services:
       - default
     volumes:
       - db:/var/lib/mysql
-  paypal:
+  apache:
     image: registry.gitlab.mherrm.de/cgi/fisrv-woocommerce-plugin:latest
     container_name: fisrv-woocommerce-apache
+    mem_limit: "100M"
     restart: always
     labels:
       - "traefik.enable=true"
@@ -37,11 +39,6 @@ services:
     networks:
       - default
       - traefik
-    deploy:
-      resources:
-        limits:
-          cpus: "1.5"
-          memory: 512M
 networks:
   traefik:
     external: true
