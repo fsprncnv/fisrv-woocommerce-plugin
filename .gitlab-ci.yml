@@ -13,9 +13,12 @@ variables:
   MYSQL_PASSWORD: "wordpress"
   MYSQL_HOST: fisrv_mysql
 
+phpstan:
+  extends: phpstan
+  allow_failure: true
+
 validate:
   extends: .base_validate
-  allow_failure: true
 
 build:
   extends: .base_build
