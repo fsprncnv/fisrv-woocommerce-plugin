@@ -21,6 +21,8 @@ build:
 
 test:
   extends: .base_test
+  before_script:
+    - cd tests/
 
 docker:
   extends: .base_docker
