@@ -6,23 +6,33 @@ test.beforeEach(async ({ page }) => {
   await page.goto(STORE_HOST + '/?add-to-cart=12');
 });
 
-test('Woocommerce and Fiserv plugin are activated properly', async ({
+// ADMIN ENV CONFIG
+
+// how do i get the plugin (marketplace, zip file)
+
+test('Woocommerce and Fiserv plugin are installed and activated properly', async ({
   page,
 }) => {});
 
-test('Configure plugin and failed API health check due to bad API key', async ({
+test('Setup plugin and failed API health check due to bad API key (fail flow)', async ({
   page,
 }) => {});
 
-test('Configure plugin and successful API health check', async ({
+test('Setup plugin and successful API health check (success flow)', async ({
   page,
 }) => {});
 
-test('Enable generic method and check specific method should be disabled', async ({
+test('Enable generic option and check specific method should be disabled', async ({
   page,
 }) => {});
 
-test('Web shop data (localization, line items) are properly passed to redirect page', async ({
+// ... enable specific (apple pay) and disable generic
+
+
+// WP WEB SHOP 
+
+test('Web shop data (localization based on WP-admin, cart items) are properly passed to redirect page', async ({
+  // wp-admin set global language to german
   page,
 }) => {});
 
@@ -57,6 +67,8 @@ test('Successful order', async ({ page }) => {
 });
 
 test('Order notes created', async ({ page }) => {});
+
+// get full response report from fiserv server
 
 test('Autocomplete sets order status to complete', async ({ page }) => {});
 

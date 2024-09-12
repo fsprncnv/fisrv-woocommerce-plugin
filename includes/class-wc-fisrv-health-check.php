@@ -28,4 +28,51 @@ final class WC_Fisrv_Health_Check
 			)
 		);
 	}
+
+	public static function add_image(WP_REST_Request $request): WP_REST_Response|WP_Error
+	{
+		try {
+			$gateway_id = $request->get_param('gateway_id');
+			$data = $request->get_param('data');
+
+			$gateway = WC()->payment_gateways()->payment_gateways()[$gateway_id] ?? false;
+
+			if (!$gateway) {
+				return new WP_REST_Response([
+					'status' => 'error',
+					'gateway_id' => $gateway_id,
+					'error' => 'Gateway ID invalid',
+					'list' => json_encode((new WC_Payment_Gateways)->payment_gateways())
+				]);
+			}
+
+			$list_json = $gateway->get_option('custom_icon');
+			$decoded_list = json_decode($list_json, true) ?? [];
+			array_push($decoded_list, $data);
+
+			$gateway->update_option('custom_icon', json_encode($decoded_list));
+
+		} catch (\Throwable $th) {
+			return new WP_REST_Response([
+				'status' => 'error',
+				'error' => $th->getMessage()
+			]);
+		}
+
+		return new WP_REST_Response([
+			'status' => 'ok'
+		]);
+	}
+
+	public static function register_add_image(): void
+	{
+		register_rest_route(
+			self::$webhook_endpoint,
+			'/image',
+			array(
+				'methods' => 'GET',
+				'callback' => array(self::class, 'add_image'),
+			)
+		);
+	}
 }
