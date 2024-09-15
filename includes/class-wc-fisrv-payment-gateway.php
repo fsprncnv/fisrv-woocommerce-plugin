@@ -11,14 +11,9 @@ use Fisrv\Models\PreSelectedPaymentMethod;
  * @author     fisrv
  * @since      1.0.0
  */
-abstract class WC_Fisrv_Payment_Gateway extends WC_Payment_Gateway
+abstract class WC_Fisrv_Payment_Gateway extends WC_Fisrv_Payment_Settings
 {
-
 	protected ?PreSelectedPaymentMethod $selected_method = null;
-
-	protected string $default_title = '';
-
-	protected string $default_description = '';
 
 	protected array $supported_methods = [];
 
@@ -26,166 +21,31 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Payment_Gateway
 	{
 		$this->has_fields = false;
 		$this->init_form_fields();
-		// $this->init_settings();
 		$this->init_properties();
 		$this->supports = [
 			'products',
 			'refunds'
 		];
 
-
-		add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
 		add_filter('woocommerce_gateway_icon', [$this, 'custom_payment_gateway_icons'], 10, 2);
-		add_filter("woocommerce_generate_custom_icon_html", [$this, 'custom_icon_settings_field'], 1, 4);
-		add_filter("woocommerce_generate_healthcheck_html", [$this, 'healthcheck_settings_field'], 1, 4);
-		add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, [$this, 'custom_save_icon_value'], 10, 1);
-		// add_filter('woocommerce_locate_template', [$this, 'custom_woocommerce_locate_template'], 10, 3);
-	}
 
-	public function process_admin_options()
-	{
-		WC_Fisrv_Logger::generic_log('process_admin_options() fired');
-	}
-
-	public function custom_save_icon_value($settings)
-	{
-		return $settings;
-	}
-
-	/**
-	 * 
-	 * @param string $field_html The markup of the field being generated (initiated as an empty string).
-	 * @param string $key The key of the field.
-	 * @param array  $data The attributes of the field as an associative array.
-	 * @param WC_Settings_API $wc_settings The current WC_Settings_API object.
-	 */
-	public function custom_icon_settings_field(string $field_html, string $key, array $data, WC_Settings_API $wc_settings)
-	{
-		$html_identifier = "woocommerce_{$wc_settings->id}_{$key}";
-		// $variable_icon = esc_attr($wc_settings->get_option('icon', $this->get_default_icon()));
-
-		$field_html = '<tr valign="top">
-			<th scope="row" class="titledesc">
-				<label for="' . $html_identifier . '">' . $data['title'] . ' <span class="woocommerce-help-tip" tabindex="0" aria-label="Custom name of gateway"></span></label>
-			</th>
-			<td class="forminp">
-				<fieldset style="display: flex; flex-direction: row;">
-					<legend class="screen-reader-text"><span>Gateway Name</span></legend>
-					' . $this->render_icons_of_supported_methods($wc_settings->id, '', $height = '4rem') . '
-					<input class="input-text regular-input" type="text" name="fs-icons-data" id="fs-icons-data" value="' . implode(',', json_decode('[]', true)) . '" placeholder="Enter image URL to add to list">
-					<div class="fs-add-button" id="fs-icon-btn" onclick="addImage()">+</div>
-				</fieldset>
-			</td>
-			<style>
-				.fs-add-button {
-					display: flex;
-					justify-content: center;
-					align-items: center;
-					width: ' . $height . ';
-					height: ' . $height . ';
-					background-color: white;
-					cursor: pointer;
-					border-radius: 10px;
-					font-size: 1.5em;
-				}
-
-				.fs-add-button:hover {
-					opacity: 0.6;
-					transition-duration: 0.1s;
-				}
-			</style>
-			<script>
-				async function addImage() {
-					const btn = document.getElementById("fs-icon-btn");
-					const input = document.getElementById("fs-icons-data").value;
-
-					btn.innerHTML = ' . "'<span class=\"fs-loader-status\"></span>';" . '
-
-					const res = await fetch("/wp-json/fisrv_woocommerce_plugin/v1/image?gateway_id=' . $this->id . '&data=" + input, {
-                        method: "GET",
-                    });
-					const data = await res.json();
-
-					if(data["status"] === "ok") {
-                        btn.innerHTML = "OK";
-                    }
-				}
-			</script>
-		</tr>';
-
-		return $field_html;
-	}
-
-	public function healthcheck_settings_field(string $field_html, string $key, array $data, WC_Settings_API $wc_settings)
-	{
-		$html_identifier = "woocommerce_{$wc_settings->id}_{$key}";
-
-		$field_html = '<tr valign="top">
-			<th scope="row" class="titledesc">
-				<label for="' . $html_identifier . '">' . $data['title'] . ' <span class="woocommerce-help-tip" tabindex="0" aria-label="Custom name of gateway"></span></label>
-			</th>
-			<td class="forminp">
-				<fieldset style="display: flex; flex-direction: row; align-items: center;">
-					<legend class="screen-reader-text"><span>Gateway Name</span></legend>
-					<div id="fs-fetcher-icon" class="fs-add-button" onclick="fetchHealth()">+</div>
-					<div style="display: flex; flex-direction: row; margin-left: 1rem; align-items: center;">
-						<div id="fs-status-indicator" style="background-color: lightblue; border-radius: 100%; width: 0.8em; height: 0.8em; margin-right: 1em;"></div>
-						<div id="fs-status-text">Check status</div>
-					</div>
-				</fieldset>
-			</td>
-			<script>
-				async function fetchHealth() {
-					const indicator = document.getElementById("fs-status-indicator");
-					const text = document.getElementById("fs-status-text");
-					const fetcherIcon = document.getElementById("fs-fetcher-icon");
-
-					text.innerHTML = ' . "'<span class=\"fs-loader-status\"></span>';" . '
-					const res = await fetch("/wp-json/fisrv_woocommerce_plugin/v1/health", {
-                        method: "GET",
-                    });
-                    const data = await res.json();
-					text.innerHTML = data["message"];
-
-					if(data["status"] !== "ok") {
-                        indicator.style.background = "OrangeRed";
-                    } else {
-                        indicator.style.background = "LightGreen";
-                    }
-				}
-			</script>
-			<style>
-				.fs-loader-status {
-					width: 24px;
-					height: 24px;
-					border: 2px solid gray;
-					border-bottom-color: transparent;
-					border-radius: 50%;
-					display: inline-block;
-					box-sizing: border-box;
-					animation: rotation 1s linear infinite;
-				}
-			</style>
-		</tr>';
-		return $field_html;
-	}
-
-	private function render_text_field(string $value = '', string $key, WC_Settings_API $wc_settings)
-	{
-		$html_identifier = "woocommerce_{$wc_settings->id}_{$key}";
-		return '<input class="input-text regular-input " type="text" 
-					name="' . $html_identifier . '" id="' . $html_identifier . '" style="" value="' . $value . '" placeholder="">';
+		add_filter("woocommerce_generate_custom_icon_html", [WC_Fisrv_Payment_Settings::class, 'custom_icon_settings_field'], 1, 4);
+		add_filter("woocommerce_generate_healthcheck_html", [WC_Fisrv_Payment_Settings::class, 'healthcheck_settings_field'], 1, 4);
+		add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, [WC_Fisrv_Payment_Settings::class, 'custom_save_icon_value'], 10, 1);
+		add_filter('woocommerce_locate_template', [$this, 'custom_woocommerce_locate_template'], 10, 3);
 	}
 
 	public function is_available(): bool
 	{
-		$generic_gateway = WC()->payment_gateways()->payment_gateways()['fisrv-gateway-generic'];
+		// $generic_gateway = WC()->payment_gateways()->payment_gateways()['fisrv-gateway-generic'];
 
-		return !in_array('', [
-			$generic_gateway->get_option('api_key'),
-			$generic_gateway->get_option('api_secret'),
-			$generic_gateway->get_option('store_id')
-		]) && parent::is_available();
+		// return !in_array('', [
+		// 	$generic_gateway->get_option('api_key'),
+		// 	$generic_gateway->get_option('api_secret'),
+		// 	$generic_gateway->get_option('store_id')
+		// ]) && parent::is_available();
+		// return true;
+		return parent::is_available();
 	}
 
 	public function update_option($key, $value = '')
@@ -231,64 +91,13 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Payment_Gateway
 		// $this->icon = $this->get_option('icon', $this->get_default_icon());
 	}
 
-	public function custom_payment_gateway_icons($icon, $gateway_id)
+	public static function custom_payment_gateway_icons($icon, $gateway_id)
 	{
 		if (!str_starts_with($gateway_id, 'fisrv')) {
 			return $icon;
 		}
 
-		return $this->render_icons_of_supported_methods($gateway_id, $styles = 'margin-left: auto;');
-	}
-
-	private function render_icons_of_supported_methods(string $gateway_id, string $styles = '', string $height = '2rem')
-	{
-		$icon_html = '';
-		// $icons = json_decode($this->get_option('icons'), true);
-
-		// foreach ($icons as $icon_title => $icon_url) {
-		// 	$is_png = in_array($supported_method, ['paypal']);
-
-		// 	if ($supported_method === 'creditcard') {
-		// 		$image_src = "https://logowik.com/content/uploads/images/credit-card2790.jpg";
-		// 	} else {
-		// 		$image_src = "https://woocommerce.com/wp-content/plugins/wccom-plugins/payment-gateway-suggestions/images/" . ($is_png ? '72x72' : 'icons') . "/{$supported_method}." . ($is_png ? 'png' : 'svg');
-		// 	}
-		// }
-
-
-		$icon_html = '<div style=' . $styles . '>';
-
-		switch ($gateway_id) {
-			case 'fisrv-gateway-generic':
-				$image_src = 'https://upload.wikimedia.org/wikipedia/commons/8/89/Fiserv_logo.svg';
-				break;
-
-			case 'fisrv-apple-pay':
-				$image_src = 'https://woocommerce.com/wp-content/plugins/wccom-plugins/payment-gateway-suggestions/images/icons/googlepay.svg';
-				$icon_html .= $this->render_single_img($height, $image_src);
-				break;
-
-			case 'fisrv-google-pay':
-				$image_src = 'https://woocommerce.com/wp-content/plugins/wccom-plugins/payment-gateway-suggestions/images/icons/googlepay.svg';
-				$icon_html .= $this->render_single_img($height, $image_src);
-				break;
-
-			case 'fisrv-credit-card':
-				$image_src = 'https://logowik.com/content/uploads/images/credit-card2790.jpg';
-				$icon_html .= $this->render_single_img($height, $image_src);
-				break;
-
-			default:
-				break;
-		}
-
-		$icon_html .= '</div>';
-		return $icon_html;
-	}
-
-	private function render_single_img(string $height, string $image_src): string
-	{
-		return '<img style="border-radius: 10%; height: ' . $height . '; margin-right: 5px" src="' . WC_HTTPS::force_https_url($image_src) . '" alt="' . esc_attr($this->title) . '" />';
+		return self::render_icons_of_supported_methods(true, $gateway_id, $styles = 'margin-left: auto;');
 	}
 
 	public function custom_woocommerce_locate_template($template, $template_name, $template_path)
@@ -304,118 +113,6 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Payment_Gateway
 		}
 
 		return $template;
-	}
-
-	/**
-	 * Initialize form text fields on gateway options page
-	 */
-	public function init_form_fields(): void
-	{
-		if ($this->id === 'fisrv-gateway-generic') {
-			$this->form_fields = [
-				'api_key' => array(
-					'title' => 'API Key',
-					'type' => 'text',
-					'description' => esc_html__('Acquire API Key from Developer Portal', 'fisrv-checkout-for-woocommerce'),
-					'desc_tip' => true,
-				),
-				'api_secret' => array(
-					'title' => 'API Secret',
-					'type' => 'password',
-					'description' => esc_html__('Acquire API Secret from Developer Portal', 'fisrv-checkout-for-woocommerce'),
-					'desc_tip' => true,
-				),
-				'store_id' => array(
-					'title' => 'Store ID',
-					'type' => 'text',
-					'description' => esc_html__('Your Store ID for Checkout', 'fisrv-checkout-for-woocommerce'),
-					'desc_tip' => true,
-				),
-				'is_prod' => array(
-					'title' => 'Production Mode',
-					'type' => 'checkbox',
-					'description' => esc_html__('Use Live (Production) Mode or Test (Sandbox) Mode', 'fisrv-checkout-for-woocommerce'),
-					'desc_tip' => true,
-				),
-				'healthcheck' => array(
-					'title' => 'API Health',
-					'type' => 'healthcheck',
-					'description' => esc_html__('Get current status of Fiserv API and your configuration', 'fisrv-checkout-for-woocommerce'),
-					'desc_tip' => true,
-				),
-				'autocomplete' => array(
-					'title' => 'Auto-complete Orders',
-					'type' => 'checkbox',
-					'description' => esc_html__('Skip processing order status and set to complete status directly', 'fisrv-checkout-for-woocommerce'),
-					'desc_tip' => true,
-				),
-				// 'enable_tokens' => array(
-				// 	'title' => 'Enable Transaction Tokens',
-				// 	'type' => 'checkbox',
-				// 	'description' => esc_html__('If enabled, a successful payment of a user will be tokenized and can be optionally used on sub-sequent payment', 'fisrv-checkout-for-woocommerce'),
-				// 	'desc_tip' => true,
-				// ),
-				'transaction_type' => array(
-					'title' => 'Transaction Type',
-					'type' => 'select',
-					'description' => esc_html__('Set transaction type. Currently, only SALE transactions are available.', 'fisrv-checkout-for-woocommerce'),
-					'desc_tip' => true,
-					'default' => 'sale',
-					'options' => array(
-						'SALE' => 'Sale',
-					),
-				),
-				'enable_log' => array(
-					'title' => 'Enable Developer Logs',
-					'type' => 'checkbox',
-					'description' => esc_html__('Enable log messages on WooCommerce', 'fisrv-checkout-for-woocommerce'),
-					'desc_tip' => true,
-				),
-			];
-		}
-
-
-		$this->form_fields += array(
-			'icons' => array(
-				'title' => 'Gateway Icon',
-				'description' => esc_html__('Link of image asset', 'fisrv-checkout-for-woocommerce'),
-				// 'default' => [],
-				'type' => 'custom_icon',
-				'desc_tip' => true,
-			),
-			'title' => array(
-				'title' => 'Gateway Name',
-				'type' => 'text',
-				'description' => esc_html__('Custom name of gateway', 'fisrv-checkout-for-woocommerce'),
-				'default' => $this->default_title,
-				'desc_tip' => true,
-			),
-			'description' => array(
-				'title' => 'Gateway Description',
-				'type' => 'text',
-				'description' => esc_html__('Custom description of gateway', 'fisrv-checkout-for-woocommerce'),
-				'default' => 'Payment will be processed by Fiserv. You will be redirect to external checkout page.',
-				'desc_tip' => true,
-			),
-			'fail_page' => array(
-				'title' => 'Redirect after payment failure',
-				'type' => 'select',
-				'description' => esc_html__('Where to redirect if payment failed', 'fisrv-checkout-for-woocommerce'),
-				'default' => '',
-				'desc_tip' => true,
-				'options' => array(
-					'checkout' => 'Checkout page',
-					'cart' => 'Shopping cart',
-					'home' => 'Home page'
-				),
-			),
-			'restore' => array(
-				'title' => 'Restore settings',
-				'type' => 'restore_settings',
-				'description' => esc_html__('Restore all settings to default state', 'fisrv-checkout-for-woocommerce'),
-				'desc_tip' => true,
-			),
-		);
 	}
 
 	/**
