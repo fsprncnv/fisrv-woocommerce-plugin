@@ -81,6 +81,9 @@ if (!class_exists('fisrv_checkout_for_woocommerce')) {
 
             /** Register health check endpoint */
             add_action('rest_api_init', [WC_Fisrv_Health_Check::class, 'register_add_image']);
+
+            wp_enqueue_style('fisrv-custom-style', plugins_url('assets\styles\fisrv-custom-style.css', __FILE__));
+            wp_enqueue_script('fisrv-custom-script', plugins_url('assets\scripts\fisrv-custom-script.js', __FILE__));
         }
 
         /**
