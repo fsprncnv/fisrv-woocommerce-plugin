@@ -13,7 +13,7 @@ class WC_Fisrv_Payment_Generic extends WC_Fisrv_Payment_Gateway
 		$this->method_title = 'Fiserv Checkout';
 		$this->method_description = __('Generic option shows all supported methods on redirect page. ', 'fisrv-checkout-for-woocommerce');
 
-		$this->default_title = 'Generic';
+		$this->default_title = 'Fiserv Checkout';
 		$this->supported_methods = ['creditcard', 'paypal', 'googlepay', 'applepay'];
 
 		$this->gateway_applepay = new WC_Fisrv_Gateway_Applepay();

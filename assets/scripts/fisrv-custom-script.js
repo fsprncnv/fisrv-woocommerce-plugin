@@ -5,7 +5,7 @@ async function addImage() {
 
     btn.innerHTML = "<span class='fs-loader-status'></span>";
 
-    const res = await fetch(`/wp-json/fisrv_woocommerce_plugin/v1/image?gateway_id=${gateway_id}&data=${input}`, {
+    const res = await fetch(`/wp-json/fisrv_woocommerce_plugin/v1/image?gateway-id=${gateway_id}&data=${input}`, {
         method: "POST",
     });
     const data = await res.json();
@@ -15,16 +15,19 @@ async function addImage() {
     }
 }
 
-async function removeImage() {
-    const icon = document.getElementById("fs-icon-overlay");
-    icon.innerHTML = "<span class='fs-loader-status'></span>";
+async function removeImage(index, node) {
+    const gateway_id = node.getAttribute("gateway-id");
+    const overlay = document.getElementById(`fs-icon-overlay-${index}`);
+    overlay.innerHTML = "<span class='fs-loader-status'></span>";
 
-    const res = await fetch(`/wp-json/fisrv_woocommerce_plugin/v1/image?gateway_id=${gateway_id}&data=${input}`, {
+    const res = await fetch(`/wp-json/fisrv_woocommerce_plugin/v1/image?gateway-id=${gateway_id}&icon-id=${index}`, {
         method: "DELETE",
     });
     const data = await res.json();
 
-    icon.parentNode.removeChild(element);
+    console.log(`Removing icon of index ${index} with node ${node.id}`);
+
+    node.innerHTML = '';
 }
 
 async function fetchHealth() {

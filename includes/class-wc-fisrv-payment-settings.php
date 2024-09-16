@@ -36,7 +36,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
 			<td class="forminp">
 				<fieldset style="display: flex; flex-direction: row;">
 					<legend class="screen-reader-text"><span>Gateway Name</span></legend>
-					' . self::render_icons_of_supported_methods(false, $wc_settings->id, 'display: flex; flex-direction: row;', $height = '4rem') . '
+					' . self::render_gateway_icons(false, $wc_settings->id, 'display: flex; flex-direction: row;', $height = '4rem') . '
 					<input class="input-text regular-input" type="text" name="fs-icons-data" id="fs-icons-data" value="' . implode(',', json_decode('[]', true)) . '" placeholder="Enter image URL to add to list">
 					<div class="fs-add-button button-primary" gatewayid="' . $wc_settings->id . '" id="fs-icon-btn" onclick="addImage()">+</div>
 				</fieldset>
@@ -46,18 +46,18 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         return $field_html;
     }
 
-    protected static function render_icons_of_supported_methods(bool $display, string $gateway_id, string $styles = '', string $height = '2rem')
+    protected static function render_gateway_icons(bool $display, string $gateway_id, string $styles = '', string $height = '2rem')
     {
         $icon_html = '';
-        $icon_html = '<div style=' . $styles . '>';
+        $icon_html = '<div style="' . $styles . '">';
         $gateway = WC()->payment_gateways()->payment_gateways()['fisrv-gateway-generic'];
 
         switch ($gateway_id) {
             case 'fisrv-gateway-generic':
-                $image_src = 'https://upload.wikimedia.org/wikipedia/commons/8/89/Fiserv_logo.svg';
+                $image_src = '';
 
-                foreach (json_decode($gateway->get_option('custom_icon'), true) as $icon) {
-                    $icon_html .= self::render_single_img($display, $height, $icon);
+                foreach (json_decode($gateway->get_option('custom_icon'), true) as $index => $icon) {
+                    $icon_html .= self::render_single_img($display, $height, $icon, $index);
                 }
 
                 break;
@@ -94,9 +94,9 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         }
 
         return '
-        <div id="fs-icon-container-' . $index . '" class="fs-icon-container">
-            <div id="fs-icon-overlay" class="fs-icon-overlay" onclick="removeImage()">🞭 Remove Icon</div>
-            <img style="border-radius: 10%; width="4em"; margin-right: 5px" src="' . WC_HTTPS::force_https_url($image_src) . '" alt="' . esc_attr('Fisrv gateway icon') . '" />
+        <div gateway-id="fisrv-gateway-generic" id="fs-icon-container-' . $index . '" class="fs-icon-container" onclick="removeImage(' . $index . ', this)">
+            <div id="fs-icon-overlay-' . $index . '" class="fs-icon-overlay">🞭 Remove Icon</div>
+            <img style="border-radius: 10%; margin-right: 5px; height: ' . $height . '" src="' . WC_HTTPS::force_https_url($image_src) . '" alt="' . esc_attr('Fisrv gateway icon') . '" />
         </div>';
     }
 
@@ -203,7 +203,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
             'icons' => array(
                 'title' => 'Gateway Icon',
                 'description' => esc_html__('Link of image asset', 'fisrv-checkout-for-woocommerce'),
-                'default' => json_encode([]),
+                'default' => json_encode(['https://upload.wikimedia.org/wikipedia/commons/8/89/Fiserv_logo.svg']),
                 'type' => 'custom_icon',
                 'desc_tip' => true,
             ),
