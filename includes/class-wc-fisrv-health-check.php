@@ -122,4 +122,25 @@ final class WC_Fisrv_Health_Check
 		);
 	}
 
+	public static function register_restore_settings(): void
+	{
+		register_rest_route(
+			self::$webhook_endpoint,
+			'/restore-settings',
+			array(
+				'methods' => WP_REST_Server::READABLE,
+				'callback' => function (WP_REST_Request $request) {
+					$gateway_id = (string) $request->get_param('gateway-id');
+					$gateway = WC()->payment_gateways()->payment_gateways()[$gateway_id] ?? false;
+
+					if (!$gateway) {
+						return;
+					}
+
+					update_option("woocommerce_{$gateway_id}_settings", '');
+				}
+			)
+		);
+	}
+
 }

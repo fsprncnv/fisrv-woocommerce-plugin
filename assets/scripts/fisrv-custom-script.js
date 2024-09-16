@@ -50,3 +50,12 @@ async function fetchHealth() {
         fetchHealthBtn.innerHTML = "✔";
     }
 }
+
+async function fisrvRestorePaymentSettings(gateway_id, button) {
+    button.innerHTML = "<span class='fs-loader-status'></span>";
+    const res = await fetch(`/wp-json/fisrv_woocommerce_plugin/v1/restore-settings?gateway-id=${gateway_id}`, {
+        method: "GET",
+    });
+    const data = await res.json();
+    button.innerHTML = "Restored";
+}

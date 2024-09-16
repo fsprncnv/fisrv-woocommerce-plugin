@@ -12,11 +12,6 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         return $settings;
     }
 
-    public function __construct()
-    {
-        add_action('woocommerce_update_options_payment_gateways_' . $this->id, [$this, 'process_admin_options']);
-    }
-
     /**
      * 
      * @param string $field_html The markup of the field being generated (initiated as an empty string).
@@ -46,6 +41,13 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         return $field_html;
     }
 
+    public static function custom_restore_settings_field(string $field_html, string $key, array $data, WC_Settings_API $wc_settings): string
+    {
+        return '
+            <div class="button-primary" onclick="fisrvRestorePaymentSettings(\'' . $wc_settings->id . '\', this)">Restore default settings</div>
+        ';
+    }
+
     protected static function render_gateway_icons(bool $display, string $gateway_id, string $styles = '', string $height = '2rem')
     {
         $icon_html = '';
@@ -54,9 +56,13 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
 
         switch ($gateway_id) {
             case 'fisrv-gateway-generic':
-                $image_src = '';
+                $icons = json_decode($gateway->get_option('custom_icon'), true);
 
-                foreach (json_decode($gateway->get_option('custom_icon'), true) as $index => $icon) {
+                if (is_null($icons) || count($icons) === 0) {
+                    $icons = ['https://upload.wikimedia.org/wikipedia/commons/8/89/Fiserv_logo.svg'];
+                }
+
+                foreach ($icons as $index => $icon) {
                     $icon_html .= self::render_single_img($display, $height, $icon, $index);
                 }
 
@@ -64,17 +70,17 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
 
             case 'fisrv-apple-pay':
                 $image_src = 'https://woocommerce.com/wp-content/plugins/wccom-plugins/payment-gateway-suggestions/images/icons/applepay.svg';
-                $icon_html .= self::render_single_img($display, $height, $image_src);
+                $icon_html .= self::render_single_img(false, $height, $image_src);
                 break;
 
             case 'fisrv-google-pay':
                 $image_src = 'https://woocommerce.com/wp-content/plugins/wccom-plugins/payment-gateway-suggestions/images/icons/googlepay.svg';
-                $icon_html .= self::render_single_img($display, $height, $image_src);
+                $icon_html .= self::render_single_img(false, $height, $image_src);
                 break;
 
             case 'fisrv-credit-card':
                 $image_src = 'https://icon-library.com/images/credit-card-icon-white/credit-card-icon-white-9.jpg';
-                $icon_html .= self::render_single_img($display, $height, plugins_url('../assets/images/fisrv-credit-card.svg', __FILE__));
+                $icon_html .= self::render_single_img(false, $height, plugins_url('../assets/images/fisrv-credit-card.svg', __FILE__));
                 break;
 
             default:
@@ -203,7 +209,6 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
             'icons' => array(
                 'title' => 'Gateway Icon',
                 'description' => esc_html__('Link of image asset', 'fisrv-checkout-for-woocommerce'),
-                'default' => json_encode(['https://upload.wikimedia.org/wikipedia/commons/8/89/Fiserv_logo.svg']),
                 'type' => 'custom_icon',
                 'desc_tip' => true,
             ),
@@ -218,7 +223,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
                 'title' => 'Gateway Description',
                 'type' => 'text',
                 'description' => esc_html__('Custom description of gateway', 'fisrv-checkout-for-woocommerce'),
-                'default' => 'Payment will be processed by Fiserv. You will be redirect to external checkout page.',
+                'default' => 'Payment will be processed by Fiserv. You will be redirected to an external checkout page.',
                 'desc_tip' => true,
             ),
             'fail_page' => array(
@@ -234,7 +239,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
                 ),
             ),
             'restore' => array(
-                'title' => 'Restore settings',
+                'title' => 'Restore Settings',
                 'type' => 'restore_settings',
                 'description' => esc_html__('Restore all settings to default state', 'fisrv-checkout-for-woocommerce'),
                 'desc_tip' => true,
