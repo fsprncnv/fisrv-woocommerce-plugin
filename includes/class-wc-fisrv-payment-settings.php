@@ -19,11 +19,9 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
      * @param array  $data The attributes of the field as an associative array.
      * @param WC_Settings_API $wc_settings The current WC_Settings_API object.
      */
-    public static function custom_icon_settings_field(string $field_html, string $key, array $data, WC_Settings_API $wc_settings)
+    public static function render_icons_component(string $field_html, string $key, array $data, WC_Settings_API $wc_settings)
     {
         $html_identifier = "woocommerce_{$wc_settings->id}_{$key}";
-        // $variable_icon = esc_attr($wc_settings->get_option('icon', $this->get_default_icon()));
-
         $field_html = '<tr valign="top">
 			<th scope="row" class="titledesc">
 				<label for="' . $html_identifier . '">' . $data['title'] . ' <span class="woocommerce-help-tip" tabindex="0" aria-label="Custom name of gateway"></span></label>
@@ -33,7 +31,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
 					<legend class="screen-reader-text"><span>Gateway Name</span></legend>
 					' . self::render_gateway_icons(false, $wc_settings->id, 'display: flex; flex-direction: row;', $height = '4rem') . '
 					<input class="input-text regular-input" type="text" name="fs-icons-data" id="fs-icons-data" value="' . implode(',', json_decode('[]', true)) . '" placeholder="Enter image URL to add to list">
-					<div class="fs-add-button button-primary" gatewayid="' . $wc_settings->id . '" id="fs-icon-btn" onclick="addImage()">+</div>
+					<div style="display: flex;" class="button-primary fs-add-button" gatewayid="' . $wc_settings->id . '" id="fs-icon-btn" onclick="addImage()">+</div>
 				</fieldset>
 			</td>
 		</tr>';
@@ -41,10 +39,10 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         return $field_html;
     }
 
-    public static function custom_restore_settings_field(string $field_html, string $key, array $data, WC_Settings_API $wc_settings): string
+    public static function render_restore_button(string $field_html, string $key, array $data, WC_Settings_API $wc_settings): string
     {
         return '
-            <div class="button-primary" onclick="fisrvRestorePaymentSettings(\'' . $wc_settings->id . '\', this)">Restore default settings</div>
+            <div class="button-primary fs-add-button" onclick="fisrvRestorePaymentSettings(\'' . $wc_settings->id . '\', this)">Restore default settings</div>
         ';
     }
 
@@ -53,7 +51,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         return '
            <div class="fs-block">
                 <img style="width: 12em;" src="https://upload.wikimedia.org/wikipedia/commons/8/89/Fiserv_logo.svg" />
-                <div style="margin-top: 1em; margin-bottom: 1em;" > Pay securely with Fiserv Checkout</div>
+                <div style="margin-top: 1em; margin-bottom: 1em;">Pay securely with Fiserv Checkout. Acquire API credentials on our developer portal.</div>
                 <a style="text-decoration: none;" href="https://developer.fiserv.com">Visit developer.fiserv.com</a>
             </div>
         ';
@@ -118,7 +116,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
     }
 
 
-    public static function healthcheck_settings_field(string $field_html, string $key, array $data, WC_Settings_API $wc_settings)
+    public static function render_healthcheck(string $field_html, string $key, array $data, WC_Settings_API $wc_settings)
     {
         $html_identifier = "woocommerce_{$wc_settings->id}_{$key}";
 
@@ -129,7 +127,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
 			<td class="forminp">
 				<fieldset style="display: flex; flex-direction: row; align-items: center;">
 					<legend class="screen-reader-text"><span>Gateway Name</span></legend>
-					<div id="fs-health-btn" class="fs-add-button button-primary" onclick="fetchHealth()">+</div>
+					<div id="fs-health-btn" style="display: flex;" class="button-primary fs-add-button" onclick="fetchHealth()">+</div>
 					<div style="display: flex; flex-direction: row; margin-left: 1rem; align-items: center;">
 						<div id="fs-status-indicator" style="background-color: lightblue; border-radius: 100%; width: 0.8em; height: 0.8em; margin-right: 1em;"></div>
 						<div id="fs-status-text">Check status</div>
