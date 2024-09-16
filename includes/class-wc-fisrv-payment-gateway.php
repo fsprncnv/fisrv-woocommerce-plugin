@@ -40,27 +40,18 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Fisrv_Payment_Settings
 
 	public function is_available(): bool
 	{
-		// $generic_gateway = WC()->payment_gateways()->payment_gateways()['fisrv-gateway-generic'];
+		$generic_gateway = WC()->payment_gateways()->payment_gateways()['fisrv-gateway-generic'];
 
-		// return !in_array('', [
-		// 	$generic_gateway->get_option('api_key'),
-		// 	$generic_gateway->get_option('api_secret'),
-		// 	$generic_gateway->get_option('store_id')
-		// ]) && parent::is_available();
-		// return true;
-		return parent::is_available();
+		return !in_array('', [
+			$generic_gateway->get_option('api_key'),
+			$generic_gateway->get_option('api_secret'),
+			$generic_gateway->get_option('store_id')
+		]) && parent::is_available();
 	}
 
 	public function update_option($key, $value = '')
 	{
 		WC_Fisrv_Logger::generic_log('update_option() fired');
-
-		if ($key === 'icons') {
-			// parent::update_option('icons', 'blub');
-			return;
-		}
-
-		// WC_Fisrv_Logger::generic_log($key . ' ' . $value);
 
 		parent::update_option($key, $value);
 
@@ -69,10 +60,10 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Fisrv_Payment_Settings
 				$this->disable_gateway(new WC_Fisrv_Gateway_Applepay());
 				$this->disable_gateway(new WC_Fisrv_Gateway_Googlepay());
 				$this->disable_gateway(new WC_Fisrv_Gateway_Cards());
-				wc_add_notice(__('Disabled specific gateways since generic gateway was enabled.', 'fisrv-checkout-for-woocommerce'));
+				WC_Fisrv_Logger::generic_log('Disabled specific gateways since generic gateway was enabled');
 			} else {
 				$this->disable_gateway(new WC_Fisrv_Payment_Generic());
-				wc_add_notice(__('Disabled generic gateway since specific gateways were enabled.', 'fisrv-checkout-for-woocommerce'));
+				WC_Fisrv_Logger::generic_log('Disabled generic gateway since specific gateways were enabled');
 			}
 		}
 	}

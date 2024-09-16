@@ -308,13 +308,24 @@ final class WC_Fisrv_Checkout_Handler
 			$order->get_checkout_order_received_url()
 		);
 
+		$selectedFailurePage = $order->get_checkout_payment_url();
+		$gateway = WC()->payment_gateways()->payment_gateways()[$order->get_payment_method()];
+
+		if ($gateway instanceof WC_Fisrv_Payment_Gateway && $gateway->get_option('fail_page') === 'cart') {
+			$selectedFailurePage = $order->get_edit_order_url();
+		}
+
+		if ($gateway instanceof WC_Fisrv_Payment_Gateway && $gateway->get_option('fail_page') === 'cart') {
+			$selectedFailurePage = home_url();
+		}
+
 		$req->checkoutSettings->redirectBackUrls->failureUrl = add_query_arg(
 			array(
 				'_wpnonce' => $nonce,
 				'transaction_approved' => false,
 				'wc_order_id' => $order->get_id(),
 			),
-			$order->get_checkout_payment_url()
+			$selectedFailurePage
 		);
 
 		/** Append ampersand to allow checkout solution to append query params */
