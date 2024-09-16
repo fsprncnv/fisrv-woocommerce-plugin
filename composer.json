@@ -50,7 +50,15 @@
       "@composer --no-plugins --no-interaction install --no-scripts --no-dev",
       "@composer --no-plugins --no-interaction archive --format=zip"
     ],
-    "format": []
+    "analyse": [
+      "vendor/bin/phpstan analyse includes"
+    ],
+    "fix-format": [
+      "vendor/bin/phpcbf includes --standard=WordPressfix"
+    ],
+    "format": [
+      "vendor/bin/phpcs includes --standard=WordPress"
+    ]
   },
   "scripts-descriptions": {
     "build": "Build project artifact."

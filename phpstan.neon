@@ -1,9 +1,9 @@
 parameters:
-  level: 8
+  level: 1
   excludePaths:
     - vendor/*
   bootstrapFiles:
-  - vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
-  - vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php
-  - vendor/php-stubs/woocommerce-stubs/woocommerce-packages-stubs.php
+    - vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
+    - vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php
+    - vendor/php-stubs/woocommerce-stubs/woocommerce-packages-stubs.php
   phpVersion: 80100
