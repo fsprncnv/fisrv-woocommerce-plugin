@@ -48,6 +48,17 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         ';
     }
 
+    public static function render_fisrv_header(string $field_html, string $key, array $data, WC_Settings_API $wc_settings): string
+    {
+        return '
+           <div class="fs-block">
+                <img style="width: 12em;" src="https://upload.wikimedia.org/wikipedia/commons/8/89/Fiserv_logo.svg" />
+                <div style="margin-top: 1em; margin-bottom: 1em;" > Pay securely with Fiserv Checkout</div>
+                <a style="text-decoration: none;" href="https://developer.fiserv.com">Visit developer.fiserv.com</a>
+            </div>
+        ';
+    }
+
     protected static function render_gateway_icons(bool $display, string $gateway_id, string $styles = '', string $height = '2rem')
     {
         $icon_html = '';
@@ -206,6 +217,9 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
 
 
         $this->form_fields += array(
+            'header' => [
+                'type' => 'fisrv_header',
+            ],
             'icons' => array(
                 'title' => 'Gateway Icon',
                 'description' => esc_html__('Link of image asset', 'fisrv-checkout-for-woocommerce'),
@@ -239,10 +253,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
                 ),
             ),
             'restore' => array(
-                'title' => 'Restore Settings',
                 'type' => 'restore_settings',
-                'description' => esc_html__('Restore all settings to default state', 'fisrv-checkout-for-woocommerce'),
-                'desc_tip' => true,
             ),
         );
     }

@@ -33,6 +33,7 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Fisrv_Payment_Settings
 		add_filter("woocommerce_generate_custom_icon_html", [WC_Fisrv_Payment_Settings::class, 'custom_icon_settings_field'], 1, 4);
 		add_filter("woocommerce_generate_healthcheck_html", [WC_Fisrv_Payment_Settings::class, 'healthcheck_settings_field'], 1, 4);
 		add_filter("woocommerce_generate_restore_settings_html", [WC_Fisrv_Payment_Settings::class, 'custom_restore_settings_field'], 1, 4);
+		add_filter("woocommerce_generate_fisrv_header_html", [WC_Fisrv_Payment_Settings::class, 'render_fisrv_header'], 1, 4);
 		add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, [WC_Fisrv_Payment_Settings::class, 'custom_save_icon_value'], 10, 1);
 		add_filter('woocommerce_locate_template', [$this, 'custom_woocommerce_locate_template'], 10, 3);
 	}
