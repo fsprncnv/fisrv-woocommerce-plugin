@@ -54,7 +54,7 @@
       "vendor/bin/phpstan analyse includes"
     ],
     "fix-format": [
-      "vendor/bin/phpcbf includes --standard=WordPress"
+      "vendor/bin/phpcbf includes"
     ],
     "format": []
   },
