@@ -11,7 +11,7 @@ async function addImage() {
     const data = await res.json();
 
     if (data["status"] === "ok") {
-        btn.innerHTML = "✔";
+        btn.innerHTML = "✓";
     }
 }
 
@@ -47,7 +47,7 @@ async function fetchHealth() {
         fetchHealthBtn.innerHTML = "🞭";
     } else {
         indicator.style.background = "LightGreen";
-        fetchHealthBtn.innerHTML = "✔";
+        fetchHealthBtn.innerHTML = "✓";
     }
 }
 

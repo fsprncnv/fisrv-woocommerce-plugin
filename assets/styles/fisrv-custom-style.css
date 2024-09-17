@@ -3,11 +3,14 @@
     justify-content: center;
     align-items: center;
     color: white;
+    transition-duration: 0.4s;
+    box-sizing: border-box;
+    padding: 0.1em;
+    text-align: center;
 }
 
 .fs-add-button:hover {
     opacity: 0.6;
-    transition-duration: 0.1s;
 }
 
 .fs-loader-status {
@@ -19,6 +22,11 @@
     display: inline-block;
     box-sizing: border-box;
     animation: rotation 1s linear infinite;
+}
+
+.fs-input {
+    padding: 8px 10px !important; 
+    border: none !important;
 }
 
 .fs-icon-container {
