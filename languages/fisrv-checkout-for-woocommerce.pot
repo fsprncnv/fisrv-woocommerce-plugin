@@ -130,7 +130,7 @@ msgid "API Health"
 msgstr ""
 
 #: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-payment-settings.php
-msgid "Get current status of Fiserv API and your configuration'"
+msgid "Get current status of Fiserv API and your configuration"
 msgstr ""
 
 #: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-payment-settings.php
@@ -202,7 +202,7 @@ msgid "Home page"
 msgstr ""
 
 #: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-webhook-handler.php
-msgid "Transaction status changed to via webhook"
+msgid "Transaction status changed via webhook"
 msgstr ""
 
 #: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-webhook-handler.php

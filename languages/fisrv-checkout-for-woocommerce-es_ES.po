@@ -1,0 +1,160 @@
+# Copyright (C) 2024 fisrv
+# This file is distributed under the GNU General Public License v3.0.
+msgid ""
+msgstr ""
+"Project-Id-Version: Fiserv Checkout for WooCommerce 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/fisrv-checkout-for-woocommerce\n"
+"POT-Creation-Date: 2024-06-26T08:43:20+00:00\n"
+"PO-Revision-Date: 2024-09-17 10:44+0200\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.4.4\n"
+"X-Domain: fisrv-checkout-for-woocommerce\n"
+
+msgid "Fiserv Checkout for WooCommerce"
+msgstr "Fiserv Checkout for WooCommerce"
+
+msgid "Official Fiserv Checkout WooCommerce plugin"
+msgstr "Plugin oficial de pago Fiserv para WooCommerce"
+
+msgid "Retry payment"
+msgstr "Reintentar pago"
+
+msgid "Retrying payment"
+msgstr "Reintentando pago"
+
+msgid "Payment has failed: %s"
+msgstr "El pago ha fallado: %s"
+
+msgid "Payment successful via Fiserv Checkout."
+msgstr "Pago exitoso a través de Fiserv Checkout."
+
+msgid "Order was paid successfully."
+msgstr "El pedido se pagó con éxito."
+
+msgid "Order was paid successfully and set to completed (auto-complete)."
+msgstr "El pedido se pagó con éxito y se marcó como completado (auto-completar)."
+
+msgid "Order auto-completed."
+msgstr "Pedido auto-completado."
+
+msgid "Payment method failed. Please check on settings page if API credentials are set correctly."
+msgstr "El método de pago falló. Por favor, verifique en la página de configuración si las credenciales API están configuradas correctamente."
+
+msgid "Pay with Apple Pay via Fiserv"
+msgstr "Pagar con Apple Pay a través de Fiserv"
+
+msgid "Pay with Credit/Debit via Fiserv"
+msgstr "Pagar con tarjeta de crédito/débito a través de Fiserv"
+
+msgid "Credit/Debit Card"
+msgstr "Tarjeta de crédito/débito"
+
+msgid "Generic option shows all supported methods on redirect page."
+msgstr "La opción genérica muestra todos los métodos compatibles en la página de redirección."
+
+msgid "Pay with Google Pay via Fiserv"
+msgstr "Pagar con Google Pay a través de Fiserv"
+
+msgid "Processing payment failed. Order is invalid."
+msgstr "El procesamiento del pago falló. El pedido es inválido."
+
+msgid "Payment will be processed by Fiserv. You will be redirected to an external checkout page."
+msgstr "El pago será procesado por Fiserv. Serás redirigido a una página de pago externa."
+
+msgid "Restore default settings"
+msgstr "Restaurar configuración predeterminada"
+
+msgid "Pay securely with Fiserv Checkout. Acquire API credentials on our developer portal"
+msgstr "Paga de forma segura con Fiserv Checkout. Obtén credenciales API en nuestro portal de desarrolladores"
+
+msgid "Visit developer.fiserv.com"
+msgstr "Visita developer.fiserv.com"
+
+msgid "Remove Icon"
+msgstr "Eliminar ícono"
+
+msgid "Check status"
+msgstr "Verificar estado"
+
+msgid "Acquire API Key from Developer Portal"
+msgstr "Obtener clave API desde el portal de desarrolladores"
+
+msgid "Acquire API Secret from Developer Portal"
+msgstr "Obtener secreto API desde el portal de desarrolladores"
+
+msgid "Your Store ID for Checkout"
+msgstr "Tu ID de tienda para el pago"
+
+msgid "Production Mode"
+msgstr "Modo de producción"
+
+msgid "Use Live (Production) Mode or Test (Sandbox) Mode"
+msgstr "Usar modo en vivo (producción) o modo de prueba (sandbox)"
+
+msgid "API Health"
+msgstr "Estado de la API"
+
+msgid "Get current status of Fiserv API and your configuration"
+msgstr "Obtener el estado actual de la API de Fiserv y tu configuración"
+
+msgid "Auto-complete Orders"
+msgstr "Auto-completar pedidos"
+
+msgid "Skip processing order status and set to complete status directly"
+msgstr "Omitir el procesamiento del estado del pedido y marcarlo directamente como completado"
+
+msgid "Transaction Type"
+msgstr "Tipo de transacción"
+
+msgid "Set transaction type. Currently, only SALE transactions are available."
+msgstr "Establecer tipo de transacción. Actualmente, solo están disponibles las transacciones de VENTA."
+
+msgid "Enable Developer Logs"
+msgstr "Habilitar registros de desarrollador"
+
+msgid "Enable log messages on WooCommerce"
+msgstr "Habilitar mensajes de registro en WooCommerce"
+
+msgid "Gateway Icon"
+msgstr "Ícono de la pasarela"
+
+msgid "Image URL for asset"
+msgstr "URL de la imagen para el recurso"
+
+msgid "Gateway Name"
+msgstr "Nombre de la pasarela"
+
+msgid "Custom name of gateway"
+msgstr "Nombre personalizado de la pasarela"
+
+msgid "Gateway Description"
+msgstr "Descripción de la pasarela"
+
+msgid "Custom description of gateway"
+msgstr "Descripción personalizada de la pasarela"
+
+msgid "Redirect after payment failure"
+msgstr "Redirigir después de fallo de pago"
+
+msgid "Where to redirect if payment failed"
+msgstr "Dónde redirigir si el pago falló"
+
+msgid "Checkout page"
+msgstr "Página de pago"
+
+msgid "Shopping cart"
+msgstr "Carrito de compras"
+
+msgid "Home page"
+msgstr "Página de inicio"
+
+msgid "Transaction status changed via webhook"
+msgstr "Estado de la transacción cambiado a través de webhook"
+
+msgid "Fiserv webhook has updated order to %s"
+msgstr "El webhook de Fiserv ha actualizado el pedido a %s"
