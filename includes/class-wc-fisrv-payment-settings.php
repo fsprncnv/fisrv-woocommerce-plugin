@@ -2,10 +2,10 @@
 
 abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway {
 
-	protected string $default_title = '';
 
-	protected string $default_description = '';
-
+	public function __construct() {
+		$this->title = esc_html__( 'Payment will be processed by Fiserv. You will be redirected to an external checkout page.', 'fisrv-checkout-for-woocommerce' );
+	}
 
 	public static function custom_save_icon_value( $settings ) {
 		return $settings;
@@ -39,7 +39,9 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway {
 
 	public static function render_restore_button( string $field_html, string $key, array $data, WC_Settings_API $wc_settings ): string {
 		return '
-            <div class="button-primary fs-add-button" onclick="fisrvRestorePaymentSettings(\'' . $wc_settings->id . '\', this)">Restore default settings</div>
+            <div class="button-primary fs-add-button" onclick="fisrvRestorePaymentSettings(\'' . $wc_settings->id . '\', this)">
+				' . esc_html__( 'Restore default settings', 'fisrv-checkout-for-woocommerce' ) . '
+			</div>
         ';
 	}
 
@@ -47,8 +49,9 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway {
 		return '
            <div class="fs-block">
                 <img style="width: 12em;" src="https://upload.wikimedia.org/wikipedia/commons/8/89/Fiserv_logo.svg" />
-                <div style="margin-top: 1em; margin-bottom: 1em;">Pay securely with Fiserv Checkout. Acquire API credentials on our developer portal.</div>
-                <a style="text-decoration: none;" href="https://developer.fiserv.com">Visit developer.fiserv.com</a>
+                <div style="margin-top: 1em; margin-bottom: 1em;">
+				' . esc_html__( 'Pay securely with Fiserv Checkout. Acquire API credentials on our developer portal', 'fisrv-checkout-for-woocommerce' ) . '</div>
+                <a style="text-decoration: none;" href="https://developer.fiserv.com">' . esc_html__( 'Visit developer.fiserv.com', 'fisrv-checkout-for-woocommerce' ) . '</a>
             </div>
         ';
 	}
@@ -95,6 +98,9 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway {
 		return $icon_html;
 	}
 
+	// ' . esc_html__('
+	// , 'fisrv-checkout-for-woocommerce') . '
+
 	private static function render_single_img( bool $display, string $height, string $image_src, int $index = 0 ): string {
 		if ( $display ) {
 			return '
@@ -104,7 +110,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway {
 
 		return '
         <div gateway-id="fisrv-gateway-generic" id="fs-icon-container-' . $index . '" class="fs-icon-container" onclick="removeImage(' . $index . ', this)">
-            <div id="fs-icon-overlay-' . $index . '" class="fs-icon-overlay">🞭 Remove Icon</div>
+            <div id="fs-icon-overlay-' . $index . '" class="fs-icon-overlay">🞭 ' . esc_html__( 'Remove Icon', 'fisrv-checkout-for-woocommerce' ) . '</div>
             <img style="border-radius: 10%; margin-right: 5px; height: ' . $height . '" src="' . WC_HTTPS::force_https_url( $image_src ) . '" alt="' . esc_attr( 'Fisrv gateway icon' ) . '" />
         </div>';
 	}
@@ -123,11 +129,12 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway {
 					<div id="fs-health-btn" style="display: flex;" class="button-primary fs-add-button" onclick="fetchHealth()">+</div>
 					<div style="display: flex; flex-direction: row; margin-left: 1rem; align-items: center;">
 						<div id="fs-status-indicator" style="background-color: lightblue; border-radius: 100%; width: 0.8em; height: 0.8em; margin-right: 1em;"></div>
-						<div id="fs-status-text">Check status</div>
+						<div id="fs-status-text">' . esc_html__( 'Check status', 'fisrv-checkout-for-woocommerce' ) . '</div>
 					</div>
 				</fieldset>
 			</td>
 		</tr>';
+
 		return $field_html;
 	}
 
@@ -162,19 +169,19 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway {
 					'desc_tip'    => true,
 				),
 				'is_prod'          => array(
-					'title'       => 'Production Mode',
+					'title'       => esc_html__( 'Production Mode', 'fisrv-checkout-for-woocommerce' ),
 					'type'        => 'checkbox',
 					'description' => esc_html__( 'Use Live (Production) Mode or Test (Sandbox) Mode', 'fisrv-checkout-for-woocommerce' ),
 					'desc_tip'    => true,
 				),
 				'healthcheck'      => array(
-					'title'       => 'API Health',
+					'title'       => esc_html__( 'API Health', 'fisrv-checkout-for-woocommerce' ),
 					'type'        => 'healthcheck',
 					'description' => esc_html__( 'Get current status of Fiserv API and your configuration', 'fisrv-checkout-for-woocommerce' ),
 					'desc_tip'    => true,
 				),
 				'autocomplete'     => array(
-					'title'       => 'Auto-complete Orders',
+					'title'       => esc_html__( 'Auto-complete Orders', 'fisrv-checkout-for-woocommerce' ),
 					'type'        => 'checkbox',
 					'description' => esc_html__( 'Skip processing order status and set to complete status directly', 'fisrv-checkout-for-woocommerce' ),
 					'desc_tip'    => true,
@@ -186,7 +193,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway {
 				// 'desc_tip' => true,
 				// ),
 				'transaction_type' => array(
-					'title'       => 'Transaction Type',
+					'title'       => esc_html__( 'Transaction Type', 'fisrv-checkout-for-woocommerce' ),
 					'type'        => 'select',
 					'description' => esc_html__( 'Set transaction type. Currently, only SALE transactions are available.', 'fisrv-checkout-for-woocommerce' ),
 					'desc_tip'    => true,
@@ -196,7 +203,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway {
 					),
 				),
 				'enable_log'       => array(
-					'title'       => 'Enable Developer Logs',
+					'title'       => esc_html__( 'Enable Developer Logs', 'fisrv-checkout-for-woocommerce' ),
 					'type'        => 'checkbox',
 					'description' => esc_html__( 'Enable log messages on WooCommerce', 'fisrv-checkout-for-woocommerce' ),
 					'desc_tip'    => true,
@@ -209,35 +216,35 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway {
 				'type' => 'fisrv_header',
 			),
 			'icons'       => array(
-				'title'       => 'Gateway Icon',
-				'description' => esc_html__( 'Link of image asset', 'fisrv-checkout-for-woocommerce' ),
+				'title'       => esc_html__( 'Gateway Icon', 'fisrv-checkout-for-woocommerce' ),
+				'description' => esc_html__( 'Image URL for asset', 'fisrv-checkout-for-woocommerce' ),
 				'type'        => 'custom_icon',
 				'desc_tip'    => true,
 			),
 			'title'       => array(
-				'title'       => 'Gateway Name',
+				'title'       => esc_html__( 'Gateway Name', 'fisrv-checkout-for-woocommerce' ),
 				'type'        => 'text',
 				'description' => esc_html__( 'Custom name of gateway', 'fisrv-checkout-for-woocommerce' ),
-				'default'     => $this->default_title,
+				'default'     => $this->title,
 				'desc_tip'    => true,
 			),
 			'description' => array(
-				'title'       => 'Gateway Description',
+				'title'       => esc_html__( 'Gateway Description', 'fisrv-checkout-for-woocommerce' ),
 				'type'        => 'text',
 				'description' => esc_html__( 'Custom description of gateway', 'fisrv-checkout-for-woocommerce' ),
-				'default'     => 'Payment will be processed by Fiserv. You will be redirected to an external checkout page.',
+				'default'     => $this->description,
 				'desc_tip'    => true,
 			),
 			'fail_page'   => array(
-				'title'       => 'Redirect after payment failure',
+				'title'       => esc_html__( 'Redirect after payment failure', 'fisrv-checkout-for-woocommerce' ),
 				'type'        => 'select',
 				'description' => esc_html__( 'Where to redirect if payment failed', 'fisrv-checkout-for-woocommerce' ),
-				'default'     => '',
+				'default'     => 'checkout',
 				'desc_tip'    => true,
 				'options'     => array(
-					'checkout' => 'Checkout page',
-					'cart'     => 'Shopping cart',
-					'home'     => 'Home page',
+					'checkout' => esc_html__( 'Checkout page', 'fisrv-checkout-for-woocommerce' ),
+					'cart'     => esc_html__( 'Shopping cart', 'fisrv-checkout-for-woocommerce' ),
+					'home'     => esc_html__( 'Home page', 'fisrv-checkout-for-woocommerce' ),
 				),
 			),
 			'restore'     => array(

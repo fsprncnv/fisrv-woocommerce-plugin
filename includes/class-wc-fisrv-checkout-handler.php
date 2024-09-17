@@ -1,8 +1,6 @@
 <?php
 
 use Fisrv\Checkout\CheckoutClient;
-use Fisrv\Exception\ErrorResponse;
-use Fisrv\HttpClient\HttpClient;
 use Fisrv\Models\CheckoutClientRequest;
 use Fisrv\Models\Currency;
 use Fisrv\Models\LineItem;
@@ -11,7 +9,6 @@ use Fisrv\Models\PaymentsClientRequest;
 use Fisrv\Models\PaymentsClientResponse;
 use Fisrv\Models\PreSelectedPaymentMethod;
 use Fisrv\Models\ToBeUsedFor;
-use Fisrv\Models\TransactionSequenceType;
 use Fisrv\Models\TransactionType;
 use Fisrv\Payments\PaymentsClient;
 
@@ -25,7 +22,6 @@ use Fisrv\Payments\PaymentsClient;
  * @since      1.0.0
  */
 final class WC_Fisrv_Checkout_Handler {
-
 
 	const FISRV_NONCE = 'fisrv-nonce';
 
@@ -87,13 +83,13 @@ final class WC_Fisrv_Checkout_Handler {
 
 			if ( sanitize_text_field( $_GET['transaction_approved'] ) ) {
 				if ( $generic_gateway->get_option( 'autocomplete' ) === 'no' ) {
-					$order->update_status( 'wc-processing', __( 'Order has completed with auto-completion', 'fisrv-checkout-for-woocommerce' ) );
+					$order->update_status( 'wc-processing', __( 'Order was paid sucessfully.', 'fisrv-checkout-for-woocommerce' ) );
 					return;
 				}
 
 				$has_completed = $order->payment_complete();
 				if ( $has_completed ) {
-					$order->update_status( 'wc-completed', __( 'Order has completed with auto-completion', 'fisrv-checkout-for-woocommerce' ) );
+					$order->update_status( 'wc-completed', __( 'Order was paid sucessfully and set to completed (auto-complete).', 'fisrv-checkout-for-woocommerce' ) );
 					WC_Fisrv_Logger::log( $order, __( 'Order auto-completed.', 'fisrv-checkout-for-woocommerce' ) );
 				}
 			}

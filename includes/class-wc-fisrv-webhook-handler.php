@@ -15,6 +15,7 @@ use Fisrv\Models\WebhookEvent\WebhookEvent;
 final class WC_Fisrv_Webhook_Handler {
 
 
+
 	public static string $webhook_endpoint = '/fisrv_woocommerce_plugin/v1';
 
 	/**
@@ -28,11 +29,11 @@ final class WC_Fisrv_Webhook_Handler {
 		$request_body = $request->get_body();
 		$order_id     = $request->get_param( 'wc_order_id' );
 
-		if ( ! is_string( $order_id ) ) {
-			throw new Exception( esc_html__( 'Query parameter (order ID) is malformed', 'fisrv-checkout-for-woocommerce' ) );
-		}
-
 		try {
+			if ( ! is_string( $order_id ) ) {
+				throw new Exception( 'Query parameter (order ID) is malformed' );
+			}
+
 			$webhook_event = new WebhookEvent( $request_body );
 			self::update_order( $order_id, $webhook_event );
 
@@ -78,7 +79,7 @@ final class WC_Fisrv_Webhook_Handler {
 
 		if ( ! $order instanceof WC_Order ) {
 			/* translators: %s: Order ID */
-			throw new Exception( esc_html( sprintf( __( 'Order with ID %s has not been found.', 'fisrv-checkout-for-woocommerce' ), $order_id ) ) );
+			throw new Exception( sprintf( 'Order with ID %s has not been found.', $order_id ) );
 		}
 
 		$stored_events_list = json_decode( strval( $order->get_meta( '_fisrv_plugin_webhook_event' ) ), true );
@@ -140,16 +141,16 @@ final class WC_Fisrv_Webhook_Handler {
 
 		if ( $order->has_status( 'completed' ) || $order->has_status( 'cancelled' ) ) {
 			/* translators: %1$s: Prior status ID %2$s: Current status */
-			WC_Fisrv_Logger::log( $order, sprintf( __( 'Attempted to change status of order that has been processed already. Prior status: %1$s Attempted status change: %2$s', 'fisrv-checkout-for-woocommerce' ), $order->get_status(), $wc_status_unprefixed ) );
+			WC_Fisrv_Logger::log( $order, sprintf( 'Attempted to change status of order that has been processed already. Prior status: %1$s Attempted status change: %2$s', $order->get_status(), $wc_status_unprefixed ) );
 
 			return;
 		}
 
-		$order->update_status( $wc_status, __( 'Transaction status changed', 'fisrv-checkout-for-woocommerce' ) );
+		$order->update_status( $wc_status, __( 'Transaction status changed to via webhook', 'fisrv-checkout-for-woocommerce' ) );
 		/* translators: %s: Staus without prefix */
-		$order->add_order_note( sprintf( __( 'Fiserv checkout has updated order to %s', 'fisrv-checkout-for-woocommerce' ), $wc_status_unprefixed ) );
+		$order->add_order_note( sprintf( __( 'Fiserv webhook has updated order to %s', 'fisrv-checkout-for-woocommerce' ), $wc_status_unprefixed ) );
 		/* translators: %1$s: Order ID %2$s: Order status */
-		WC_Fisrv_Logger::log( $order, sprintf( __( 'Order %1$s changed to status %2$s', 'fisrv-checkout-for-woocommerce' ), $order->get_id(), $order->get_status() ) );
+		WC_Fisrv_Logger::log( $order, sprintf( 'Order %s changed to status %s via webhook', $order->get_id(), $order->get_status() ) );
 
 		$order->save_meta_data();
 	}

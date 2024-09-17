@@ -15,121 +15,196 @@ msgstr ""
 "X-Domain: fisrv-checkout-for-woocommerce\n"
 
 #. Plugin Name of the plugin
-#: C:\Users\princen.vijayakumar\Local Sites\fiserv-wp-dev\app\public\wp-content\plugins\fisrv-checkout-for-woocommerce\fisrv-checkout-for-woocommerce.php
+#: fisrv-checkout-for-woocommerce\fisrv-checkout-for-woocommerce.php
 msgid "Fiserv Checkout for WooCommerce"
 msgstr ""
 
 #. Description of the plugin
-#: C:\Users\princen.vijayakumar\Local Sites\fiserv-wp-dev\app\public\wp-content\plugins\fisrv-checkout-for-woocommerce\fisrv-checkout-for-woocommerce.php
+#: fisrv-checkout-for-woocommerce\fisrv-checkout-for-woocommerce.php
 msgid "Official Fiserv Checkout WooCommerce plugin"
 msgstr ""
 
-#: includes\wc-fisrv-gateway-googlepay.php
-msgid "Pay with Google Pay via Fiserv"
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-checkout-handler.php
+msgid "Retry payment"
 msgstr ""
 
-#: 
-msgid "Pay with credit card via Fiserv"
-msgstr ""
-
-#: 
-msgid "Pay with Apple Pay via Fiserv"
-msgstr ""
-
-
-#: includes\wc-fisrv-payment-gateway.php
-#: 
-msgid "Enable Payment Gateway"
-msgstr ""
-
-#: 
-msgid "Acquire API Key from Developer Portal"
-msgstr ""
-
-#: 
-msgid "Acquire API Secret from Developer Portal"
-msgstr ""
-
-#: 
-msgid "Your Store ID for Checkout"
-msgstr ""
-
-#: 
-msgid "Custom name of gateway"
-msgstr ""
-
-#: 
-msgid "Custom description of gateway"
-msgstr ""
-
-#: 
-msgid "Link of image asset"
-msgstr ""
-
-#: 
-msgid "Processing payment failed. Order is invalid."
-msgstr ""
-
-
-#: includes\wc-fisrv-webhook-handler.php
-#: 
-msgid "Query parameter (order ID) is malformed"
-msgstr ""
-
-#: 
-msgid "Order with ID %s has not been found."
-msgstr ""
-
-#: 
-msgid "Attempted to change status of order that has been processed already. Prior status: %1$s Attempted status change: %2$s"
-msgstr ""
-
-#: 
-msgid "Order %1$s changed to status %2$s"
-msgstr ""
-
-#: 
-msgid "Transaction status changed"
-msgstr ""
-
-#: 
-msgid "Fiserv checkout has updated order to %s"
-msgstr ""
-
-
-#: includes\wc-fisrv-checkout-handler.php
-#: 
-msgid "Security check: Nonce was invalid when checkout redirected back to failure URL."
-msgstr ""
-
-#: 
-msgid "Payment validation failed, retrying on checkout page: %1$s -- %2$s"
-msgstr ""
-
-#: 
-msgid "Payment has failed: %s"
-msgstr ""
-
-#: 
-msgid "Order completed with card payment."
-msgstr ""
-
-#: 
-msgid "Fiserv checkout link %1$s created with checkout ID %2$s and trace ID %3&s."
-msgstr ""
-
-#: 
-msgid "Payment method %s failed. Please check on settings page if API credentials are set correctly."
-msgstr ""
-
-#: 
-msgid "Order has completed"
-msgstr ""
-
-#: 
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-checkout-handler.php
 msgid "Retrying payment"
 msgstr ""
 
-#:
-msgid "Select specific method on payment page"
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-checkout-handler.php
+msgid "Payment has failed: %s"
+msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-checkout-handler.php
+msgid "Payment successful via Fiserv Checkout."
+msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-checkout-handler.php
+msgid "Order was paid sucessfully."
+msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-checkout-handler.php
+msgid "Order was paid sucessfully and set to completed (auto-complete)."
+msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-checkout-handler.php
+msgid "Order auto-completed."
+msgstr "Fiserv checkout link %1$s created with checkout ID %2$s and trace ID %3$s."
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-checkout-handler.php
+msgid "Payment method failed. Please check on settings page if API credentials are set correctly."
+msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-gateway-applepay.php
+msgid "Pay with Apple Pay via Fiserv"
+msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-gateway-cards.php
+msgid "Pay with Credit/Debit via Fiserv"
+msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-gateway-cards.php
+msgid "Credit/Debit Card"
+msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-gateway-generic.php
+msgid "Generic option shows all supported methods on redirect page."
+msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-gateway-googlepay.php
+msgid "Pay with Google Pay via Fiserv"
+msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-payment-gateway.php
+msgid "Processing payment failed. Order is invalid."
+msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-payment-settings.php
+msgid "Payment will be processed by Fiserv. You will be redirected to an external checkout page."
+msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-payment-settings.php
+msgid "Restore default settings"
+msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-payment-settings.php
+msgid "Pay securely with Fiserv Checkout. Acquire API credentials on our developer portal"
+msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-payment-settings.php
+msgid "Visit developer.fiserv.com"
+msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-payment-settings.php
+msgid "Remove Icon"
+msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-payment-settings.php
+msgid "Check status"
+msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-payment-settings.php
+msgid "Acquire API Key from Developer Portal"
+msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-payment-settings.php
+msgid "Acquire API Secret from Developer Portal"
+msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-payment-settings.php
+msgid "Your Store ID for Checkout"
+msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-payment-settings.php
+msgid "Production Mode"
+msgstr ""
+
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-payment-settings.php
+msgid "Use Live (Production) Mode or Test (Sandbox) Mode"
+msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-payment-settings.php
+msgid "API Health"
+msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-payment-settings.php
+msgid "Get current status of Fiserv API and your configuration'"
+msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-payment-settings.php
+msgid "Auto-complete Orders"
+msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-payment-settings.php
+msgid "Skip processing order status and set to complete status directly"
+msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-payment-settings.php
+msgid "Transaction Type"
+msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-payment-settings.php
+msgid "Set transaction type. Currently, only SALE transactions are available."
+msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-payment-settings.php
+msgid "Enable Developer Logs"
+msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-payment-settings.php
+msgid "Enable log messages on WooCommerce"
+msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-payment-settings.php
+msgid "Gateway Icon"
+msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-payment-settings.php
+msgid "Image URL for asset"
+msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-payment-settings.php
+msgid "Gateway Name"
+msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-payment-settings.php
+msgid "Custom name of gateway"
+msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-payment-settings.php
+msgid "Gateway Description"
+msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-payment-settings.php
+msgid "Custom description of gateway"
+msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-payment-settings.php
+msgid "Redirect after payment failure"
+msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-payment-settings.php
+msgid "Where to redirect if payment failed"
+msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-payment-settings.php
+msgid "Checkout page"
+msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-payment-settings.php
+msgid "Shopping cart"
+msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-payment-settings.php
+msgid "Home page"
+msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-webhook-handler.php
+msgid "Transaction status changed to via webhook"
+msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-webhook-handler.php
+msgid "Fiserv webhook has updated order to %s"
 msgstr ""
