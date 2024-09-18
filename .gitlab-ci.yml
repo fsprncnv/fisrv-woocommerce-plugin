@@ -22,11 +22,10 @@ build:
 
 test:
   image: mcr.microsoft.com/playwright:v1.47.1-jammy
-  parallel: 7
   script:
     - npm install
     - npm ci
-    - npx playwright test --shard=$CI_NODE_INDEX/$CI_NODE_TOTAL
+    - npx playwright test
   before_script:
     - cd tests/
 
