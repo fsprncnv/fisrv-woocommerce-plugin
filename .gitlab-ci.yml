@@ -23,6 +23,7 @@ build:
 test:
   image: mcr.microsoft.com/playwright:v1.39.0-jammy
   script:
+    - npm install
     - npm ci
     - npx playwright test
   before_script:
