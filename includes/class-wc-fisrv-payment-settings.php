@@ -72,7 +72,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
                 <?php echo esc_html__(
                     'Pay securely with Fiserv Checkout. Acquire API credentials on our developer portal',
                     'fisrv-checkout-for-woocommerce'
-                ) ?>
+                ) ?>.
             </div>
             <a style="text-decoration: none;" href="https://developer.fiserv.com"><?php echo esc_html__(
                 'Visit developer.fiserv.com',
@@ -211,7 +211,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
             <td class="forminp">
                 <fieldset>
                     <legend class="screen-reader-text"><span><?php echo $data['title'] ?? "" ?></span></legend>
-                    <input class="fs-input" type="<?php echo $data['type'] ?? "text" ?>" name="<?php echo $html_identifier ?>y"
+                    <input class="fs-input" type="<?php echo $data['type'] ?? "text" ?>" name="<?php echo $html_identifier ?>"
                         id="<?php echo $html_identifier ?>" style="" value="<?php echo $this->get_option($key) ?? "" ?> "
                         placeholder="<?php echo $data['default'] ?? "" ?> ">
                 </fieldset>
