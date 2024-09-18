@@ -77,13 +77,16 @@ if (!class_exists('fisrv_checkout_for_woocommerce')) {
             add_action('rest_api_init', [WC_Fisrv_Webhook_Handler::class, 'register_consume_events']);
 
             /** Register health check endpoint */
-            add_action('rest_api_init', [WC_Fisrv_Health_Check::class, 'register_health_report']);
+            add_action('rest_api_init', [WC_Fisrv_Rest_Routes::class, 'register_health_report']);
 
             /** Register add icon endpoint */
-            add_action('rest_api_init', [WC_Fisrv_Health_Check::class, 'register_add_image']);
+            add_action('rest_api_init', [WC_Fisrv_Rest_Routes::class, 'register_add_image']);
 
             /** Register remove icon endpoint */
-            add_action('rest_api_init', [WC_Fisrv_Health_Check::class, 'register_remove_image']);
+            add_action('rest_api_init', [WC_Fisrv_Rest_Routes::class, 'register_remove_image']);
+
+            /** Register checkout details endpoint */
+            add_action('rest_api_init', [WC_Fisrv_Rest_Routes::class, 'register_checkout_report']);
 
             wp_enqueue_style('fisrv-custom-style', plugins_url('assets\styles\fisrv-custom-style.css', __FILE__));
 

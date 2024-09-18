@@ -28,6 +28,9 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Fisrv_Payment_Settings
             'refunds',
         );
 
+        add_action('add_meta_boxes', [$this, 'custom_order_meta_box'], 10, 2);
+
+
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
         add_filter('woocommerce_gateway_icon', array($this, 'custom_payment_gateway_icons'), 10, 2);
 
@@ -38,6 +41,52 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Fisrv_Payment_Settings
         add_filter('woocommerce_generate_fisrv_header_html', array(WC_Fisrv_Payment_Settings::class, 'render_fisrv_header'), 1, 4);
         add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array(WC_Fisrv_Payment_Settings::class, 'custom_save_icon_value'), 10, 1);
         add_filter('woocommerce_locate_template', array($this, 'custom_woocommerce_locate_template'), 10, 3);
+    }
+
+    public function custom_order_meta_box($id, $order)
+    {
+        add_meta_box(
+            'fiserv-checkout-order-meta-box',
+            'Fiserv Checkout Info ',
+            function () use ($order) {
+                echo $this->custom_order_meta_box_callback($order);
+            },
+            $id,
+            'side',
+            'core'
+        );
+    }
+
+    public function custom_order_meta_box_callback($order)
+    {
+        ob_start();
+
+        $meta_data = [
+            'Checkout Link' => "<a href='" . $order->get_meta('_fisrv_plugin_checkout_link') . "'>Go to checkout page</a>",
+            'Checkout ID' => $order->get_meta('_fisrv_plugin_checkout_id'),
+            'Trace ID' => $order->get_meta('_fisrv_plugin_trace_id'),
+        ];
+
+        ?>
+        <div class="customer-history order-attribution-metabox">
+            <div id="fs-checkout-info-container">
+                <?php
+                foreach ($meta_data as $key => $value) {
+                    ?>
+                    <h4><?php echo $key ?></h4>
+                    <span class="order-attribution-total-orders"><?php echo $value ?></span>
+                    <?php
+                }
+                ?>
+            </div>
+            <div class="fs-checkout-report-button" reported="false"
+                onclick="fetchCheckoutReport('<?php echo $order->get_meta('_fisrv_plugin_checkout_id') ?>', this)">Fetch Full
+                Checkout
+                Data</div>
+        </div>
+        <?php
+
+        return ob_get_clean();
     }
 
     public function is_available(): bool
