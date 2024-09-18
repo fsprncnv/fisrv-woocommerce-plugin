@@ -34,12 +34,18 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
                 <fieldset style="display: flex; flex-direction: row;">
                     <legend class="screen-reader-text"><span>Gateway Name</span></legend>
                     <?php echo self::render_gateway_icons($wc_settings->id, 'display: flex; flex-direction: row;', '4rem') ?>
-                    <input style="margin-left: 8px; margin-right: 8px; padding: 8px 10px; border: none;"
-                        class="input-text regular-input" type="text" name="fs-icons-data" id="fs-icons-data"
-                        value="<?php echo implode(',', json_decode('[]', true)) ?>"
-                        placeholder="Enter image URL to add to list">
-                    <div style="display: flex;" class="button-primary fs-add-button" gatewayid="<?php echo $wc_settings->id ?>"
-                        id="fs-icon-btn" onclick="addImage()">+</div>
+                    <?php
+                    if ($wc_settings->id === 'fisrv-gateway-generic') {
+                        ?>
+                        <input style="margin-left: 8px; margin-right: 8px; padding: 8px 10px; border: none;"
+                            class="input-text regular-input" type="text" name="fs-icons-data" id="fs-icons-data"
+                            value="<?php echo implode(',', json_decode('[]', true)) ?>"
+                            placeholder="Enter image URL to add to list">
+                        <div style="display: flex;" class="button-primary fs-add-button" gatewayid="<?php echo $wc_settings->id ?>"
+                            id="fs-icon-btn" onclick="addImage()">+</div>
+                        <?php
+                    }
+                    ?>
                 </fieldset>
             </td>
         </tr>
@@ -229,6 +235,9 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
     {
         if ($this->id === 'fisrv-gateway-generic') {
             $this->form_fields = array(
+                'header' => array(
+                    'type' => 'fisrv_header',
+                ),
                 'api_key' => array(
                     'title' => 'API Key',
                     'type' => 'text',
@@ -292,9 +301,6 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         }
 
         $this->form_fields += array(
-            'header' => array(
-                'type' => 'fisrv_header',
-            ),
             'icons' => array(
                 'title' => esc_html__('Gateway Icon', 'fisrv-checkout-for-woocommerce'),
                 'description' => esc_html__('Image URL for asset', 'fisrv-checkout-for-woocommerce'),
