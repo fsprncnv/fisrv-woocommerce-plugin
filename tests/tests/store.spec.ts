@@ -1,16 +1,26 @@
 import { test, expect, Page } from '@playwright/test';
 
-test.beforeEach(async ({ page }) => {
-  await page.goto('/?add-to-cart=12');
-});
-
 // ADMIN ENV CONFIG
 
 // how do i get the plugin (marketplace, zip file)
 
+test.beforeEach(async ({ page }) => {
+  await authenticate(page);
+  await restartWoocommercePlugin(page);
+});
+
 test('Woocommerce and Fiserv plugin are installed and activated properly', async ({
   page,
-}) => {});
+}) => {
+  await expect(page.locator('#deactivate-woocommerce')).toBeVisible();
+});
+
+async function restartWoocommercePlugin(page: Page) {
+  await page.goto('/wp-admin/plugins.php');
+  await page.locator('#deactivate-woocommerce').click();
+  await page.waitForLoadState('load');
+  await page.locator('#activate-woocommerce').click();
+}
 
 test('Setup plugin and failed API health check due to bad API key (fail flow)', async ({
   page,
@@ -40,6 +50,7 @@ test.describe('Successful order and partial refund', () => {
 
   test.beforeAll(async ({ browser }) => {
     page = await browser.newPage();
+    await page.goto('/?add-to-cart=12');
   });
 
   test('01. Fill cart and fill in billing info in guest session', async ({
@@ -120,4 +131,18 @@ async function createSuccessfulOrder(page: Page): Promise<any> {
     .locator('.wc-block-order-confirmation-summary-list-item__value')
     .first()
     .innerHTML();
+}
+
+async function authenticate(page: Page) {
+  await page.goto('/wp-admin');
+
+  if (page.url().match(/.*wp-login.*$/)) {
+    await page.locator('#user_login').fill('admin');
+    await page
+      .locator('#user_pass')
+      .fill(process.env.WP_PASSWORD ?? 'password');
+
+    await page.getByRole('button', { name: 'Log In' }).click();
+    await page.waitForURL(/.*wp-admin.*$/);
+  }
 }
