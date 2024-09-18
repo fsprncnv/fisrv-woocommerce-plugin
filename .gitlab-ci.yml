@@ -1,17 +1,18 @@
 include:
-  - project: "default/base"
-    ref: "main"
-    file: ".php.gitlab-ci.yml"
+  - project: 'default/base'
+    ref: 'main'
+    file: '.php.gitlab-ci.yml'
 
 variables:
   IMAGE_TAG: $CI_REGISTRY_IMAGE:latest
-  DOCKERFILE: "docker/Dockerfile"
-  SKIP_PHPUNIT: "true"
-  MYSQL_DATABASE: "wordpress"
-  MYSQL_ROOT_PASSWORD: "wordpress"
-  MYSQL_USER: "wordpress"
-  MYSQL_PASSWORD: "wordpress"
+  DOCKERFILE: 'docker/Dockerfile'
+  SKIP_PHPUNIT: 'true'
+  MYSQL_DATABASE: 'wordpress'
+  MYSQL_ROOT_PASSWORD: 'wordpress'
+  MYSQL_USER: 'wordpress'
+  MYSQL_PASSWORD: 'wordpress'
   MYSQL_HOST: fisrv_mysql
+  WP_URL: https://fiwoo.mherrm.de/
 
 validate:
   extends: .base_validate
@@ -20,7 +21,10 @@ build:
   extends: .base_build
 
 test:
-  extends: .base_test
+  image: mcr.microsoft.com/playwright:v1.39.0-jammy
+  script:
+    - npm ci
+    - npx playwright test
   before_script:
     - cd tests/
 
