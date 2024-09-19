@@ -10,11 +10,11 @@ class WC_Fisrv_Payment_Generic extends WC_Fisrv_Payment_Gateway
 
     public function __construct()
     {
-        $this->id = 'fisrv-gateway-generic';
+        $this->id = FisrvGateway::GENERIC->value;
 
-        $this->method_title       = 'Fiserv Checkout';
+        $this->method_title = 'Fiserv Checkout';
         $this->method_description = esc_html__('Generic option shows all supported methods on redirect page.', 'fisrv-checkout-for-woocommerce');
-        $this->title              = 'Fiserv Checkout';
+        $this->title = 'Fiserv Checkout';
 
         parent::__construct();
     }

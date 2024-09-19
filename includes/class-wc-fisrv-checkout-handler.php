@@ -195,7 +195,7 @@ final class WC_Fisrv_Checkout_Handler
 
     public static function get_health_report(): array
     {
-        $gateway = WC()->payment_gateways()->payment_gateways()['fisrv-gateway-generic'];
+        $gateway = WC()->payment_gateways()->payment_gateways()[FisrvGateway::GENERIC->value];
         $paymentsClient = new PaymentsClient(self::init_api_credentials($gateway, 'Fisrv\Payments\PaymentsClient'));
 
         if (!($paymentsClient instanceof PaymentsClient)) {
@@ -222,7 +222,7 @@ final class WC_Fisrv_Checkout_Handler
     public static function get_checkout_details($checkout_id): array
     {
         if (is_null(self::$client)) {
-            $gateway = WC()->payment_gateways()->payment_gateways()['fisrv-gateway-generic'];
+            $gateway = WC()->payment_gateways()->payment_gateways()[FisrvGateway::GENERIC->value];
             self::$client = new CheckoutClient(self::init_api_credentials($gateway));
         }
 
@@ -373,7 +373,7 @@ final class WC_Fisrv_Checkout_Handler
             WC_Fisrv_Webhook_Handler::$webhook_endpoint . '/events'
         );
 
-        if ($order->get_payment_method() !== 'fisrv-gateway-generic') {
+        if ($order->get_payment_method() !== FisrvGateway::GENERIC->value) {
             $req->checkoutSettings->preSelectedPaymentMethod = $method;
         }
 

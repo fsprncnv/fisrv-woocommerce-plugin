@@ -4,7 +4,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
 {
     public function __construct()
     {
-        $this->title = esc_html__('Payment will be processed by Fiserv. You will be redirected to an external checkout page.', 'fisrv-checkout-for-woocommerce');
+        $this->description = esc_html__('Payment will be processed by Fiserv. You will be redirected to an external checkout page.', 'fisrv-checkout-for-woocommerce');
     }
 
     public static function custom_save_icon_value($settings)
@@ -35,7 +35,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
                     <legend class="screen-reader-text"><span>Gateway Name</span></legend>
                     <?php echo self::render_gateway_icons($wc_settings->id, 'display: flex; flex-direction: row;', '4rem') ?>
                     <?php
-                    if ($wc_settings->id === 'fisrv-gateway-generic') {
+                    if ($wc_settings->id === FisrvGateway::GENERIC->value) {
                         ?>
                         <input style="margin-left: 8px; margin-right: 8px; padding: 8px 10px; border: none;"
                             class="input-text regular-input" type="text" name="fs-icons-data" id="fs-icons-data"
@@ -92,14 +92,14 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
 
     protected static function render_gateway_icons(string $gateway_id, string $styles = '', string $height = '2rem'): string
     {
-        $gateway = WC()->payment_gateways()->payment_gateways()['fisrv-gateway-generic'];
+        $gateway = WC()->payment_gateways()->payment_gateways()[FisrvGateway::GENERIC->value];
 
         ob_start();
         ?>
         <div stlye="<?php echo $styles ?>">
             <?php
             switch ($gateway_id) {
-                case 'fisrv-gateway-generic':
+                case FisrvGateway::GENERIC->value:
                     $icons = json_decode($gateway->get_option('custom_icon'), true);
 
                     if (is_null($icons) || count($icons) === 0) {
@@ -112,19 +112,19 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
 
                     break;
 
-                case 'fisrv-apple-pay':
+                case FisrvGateway::APPLEPAY->value:
                     $image_src =
                         'https://woocommerce.com/wp-content/plugins/wccom-plugins/payment-gateway-suggestions/images/icons/applepay.svg';
                     echo self::render_icon($height, $image_src);
                     break;
 
-                case 'fisrv-google-pay':
+                case FisrvGateway::GOOGLEPAY->value:
                     $image_src =
                         'https://woocommerce.com/wp-content/plugins/wccom-plugins/payment-gateway-suggestions/images/icons/googlepay.svg';
                     echo self::render_icon($height, $image_src);
                     break;
 
-                case 'fisrv-credit-card':
+                case FisrvGateway::CREDITCARD->value:
                     $image_src = 'https://icon-library.com/images/credit-card-icon-white/credit-card-icon-white-9.jpg';
                     echo self::render_icon($height, plugins_url('../assets/images/fisrv-credit-card.svg', __FILE__));
                     break;
@@ -156,8 +156,8 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         ob_start();
 
         ?>
-        <div gateway-id="fisrv-gateway-generic" id="fs-icon-container-<?php echo $index ?>" class="fs-icon-container"
-            onclick="removeImage(<?php echo $index ?>, this)">
+        <div gateway-id="<?php echo FisrvGateway::GENERIC->value ?>" id="fs-icon-container-<?php echo $index ?>"
+            class="fs-icon-container" onclick="removeImage(<?php echo $index ?>, this)">
             <div id="fs-icon-overlay-<?php echo $index ?>" class="fs-icon-overlay">🞭 <?php echo esc_html__(
                    'Remove Icon',
                    'fisrv-checkout-for-woocommerce'
@@ -207,7 +207,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
      */
     public function init_form_fields(): void
     {
-        if ($this->id === 'fisrv-gateway-generic') {
+        if ($this->id === FisrvGateway::GENERIC->value) {
             $this->form_fields = array(
                 'header' => array(
                     'type' => 'fisrv_header',
@@ -321,7 +321,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
 
     public static function isLoggingEnabled(): bool
     {
-        $gateway = WC()->payment_gateways()->payment_gateways()[self::$id];
+        $gateway = WC()->payment_gateways()->payment_gateways()[FisrvGateway::GENERIC->value];
         return $gateway->get_option('enable_log') === 'yes';
     }
 }

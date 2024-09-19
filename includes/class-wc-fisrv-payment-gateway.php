@@ -91,7 +91,7 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Fisrv_Payment_Settings
 
     public function is_available(): bool
     {
-        $generic_gateway = WC()->payment_gateways()->payment_gateways()['fisrv-gateway-generic'];
+        $generic_gateway = WC()->payment_gateways()->payment_gateways()[FisrvGateway::GENERIC->value];
 
         return !in_array(
             '',
@@ -110,7 +110,7 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Fisrv_Payment_Settings
         parent::update_option($key, $value);
 
         if ($key === 'enabled' && $value === 'yes') {
-            if ($this->id === 'fisrv-gateway-generic') {
+            if ($this->id === FisrvGateway::GENERIC->value) {
                 $this->disable_gateway(new WC_Fisrv_Gateway_Applepay());
                 $this->disable_gateway(new WC_Fisrv_Gateway_Googlepay());
                 $this->disable_gateway(new WC_Fisrv_Gateway_Cards());
