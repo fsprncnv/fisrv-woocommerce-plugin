@@ -155,7 +155,7 @@ msgstr ""
 
 #: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-payment-settings.php
 msgid "Enable log messages on WooCommerce"
-msgstr ""
+msgstr "Enable log messages. Errors will be logged regardless."
 
 #: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-payment-settings.php
 msgid "Gateway Icon"

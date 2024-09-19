@@ -202,32 +202,6 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         return ob_get_clean();
     }
 
-    public function generate_text_html($key, $data): bool|string
-    {
-        $html_identifier = "woocommerce_{$this->id}_{$key}";
-
-        ob_start();
-
-        ?>
-        <tr valign="top">
-            <th scope="row" class="titledesc">
-                <label for="<?php echo $html_identifier ?>"><?php echo $data['title'] ?? "" ?><span class="woocommerce-help-tip"
-                        tabindex="0" aria-label="<?php echo $data['description'] ?? "" ?>"></span></label>
-            </th>
-            <td class="forminp">
-                <fieldset>
-                    <legend class="screen-reader-text"><span><?php echo $data['title'] ?? "" ?></span></legend>
-                    <input class="fs-input" type="<?php echo $data['type'] ?? "text" ?>" name="<?php echo $html_identifier ?>"
-                        id="<?php echo $html_identifier ?>" style="" value="<?php echo $this->get_option($key) ?? "" ?> "
-                        placeholder="<?php echo $data['default'] ?? "" ?> ">
-                </fieldset>
-            </td>
-        </tr>
-        <?php
-
-        return ob_get_clean();
-    }
-
     /**
      * Initialize form text fields on gateway options page
      */
@@ -241,24 +215,28 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
                 'api_key' => array(
                     'title' => 'API Key',
                     'type' => 'text',
+                    'css' => 'padding: 8px 10px; border: none;',
                     'description' => esc_html__('Acquire API Key from Developer Portal', 'fisrv-checkout-for-woocommerce'),
                     'desc_tip' => true,
                 ),
                 'api_secret' => array(
                     'title' => 'API Secret',
                     'type' => 'password',
+                    'css' => 'padding: 8px 10px; border: none;',
                     'description' => esc_html__('Acquire API Secret from Developer Portal', 'fisrv-checkout-for-woocommerce'),
                     'desc_tip' => true,
                 ),
                 'store_id' => array(
                     'title' => 'Store ID',
                     'type' => 'text',
+                    'css' => 'padding: 8px 10px; border: none;',
                     'description' => esc_html__('Your Store ID for Checkout', 'fisrv-checkout-for-woocommerce'),
                     'desc_tip' => true,
                 ),
                 'is_prod' => array(
                     'title' => esc_html__('Production Mode', 'fisrv-checkout-for-woocommerce'),
                     'type' => 'checkbox',
+                    'css' => 'padding: 8px 10px; border: none;',
                     'description' => esc_html__('Use Live (Production) Mode or Test (Sandbox) Mode', 'fisrv-checkout-for-woocommerce'),
                     'desc_tip' => true,
                 ),
@@ -271,6 +249,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
                 'autocomplete' => array(
                     'title' => esc_html__('Auto-complete Orders', 'fisrv-checkout-for-woocommerce'),
                     'type' => 'checkbox',
+                    'css' => 'padding: 8px 10px; border: none;',
                     'description' => esc_html__('Skip processing order status and set to complete status directly', 'fisrv-checkout-for-woocommerce'),
                     'desc_tip' => true,
                 ),
@@ -282,18 +261,16 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
                 // ),
                 'transaction_type' => array(
                     'title' => esc_html__('Transaction Type', 'fisrv-checkout-for-woocommerce'),
-                    'type' => 'select',
+                    'type' => 'text',
                     'description' => esc_html__('Set transaction type. Currently, only SALE transactions are available.', 'fisrv-checkout-for-woocommerce'),
                     'desc_tip' => true,
-                    'css' => 'padding: 8px 10px; border: none;',
-                    'default' => 'sale',
-                    'options' => array(
-                        'SALE' => 'Sale',
-                    ),
+                    'default' => 'Sale',
+                    'css' => 'padding: 8px 10px; border: none; pointer-events: none;',
                 ),
                 'enable_log' => array(
                     'title' => esc_html__('Enable Developer Logs', 'fisrv-checkout-for-woocommerce'),
                     'type' => 'checkbox',
+                    'css' => 'padding: 8px 10px; border: none;',
                     'description' => esc_html__('Enable log messages on WooCommerce', 'fisrv-checkout-for-woocommerce'),
                     'desc_tip' => true,
                 ),
@@ -310,6 +287,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
             'title' => array(
                 'title' => esc_html__('Gateway Name', 'fisrv-checkout-for-woocommerce'),
                 'type' => 'text',
+                'css' => 'padding: 8px 10px; border: none;',
                 'description' => esc_html__('Custom name of gateway', 'fisrv-checkout-for-woocommerce'),
                 'default' => $this->title,
                 'desc_tip' => true,
@@ -317,6 +295,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
             'description' => array(
                 'title' => esc_html__('Gateway Description', 'fisrv-checkout-for-woocommerce'),
                 'type' => 'text',
+                'css' => 'padding: 8px 10px; border: none;',
                 'description' => esc_html__('Custom description of gateway', 'fisrv-checkout-for-woocommerce'),
                 'default' => $this->description,
                 'desc_tip' => true,
@@ -338,5 +317,11 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
                 'type' => 'restore_settings',
             ),
         );
+    }
+
+    public static function isLoggingEnabled(): bool
+    {
+        $gateway = WC()->payment_gateways()->payment_gateways()[self::$id];
+        return $gateway->get_option('enable_log') === 'yes';
     }
 }

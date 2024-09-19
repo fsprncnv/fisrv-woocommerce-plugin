@@ -11,8 +11,6 @@
  */
 final class WC_Fisrv_Logger
 {
-
-
     public const SOURCE = 'fisrv-checkout-for-woocommerce';
 
     /**
@@ -21,14 +19,22 @@ final class WC_Fisrv_Logger
      * @param string   $message Message to log
      * @param WC_Order $order   Order that failed
      */
-    public static function log( WC_Order $order, string $message ): void
+    public static function log(WC_Order $order, string $message): void
     {
+        if (!WC_Fisrv_Payment_Settings::isLoggingEnabled()) {
+            return;
+        }
+
         wc_get_logger()->notice($message, self::create_log_context($order));
     }
 
-    public static function generic_log( string $message ): void
+    public static function generic_log(string $message): void
     {
-        wc_get_logger()->notice($message, array( 'source' => self::SOURCE ));
+        if (!WC_Fisrv_Payment_Settings::isLoggingEnabled()) {
+            return;
+        }
+
+        wc_get_logger()->notice($message, array('source' => self::SOURCE));
     }
 
     /**
@@ -37,7 +43,7 @@ final class WC_Fisrv_Logger
      * @param string   $message Message to log
      * @param WC_Order $order   Order that failed
      */
-    public static function error( WC_Order $order, string $message ): void
+    public static function error(WC_Order $order, string $message): void
     {
         wc_get_logger()->error($message, self::create_log_context($order));
     }
@@ -48,15 +54,15 @@ final class WC_Fisrv_Logger
      * @param  WC_Order $order Order that failed
      * @return array<string, mixed>
      */
-    private static function create_log_context( WC_Order $order ): array
+    private static function create_log_context(WC_Order $order): array
     {
         return array(
-        'source'            => self::SOURCE,
-        'wc_order_id'       => $order->get_id(),
-        'wc_order_key'      => $order->get_order_key(),
-        'fisrv_link'        => $order->get_meta('_fisrv_plugin_checkout_link'),
-        'fisrv_checkout_id' => $order->get_meta('_fisrv_plugin_checkout_id'),
-        'fisrv_trace_id'    => $order->get_meta('_fisrv_plugin_trace_id'),
+            'source' => self::SOURCE,
+            'wc_order_id' => $order->get_id(),
+            'wc_order_key' => $order->get_order_key(),
+            'fisrv_link' => $order->get_meta('_fisrv_plugin_checkout_link'),
+            'fisrv_checkout_id' => $order->get_meta('_fisrv_plugin_checkout_id'),
+            'fisrv_trace_id' => $order->get_meta('_fisrv_plugin_trace_id'),
         );
     }
 }
