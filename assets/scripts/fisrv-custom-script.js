@@ -1,9 +1,8 @@
-async function addImage() {
-    const btn = document.getElementById("fs-icon-btn");
+async function fsAddImage(button) {
     const input = document.getElementById("fs-icons-data").value;
-    const gateway_id = btn.getAttribute("gatewayid");
+    const gateway_id = button.getAttribute("gatewayid");
 
-    btn.innerHTML = "<span class='fs-loader-status'></span>";
+    button.innerHTML = "<span class='fs-loader-status'></span>";
 
     const res = await fetch(`/wp-json/fisrv_woocommerce_plugin/v1/image?gateway-id=${gateway_id}&data=${input}`, {
         method: "POST",
@@ -11,8 +10,13 @@ async function addImage() {
     const data = await res.json();
 
     if (data["status"] === "ok") {
-        btn.innerHTML = "✓";
+        button.innerHTML = "✓";
+    } else {
+        button.innerHTML = "🞭";
     }
+
+    document.getElementById("fs-icons-data").value = '';
+    document.getElementById("fs-icons-data").placeholder = data['message'];
 }
 
 async function removeImage(index, node) {

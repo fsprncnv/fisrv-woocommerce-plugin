@@ -32,7 +32,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
                 type="text" name="fs-icons-data" id="fs-icons-data" value="<?php echo implode(',', json_decode('[]', true)) ?>"
                 placeholder="Enter image URL to add to list">
             <div style="display: flex;" class="button-primary fs-add-button" gatewayid="<?php echo $wc_settings->id ?>"
-                id="fs-icon-btn" onclick="addImage()">+</div>
+                onclick="fsAddImage(this)">+</div>
             <?php
         }
         ?>
@@ -148,7 +148,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
 
         ob_start();
         ?>
-        <div stlye="<?php echo $styles ?>">
+        <div style="<?php echo $styles ?>">
             <?php
             switch ($gateway_id) {
                 case FisrvGateway::GENERIC->value:

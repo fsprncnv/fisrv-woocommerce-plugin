@@ -46,15 +46,23 @@ final class WC_Fisrv_Rest_Routes
 
             $list_json = $gateway->get_option('custom_icon');
             $decoded_list = json_decode($list_json, true) ?? array();
-            array_push($decoded_list, $data);
 
+            if (!preg_match("/(http)?s?:?(\/\/[^\"']*\.(?:png|jpg|jpeg|gif|png|svg))/i", $data)) {
+                throw new Exception("Image URL is invalid");
+            }
+
+            if (in_array($data, $decoded_list)) {
+                throw new Exception("Image is already in list");
+            }
+
+            array_push($decoded_list, $data);
             $gateway->update_option('custom_icon', json_encode($decoded_list));
 
         } catch (\Throwable $th) {
             return new WP_REST_Response(
                 array(
                     'status' => 'error',
-                    'error' => $th->getMessage(),
+                    'message' => $th->getMessage(),
                 )
             );
         }
@@ -62,6 +70,7 @@ final class WC_Fisrv_Rest_Routes
         return new WP_REST_Response(
             array(
                 'status' => 'ok',
+                'message' => 'Icon added successfully!',
             )
         );
     }
@@ -126,46 +135,6 @@ final class WC_Fisrv_Rest_Routes
             array(
                 'methods' => WP_REST_Server::DELETABLE,
                 'callback' => array(self::class, 'remove_image'),
-            )
-        );
-    }
-
-    public static function register_restore_settings(): void
-    {
-        register_rest_route(
-            self::$webhook_endpoint,
-            '/restore-settings',
-            array(
-                'methods' => WP_REST_Server::READABLE,
-                'callback' => function (WP_REST_Request $request) {
-                    $gateway_id = (string) $request->get_param('gateway-id');
-                    $gateway = WC()->payment_gateways()->payment_gateways()[$gateway_id] ?? false;
-
-                    if (!$gateway) {
-                        WC_Fisrv_Logger::generic_log('Restore settings failed: Could not find gateway');
-                        return;
-                    }
-
-                    WC_Fisrv_Logger::generic_log("Setting woocommerce_{$gateway_id}_settings to empty string");
-
-                    try {
-                        // update_option("woocommerce_{$gateway_id}_settings", '');
-                        // $gateway_enabled = $gateway->get_option("enabled") ?? 'no';
-                        // sanitize_option("woocommerce_{$gateway_id}_settings", '');
-                        // $gateway->update_option("enabled", $gateway_enabled);
-                        // $gateway->update_option('description', $gateway->description);
-        
-                        return new WP_REST_Response([
-                            'status' => 'ok',
-                            'message' => "Successfully reverted settings of {$gateway_id} to default"
-                        ]);
-                    } catch (\Throwable $th) {
-                        return new WP_REST_Response([
-                            'status' => 'error',
-                            'message' => $th->getMessage(),
-                        ]);
-                    }
-                },
             )
         );
     }
