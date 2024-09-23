@@ -25,8 +25,6 @@ async function removeImage(index, node) {
     });
     const data = await res.json();
 
-    console.log(`Removing icon of index ${index} with node ${node.id}`);
-
     node.innerHTML = '';
 }
 

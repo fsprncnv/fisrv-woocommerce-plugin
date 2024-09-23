@@ -88,8 +88,13 @@ if (!class_exists('fisrv_checkout_for_woocommerce')) {
             /** Register checkout details endpoint */
             add_action('rest_api_init', [WC_Fisrv_Rest_Routes::class, 'register_checkout_report']);
 
+            /** Register restore settings endpoint */
+            add_action('rest_api_init', [WC_Fisrv_Rest_Routes::class, 'register_restore_settings']);
+
+            /** Safely inject style sheet */
             wp_enqueue_style('fisrv-custom-style', plugins_url('assets\styles\fisrv-custom-style.css', __FILE__));
 
+            /** Safely inject scripts */
             wp_enqueue_script('fisrv-custom-script', plugins_url('assets\scripts\fisrv-custom-script.js', __FILE__));
         }
 
