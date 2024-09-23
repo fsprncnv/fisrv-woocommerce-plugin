@@ -24,6 +24,65 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         ob_start();
 
         ?>
+        <?php echo self::render_gateway_icons($wc_settings->id, 'display: flex; flex-direction: row;', '4rem') ?>
+        <?php
+        if ($wc_settings->id === FisrvGateway::GENERIC->value) {
+            ?>
+            <input style="margin-left: 8px; margin-right: 8px; padding: 8px 10px; border: none;" class="input-text regular-input"
+                type="text" name="fs-icons-data" id="fs-icons-data" value="<?php echo implode(',', json_decode('[]', true)) ?>"
+                placeholder="Enter image URL to add to list">
+            <div style="display: flex;" class="button-primary fs-add-button" gatewayid="<?php echo $wc_settings->id ?>"
+                id="fs-icon-btn" onclick="addImage()">+</div>
+            <?php
+        }
+        ?>
+        <?php
+
+        $component = ob_get_clean();
+        return self::render_option_tablerow($key, $data, $wc_settings, $component);
+    }
+
+    public static function render_restore_button(string $field_html, string $key, array $data, WC_Settings_API $wc_settings): string
+    {
+        ob_start();
+
+        ?>
+        <div style="display: flex; align-items: center; width: fit-content;" class="button-primary fs-add-button"
+            onclick="fisrvRestorePaymentSettings('<?php echo $wc_settings->id ?>', this)">
+            <?php echo esc_html__('Restore default settings', 'fisrv-checkout-for-woocommerce') ?>
+        </div>
+        <?php
+
+        return ob_get_clean();
+    }
+
+    public static function render_wp_theme_data(string $field_html, string $key, array $data, WC_Settings_API $wc_settings): string
+    {
+        ob_start();
+        $theme = json_decode(file_get_contents(wp_get_theme()->get_stylesheet_directory_uri() . '/theme.json'), true);
+        $colors = $theme['settings']['color']['palette'];
+
+        ?>
+        <div>
+            <?php
+            foreach ($colors as $color) {
+                ?>
+                <div style="width: 20px; height 20px; background: <?php echo $color['color'] ?>;">$color</div>
+                <?php
+            }
+            ?>
+        </div>
+        <?php
+
+        $component = ob_get_clean();
+        return self::render_option_tablerow($key, $data, $wc_settings, $component);
+    }
+
+    private static function render_option_tablerow(string $key, array $data, WC_Settings_API $wc_settings, string $child_component): bool|string
+    {
+        ob_start();
+
+        ?>
         <tr valign="top">
             <th scope="row" class="titledesc">
                 <label for="<?php echo "woocommerce_{$wc_settings->id}_{$key}" ?>"><?php echo $data['title'] ?>
@@ -32,36 +91,11 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
             </th>
             <td class="forminp">
                 <fieldset style="display: flex; flex-direction: row;">
-                    <legend class="screen-reader-text"><span>Gateway Name</span></legend>
-                    <?php echo self::render_gateway_icons($wc_settings->id, 'display: flex; flex-direction: row;', '4rem') ?>
-                    <?php
-                    if ($wc_settings->id === FisrvGateway::GENERIC->value) {
-                        ?>
-                        <input style="margin-left: 8px; margin-right: 8px; padding: 8px 10px; border: none;"
-                            class="input-text regular-input" type="text" name="fs-icons-data" id="fs-icons-data"
-                            value="<?php echo implode(',', json_decode('[]', true)) ?>"
-                            placeholder="Enter image URL to add to list">
-                        <div style="display: flex;" class="button-primary fs-add-button" gatewayid="<?php echo $wc_settings->id ?>"
-                            id="fs-icon-btn" onclick="addImage()">+</div>
-                        <?php
-                    }
-                    ?>
+                    <legend class="screen-reader-text"><span><?php echo $data['title'] ?></span></legend>
+                    <?php echo $child_component ?>
                 </fieldset>
             </td>
         </tr>
-        <?php
-
-        return ob_get_clean();
-    }
-
-    public static function render_restore_button(string $field_html, string $key, array $data, WC_Settings_API $wc_settings): string
-    {
-        ob_start();
-
-        ?>
-        <div class="button-primary fs-add-button" onclick="fisrvRestorePaymentSettings('<?php echo $wc_settings->id ?>', this)">
-            <?php echo esc_html__('Restore default settings', 'fisrv-checkout-for-woocommerce') ?>
-        </div>
         <?php
 
         return ob_get_clean();
@@ -175,31 +209,21 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         ob_start();
 
         ?>
-        <tr valign="top">
-            <th scope="row" class="titledesc">
-                <label for="<?php echo "woocommerce_{$wc_settings->id}_{$key}" ?>"><?php echo $data['title'] ?><span
-                        class="woocommerce-help-tip" tabindex="0" aria-label="Custom name of gateway"></span></label>
-            </th>
-            <td class="forminp">
-                <fieldset style="display: flex; flex-direction: row; align-items: center;">
-                    <legend class="screen-reader-text"><span>Gateway Name</span></legend>
-                    <div id="fs-health-btn" style="display: flex; color: white;" class="button-primary fs-add-button"
-                        onclick="fetchHealth()">
-                        +
-                    </div>
-                    <div style="display: flex; flex-direction: row; margin-left: 1rem; align-items: center;">
-                        <div id="fs-status-indicator"
-                            style="background-color: lightblue; border-radius: 100%; width: 0.8em; height: 0.8em; margin-right: 1em;">
-                        </div>
-                        <div id="fs-status-text"><?php echo esc_html__('Check status', 'fisrv-checkout-for-woocommerce') ?>
-                        </div>
-                    </div>
-                </fieldset>
-            </td>
-        </tr>
+        <div id="fs-health-btn" style="display: flex; color: white;" class="button-primary fs-add-button"
+            onclick="fetchHealth()">
+            +
+        </div>
+        <div style="display: flex; flex-direction: row; margin-left: 1rem; align-items: center;">
+            <div id="fs-status-indicator"
+                style="background-color: lightblue; border-radius: 100%; width: 0.8em; height: 0.8em; margin-right: 1em;">
+            </div>
+            <div id="fs-status-text"><?php echo esc_html__('Check status', 'fisrv-checkout-for-woocommerce') ?>
+            </div>
+        </div>
         <?php
 
-        return ob_get_clean();
+        $component = ob_get_clean();
+        return self::render_option_tablerow($key, $data, $wc_settings, $component);
     }
 
     /**
@@ -273,6 +297,24 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
                     'css' => 'padding: 8px 10px; border: none;',
                     'description' => esc_html__('Enable log messages on WooCommerce', 'fisrv-checkout-for-woocommerce'),
                     'desc_tip' => true,
+                ),
+                'wp_theme_data' => array(
+                    'title' => esc_html__('WP Theme Data', 'fisrv-checkout-for-woocommerce'),
+                    'type' => 'wp_theme_data',
+                    'description' => esc_html__('Info about current WordPress theme data which you can use to customize your checkout page on our Virtual Terminal', 'fisrv-checkout-for-woocommerce'),
+                    'desc_tip' => true,
+                ),
+                'enable_browser_lang' => array(
+                    'title' => esc_html__('Checkout Page Language', 'fisrv-checkout-for-woocommerce'),
+                    'type' => 'select',
+                    'css' => 'padding: 8px 10px; border: none;',
+                    'default' => 'browser',
+                    'description' => esc_html__('Should language of checkout page be inferred from customer\'s browser or set to admin language', 'fisrv-checkout-for-woocommerce'),
+                    'desc_tip' => true,
+                    'options' => array(
+                        'browser' => esc_html__('Customer\'s preferred language', 'fisrv-checkout-for-woocommerce'),
+                        'admin' => esc_html__('Admin dashboard setting', 'fisrv-checkout-for-woocommerce'),
+                    ),
                 ),
             );
         }
