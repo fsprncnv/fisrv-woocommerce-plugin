@@ -60,14 +60,19 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
     {
         ob_start();
         $theme = json_decode(file_get_contents(wp_get_theme()->get_stylesheet_directory_uri() . '/theme.json'), true);
-        $colors = $theme['settings']['color']['palette'];
+        $colors = array_slice($theme['settings']['color']['palette'], 0, 3);
+        $width = 150;
 
         ?>
-        <div>
+        <div style="display: flex; flex-wrap: wrap; width: <?php echo $width * 3 ?>px; background-color: black;">
             <?php
             foreach ($colors as $color) {
                 ?>
-                <div style="width: 20px; height 20px; background: <?php echo $color['color'] ?>;">$color</div>
+                <div id="fs-color-selector-<?php echo $color['slug'] ?>"
+                    onclick="fsCopyColor('<?php echo $color['color'] ?>', this)" class="fs-color-selector"
+                    style="width: <?php echo $width ?>px; background: <?php echo $color['color'] ?>; color: <?php echo self::isDarkColor($color['color']) ? 'white' : 'black' ?>">
+                    <?php echo $color['color'] ?>
+                </div>
                 <?php
             }
             ?>
@@ -76,6 +81,19 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
 
         $component = ob_get_clean();
         return self::render_option_tablerow($key, $data, $wc_settings, $component);
+    }
+
+    private static function isDarkColor(string $hexColor): bool
+    {
+        $c = ltrim($hexColor, '#');
+
+        $rgb = intval($c, 16);
+        $r = ($rgb >> 16) & 0xff;
+        $g = ($rgb >> 8) & 0xff;
+        $b = ($rgb >> 0) & 0xff;
+
+        $luma = 0.2126 * $r + 0.7152 * $g + 0.0722 * $b;
+        return $luma < 40;
     }
 
     private static function render_option_tablerow(string $key, array $data, WC_Settings_API $wc_settings, string $child_component): bool|string
@@ -299,7 +317,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
                     'desc_tip' => true,
                 ),
                 'wp_theme_data' => array(
-                    'title' => esc_html__('WP Theme Data', 'fisrv-checkout-for-woocommerce'),
+                    'title' => esc_html__('Theme Colors', 'fisrv-checkout-for-woocommerce'),
                     'type' => 'wp_theme_data',
                     'description' => esc_html__('Info about current WordPress theme data which you can use to customize your checkout page on our Virtual Terminal', 'fisrv-checkout-for-woocommerce'),
                     'desc_tip' => true,
@@ -308,7 +326,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
                     'title' => esc_html__('Checkout Page Language', 'fisrv-checkout-for-woocommerce'),
                     'type' => 'select',
                     'css' => 'padding: 8px 10px; border: none;',
-                    'default' => 'browser',
+                    'default' => 'admin',
                     'description' => esc_html__('Should language of checkout page be inferred from customer\'s browser or set to admin language', 'fisrv-checkout-for-woocommerce'),
                     'desc_tip' => true,
                     'options' => array(

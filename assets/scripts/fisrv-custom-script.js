@@ -111,3 +111,11 @@ function renderObjectFields(report, container, currency) {
         `;
     }
 }
+
+async function fsCopyColor(color, node) {
+    navigator.clipboard.writeText(color).then(() => {
+        node.innerHTML = `Copied ${color}!`;
+    }).catch((error) => {
+        node.innerHTML = `Failed ${error}!`;
+    })
+}

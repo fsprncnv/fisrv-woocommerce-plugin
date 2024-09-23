@@ -79,3 +79,16 @@
 .fs-checkout-report-button:hover {
     background: #c75a11; 
 }
+
+.fs-color-selector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 50px;
+    cursor: pointer;
+    transition-duration: 0.1s;
+}
+
+.fs-color-selector:hover {
+    opacity: 0.9;
+}
