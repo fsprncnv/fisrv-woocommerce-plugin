@@ -105,12 +105,8 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Fisrv_Payment_Settings
         ) && parent::is_available();
     }
 
-    public function update_option($key, $value = ''): bool
+    private function toggle_exclusive_payment_methods($key, $value)
     {
-        WC_Fisrv_Logger::generic_log('update_option() fired');
-
-        parent::update_option($key, $value);
-
         if ($key === 'enabled' && $value === 'yes') {
             if ($this->id === FisrvGateway::GENERIC->value) {
                 $this->disable_gateway(new WC_Fisrv_Gateway_Applepay());
@@ -122,8 +118,6 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Fisrv_Payment_Settings
                 WC_Fisrv_Logger::generic_log('Disabled generic gateway since specific gateways were enabled');
             }
         }
-
-        return true;
     }
 
     private function disable_gateway(WC_Payment_Gateway $gateway): void
