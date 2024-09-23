@@ -49,13 +49,18 @@ async function fetchHealth() {
     }
 }
 
-async function fisrvRestorePaymentSettings(gateway_id, button) {
-    button.innerHTML = "<span class='fs-loader-status'></span>";
-    const res = await fetch(`/wp-json/fisrv_woocommerce_plugin/v1/restore-settings?gateway-id=${gateway_id}`, {
-        method: "GET",
-    });
-    const data = await res.json();
-    button.innerHTML = "Restored";
+async function fisrvRestorePaymentSettings(gateway_id, wc_settings_data, button) {
+    const settingsObject = JSON.parse(atob(wc_settings_data));
+    for (let key in settingsObject) {
+        let option = settingsObject[key];
+        let node = document.getElementById(`woocommerce_${gateway_id}_${key}`);
+
+        if (node && option['default'] && node.hasAttribute('value')) {
+            node.value = option['default'];
+        }
+    }
+
+    button.innerHTML = "Fields restored";
 }
 
 async function fetchCheckoutReport(checkout_id, button) {
@@ -115,7 +120,5 @@ function renderObjectFields(report, container, currency) {
 async function fsCopyColor(color, node) {
     navigator.clipboard.writeText(color).then(() => {
         node.innerHTML = `Copied ${color}!`;
-    }).catch((error) => {
-        node.innerHTML = `Failed ${error}!`;
-    })
+    });
 }

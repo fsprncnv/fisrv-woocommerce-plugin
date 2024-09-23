@@ -48,7 +48,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
 
         ?>
         <div style="display: flex; align-items: center; width: fit-content;" class="button-primary fs-add-button"
-            onclick="fisrvRestorePaymentSettings('<?php echo $wc_settings->id ?>', this)">
+            onclick="fisrvRestorePaymentSettings('<?php echo $wc_settings->id ?>', '<?php echo base64_encode(json_encode($wc_settings->get_form_fields())) ?>', this)">
             <?php echo esc_html__('Restore default settings', 'fisrv-checkout-for-woocommerce') ?>
         </div>
         <?php

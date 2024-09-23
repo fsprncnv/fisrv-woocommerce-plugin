@@ -139,7 +139,6 @@ final class WC_Fisrv_Rest_Routes
                 'methods' => WP_REST_Server::READABLE,
                 'callback' => function (WP_REST_Request $request) {
                     $gateway_id = (string) $request->get_param('gateway-id');
-
                     $gateway = WC()->payment_gateways()->payment_gateways()[$gateway_id] ?? false;
 
                     if (!$gateway) {
@@ -150,12 +149,12 @@ final class WC_Fisrv_Rest_Routes
                     WC_Fisrv_Logger::generic_log("Setting woocommerce_{$gateway_id}_settings to empty string");
 
                     try {
-                        // $gateway_enabled = $gateway->get_option("enabled") ?? 'no';
                         // update_option("woocommerce_{$gateway_id}_settings", '');
+                        // $gateway_enabled = $gateway->get_option("enabled") ?? 'no';
                         // sanitize_option("woocommerce_{$gateway_id}_settings", '');
                         // $gateway->update_option("enabled", $gateway_enabled);
-                        $gateway->update_option('description', $gateway->description);
-
+                        // $gateway->update_option('description', $gateway->description);
+        
                         return new WP_REST_Response([
                             'status' => 'ok',
                             'message' => "Successfully reverted settings of {$gateway_id} to default"
