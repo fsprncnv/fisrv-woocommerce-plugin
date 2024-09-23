@@ -102,7 +102,7 @@ final class WC_Fisrv_Checkout_Handler
     /**
      * Inititalize configuraiton parameters of fisrv SDK.
      */
-    public static function init_api_credentials(WC_Fisrv_Payment_Generic $generic_gateway, string $clientClass = 'Fisrv\Checkout\CheckoutClient'): array
+    public static function init_api_credentials(WC_Fisrv_Payment_Generic $generic_gateway): array
     {
         if (!($generic_gateway instanceof WC_Fisrv_Payment_Gateway)) {
             throw new Exception('Could not retrieve payment settings');
@@ -193,10 +193,9 @@ final class WC_Fisrv_Checkout_Handler
         return $response;
     }
 
-    public static function get_health_report(): array
+    public static function get_health_report(array $credentials): array
     {
-        $gateway = WC()->payment_gateways()->payment_gateways()[FisrvGateway::GENERIC->value];
-        $paymentsClient = new PaymentsClient(self::init_api_credentials($gateway, 'Fisrv\Payments\PaymentsClient'));
+        $paymentsClient = new PaymentsClient($credentials);
 
         if (!($paymentsClient instanceof PaymentsClient)) {
             return array(

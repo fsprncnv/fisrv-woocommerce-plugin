@@ -32,13 +32,14 @@ async function removeImage(index, node) {
     node.innerHTML = '';
 }
 
-async function fetchHealth() {
+async function fsFetchHealth(is_prod) {
     const indicator = document.getElementById("fs-status-indicator");
     const text = document.getElementById("fs-status-text");
     const fetchHealthBtn = document.getElementById("fs-health-btn");
+    const readField = (key) => document.getElementById(`woocommerce_fisrv-gateway-generic_${key}`).value;
 
     fetchHealthBtn.innerHTML = "<span class='fs-loader-status'></span>";
-    const res = await fetch("/wp-json/fisrv_woocommerce_plugin/v1/health", {
+    const res = await fetch(`/wp-json/fisrv_woocommerce_plugin/v1/health?is_prod=${is_prod}&api_key=${readField('api_key')}&api_secret=${readField('api_secret')}&store_id=${readField('store_id')}`, {
         method: "GET",
     });
     const data = await res.json();

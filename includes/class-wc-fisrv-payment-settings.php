@@ -228,7 +228,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
 
         ?>
         <div id="fs-health-btn" style="display: flex; color: white;" class="button-primary fs-add-button"
-            onclick="fetchHealth()">
+            onclick="fsFetchHealth('<?php echo $wc_settings->get_option('is_prod') ?>')">
             +
         </div>
         <div style="display: flex; flex-direction: row; margin-left: 1rem; align-items: center;">
