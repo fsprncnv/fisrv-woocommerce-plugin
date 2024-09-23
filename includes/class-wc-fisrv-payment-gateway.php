@@ -20,6 +20,8 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Fisrv_Payment_Settings
 
     public function __construct()
     {
+        parent::__construct();
+
         $this->has_fields = false;
         $this->init_form_fields();
         $this->init_properties();
@@ -29,18 +31,17 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Fisrv_Payment_Settings
         );
 
         add_action('add_meta_boxes', [$this, 'custom_order_meta_box'], 10, 2);
-
-
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
-        add_filter('woocommerce_gateway_icon', array($this, 'custom_payment_gateway_icons'), 10, 2);
 
-        // add_filter('woocommerce_generate_text_html', array(WC_Fisrv_Payment_Settings::class, 'render_text_field'), 1, 4);
+        add_filter('woocommerce_gateway_icon', array($this, 'custom_payment_gateway_icons'), 10, 2);
         add_filter('woocommerce_generate_custom_icon_html', array(WC_Fisrv_Payment_Settings::class, 'render_icons_component'), 1, 4);
+        add_filter('woocommerce_generate_wp_theme_data_html', array(WC_Fisrv_Payment_Settings::class, 'render_wp_theme_data'), 1, 4);
         add_filter('woocommerce_generate_healthcheck_html', array(WC_Fisrv_Payment_Settings::class, 'render_healthcheck'), 10, 4);
         add_filter('woocommerce_generate_restore_settings_html', array(WC_Fisrv_Payment_Settings::class, 'render_restore_button'), 1, 4);
         add_filter('woocommerce_generate_fisrv_header_html', array(WC_Fisrv_Payment_Settings::class, 'render_fisrv_header'), 1, 4);
         add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array(WC_Fisrv_Payment_Settings::class, 'custom_save_icon_value'), 10, 1);
         add_filter('woocommerce_locate_template', array($this, 'custom_woocommerce_locate_template'), 10, 3);
+        // add_filter('woocommerce_generate_text_html', array(WC_Fisrv_Payment_Settings::class, 'render_text_field'), 1, 4);
     }
 
     public function custom_order_meta_box($id, $order)
