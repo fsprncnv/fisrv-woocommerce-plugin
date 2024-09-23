@@ -1,21 +1,14 @@
 import { test, expect, Page } from '@playwright/test';
-
 // ADMIN ENV CONFIG
 
 // how do i get the plugin (marketplace, zip file)
 
-test.beforeEach(async ({ page }) => {
-  await authenticate(page);
-  await restartWoocommercePlugin(page);
-});
-
-test('Woocommerce and Fiserv plugin are installed and activated properly', async ({
-  page,
-}) => {
-  await expect(page.locator('#deactivate-woocommerce')).toBeVisible();
-});
-
 async function restartWoocommercePlugin(page: Page) {
+  if (await page.locator('#activate-woocommerce').isVisible()) {
+    await page.locator('#activate-woocommerce').click();
+    return;
+  }
+
   await page.goto('/wp-admin/plugins.php');
   await page.locator('#deactivate-woocommerce').click();
   await page.waitForLoadState('load');
@@ -50,12 +43,20 @@ test.describe('Successful order and partial refund', () => {
 
   test.beforeAll(async ({ browser }) => {
     page = await browser.newPage();
-    await page.goto('/?add-to-cart=12');
+    await authenticate(page);
+    await restartWoocommercePlugin(page);
+  });
+
+  test('00. Woocommerce and Fiserv plugin are installed and activated properly', async ({
+    page,
+  }) => {
+    await expect(page.locator('#deactivate-woocommerce')).toBeVisible();
   });
 
   test('01. Fill cart and fill in billing info in guest session', async ({
     page,
   }) => {
+    await page.goto('/?add-to-cart=12');
     await page.goto('/checkout');
 
     await fillOutBillingFormOnStore(page);

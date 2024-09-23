@@ -20,17 +20,13 @@ validate:
 build:
   extends: .base_build
 
+test:
+  extends: .base_test
+  before_script:
+    - cd tests/
+
 docker:
   extends: .base_docker
 
 release:
   extends: .base_release
-
-test:
-  image: mcr.microsoft.com/playwright:v1.47.1-jammy
-  script:
-    - npm install
-    - npm ci
-    - npx playwright test
-  before_script:
-    - cd tests/
