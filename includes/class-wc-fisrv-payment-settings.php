@@ -135,7 +135,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
             <a style="text-decoration: none;" href="https://developer.fiserv.com"><?php echo esc_html__(
                 'Visit developer.fiserv.com',
                 'fisrv-checkout-for-woocommerce'
-            ) ?></a>
+                                                                                  ) ?></a>
         </div>
         <?php
 
@@ -151,38 +151,38 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         <div style="<?php echo $styles ?>">
             <?php
             switch ($gateway_id) {
-                case FisrvGateway::GENERIC->value:
-                    $icons = json_decode($gateway->get_option('custom_icon'), true);
+            case FisrvGateway::GENERIC->value:
+                $icons = json_decode($gateway->get_option('custom_icon'), true);
 
-                    if (is_null($icons) || count($icons) === 0) {
-                        $icons = array('https://upload.wikimedia.org/wikipedia/commons/8/89/Fiserv_logo.svg');
-                    }
+                if (is_null($icons) || count($icons) === 0) {
+                    $icons = array('https://upload.wikimedia.org/wikipedia/commons/8/89/Fiserv_logo.svg');
+                }
 
-                    foreach ($icons as $index => $icon) {
-                        echo self::render_icon_with_overlay($height, $icon, $index);
-                    }
+                foreach ($icons as $index => $icon) {
+                    echo self::render_icon_with_overlay($height, $icon, $index);
+                }
 
-                    break;
+                break;
 
-                case FisrvGateway::APPLEPAY->value:
-                    $image_src =
-                        'https://woocommerce.com/wp-content/plugins/wccom-plugins/payment-gateway-suggestions/images/icons/applepay.svg';
-                    echo self::render_icon($height, $image_src);
-                    break;
+            case FisrvGateway::APPLEPAY->value:
+                $image_src =
+                    'https://woocommerce.com/wp-content/plugins/wccom-plugins/payment-gateway-suggestions/images/icons/applepay.svg';
+                echo self::render_icon($height, $image_src);
+                break;
 
-                case FisrvGateway::GOOGLEPAY->value:
-                    $image_src =
-                        'https://woocommerce.com/wp-content/plugins/wccom-plugins/payment-gateway-suggestions/images/icons/googlepay.svg';
-                    echo self::render_icon($height, $image_src);
-                    break;
+            case FisrvGateway::GOOGLEPAY->value:
+                $image_src =
+                    'https://woocommerce.com/wp-content/plugins/wccom-plugins/payment-gateway-suggestions/images/icons/googlepay.svg';
+                echo self::render_icon($height, $image_src);
+                break;
 
-                case FisrvGateway::CREDITCARD->value:
-                    $image_src = 'https://icon-library.com/images/credit-card-icon-white/credit-card-icon-white-9.jpg';
-                    echo self::render_icon($height, plugins_url('../assets/images/fisrv-credit-card.svg', __FILE__));
-                    break;
+            case FisrvGateway::CREDITCARD->value:
+                $image_src = 'https://icon-library.com/images/credit-card-icon-white/credit-card-icon-white-9.jpg';
+                echo self::render_icon($height, plugins_url('../assets/images/fisrv-credit-card.svg', __FILE__));
+                break;
 
-                default:
-                    break;
+            default:
+                break;
             }
             ?>
         </div>
@@ -211,9 +211,9 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         <div gateway-id="<?php echo FisrvGateway::GENERIC->value ?>" id="fs-icon-container-<?php echo $index ?>"
             class="fs-icon-container" onclick="removeImage(<?php echo $index ?>, this)">
             <div id="fs-icon-overlay-<?php echo $index ?>" class="fs-icon-overlay">🞭 <?php echo esc_html__(
-                   'Remove Icon',
-                   'fisrv-checkout-for-woocommerce'
-               ) ?></div>
+                'Remove Icon',
+                'fisrv-checkout-for-woocommerce'
+                                     ) ?></div>
             <?php echo self::render_icon($height, $image_src, $index) ?>
         </div>
         <?php

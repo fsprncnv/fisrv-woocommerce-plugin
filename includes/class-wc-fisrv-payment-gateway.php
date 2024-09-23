@@ -225,11 +225,10 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Fisrv_Payment_Settings
      */
     public function can_refund_order(mixed $order)
     {
-        if (
-            !($order instanceof WC_Order) ||
-            !(str_starts_with($order->get_payment_method(), 'fisrv')) ||
-            is_null($order->get_date_completed()) ||
-            !($order->is_paid())
+        if (!($order instanceof WC_Order) 
+            || !(str_starts_with($order->get_payment_method(), 'fisrv')) 
+            || is_null($order->get_date_completed()) 
+            || !($order->is_paid())
         ) {
             return false;
         }

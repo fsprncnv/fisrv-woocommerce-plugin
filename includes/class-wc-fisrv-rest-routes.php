@@ -19,12 +19,16 @@ final class WC_Fisrv_Rest_Routes
             array(
                 'methods' => WP_REST_Server::READABLE,
                 'callback' => function (WP_REST_Request $request) {
-                    return new WP_REST_Response(WC_Fisrv_Checkout_Handler::get_health_report([
-                        'is_prod' => $request->get_param('is_prod') === 'yes' ? true : false,
-                        'api_key' => $request->get_param('api_key'),
-                        'api_secret' => $request->get_param('api_secret'),
-                        'store_id' => $request->get_param('store_id'),
-                    ]));
+                    return new WP_REST_Response(
+                        WC_Fisrv_Checkout_Handler::get_health_report(
+                            [
+                            'is_prod' => $request->get_param('is_prod') === 'yes' ? true : false,
+                            'api_key' => $request->get_param('api_key'),
+                            'api_secret' => $request->get_param('api_secret'),
+                            'store_id' => $request->get_param('store_id'),
+                            ]
+                        )
+                    );
                 },
             )
         );
