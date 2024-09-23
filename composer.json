@@ -1,7 +1,7 @@
 {
   "name": "extension/fisrv-checkout-for-woocommerce",
   "description": "Fiserv payment plugin for WooCommerce",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "minimum-stability": "dev",
   "license": "GNU General Public License v3.0",
   "autoload": {
@@ -47,8 +47,8 @@
   },
   "scripts": {
     "build": [
-      "@composer --no-plugins --no-interaction install --no-scripts --no-dev",
-      "@composer --no-plugins --no-interaction archive --format=zip"
+      "composer install --ignore-platform-reqs --no-dev --optimize-autoloader --no-ansi --no-interaction --no-progress",
+      "composer archive --format=zip"
     ],
     "analyse": [
       "vendor/bin/phpstan analyse includes"

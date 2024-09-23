@@ -1,4 +1,6 @@
 import { test, expect, Page } from '@playwright/test';
+import dotenv from 'dotenv';
+
 // ADMIN ENV CONFIG
 
 // how do i get the plugin (marketplace, zip file)

@@ -24,14 +24,14 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         ob_start();
 
         ?>
-        <?php echo self::render_gateway_icons($wc_settings->id, 'display: flex; flex-direction: row;', '4rem') ?>
+        <?php echo wp_kses_post(self::render_gateway_icons($wc_settings->id, 'display: flex; flex-direction: row;', '4rem')) ?>
         <?php
         if ($wc_settings->id === FisrvGateway::GENERIC->value) {
             ?>
             <input style="margin-left: 8px; margin-right: 8px; padding: 8px 10px; border: none;" class="input-text regular-input"
-                type="text" name="fs-icons-data" id="fs-icons-data" value="<?php echo implode(',', json_decode('[]', true)) ?>"
-                placeholder="Enter image URL to add to list">
-            <div style="display: flex;" class="button-primary fs-add-button" gatewayid="<?php echo $wc_settings->id ?>"
+                type="text" name="fs-icons-data" id="fs-icons-data"
+                value="<?php echo esc_html(implode(',', json_decode('[]', true))) ?>" placeholder="Enter image URL to add to list">
+            <div style="display: flex;" class="button-primary fs-add-button" gatewayid="<?php echo esc_attr($wc_settings->id) ?>"
                 onclick="fsAddImage(this)">+</div>
             <?php
         }
@@ -48,7 +48,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
 
         ?>
         <div style="display: flex; align-items: center; width: fit-content;" class="button-primary fs-add-button"
-            onclick="fisrvRestorePaymentSettings('<?php echo $wc_settings->id ?>', '<?php echo base64_encode(json_encode($wc_settings->get_form_fields())) ?>', this)">
+            onclick="fisrvRestorePaymentSettings('<?php echo esc_attr($wc_settings->id) ?>', '<?php echo esc_attr(base64_encode(wp_json_encode($wc_settings->get_form_fields()))) ?>', this)">
             <?php echo esc_html__('Restore default settings', 'fisrv-checkout-for-woocommerce') ?>
         </div>
         <?php
@@ -59,19 +59,19 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
     public static function render_wp_theme_data(string $field_html, string $key, array $data, WC_Settings_API $wc_settings): string
     {
         ob_start();
-        $theme = json_decode(file_get_contents(wp_get_theme()->get_stylesheet_directory_uri() . '/theme.json'), true);
+        $theme = json_decode(wp_remote_get(wp_get_theme()->get_stylesheet_directory_uri() . '/theme.json'), true);
         $colors = array_slice($theme['settings']['color']['palette'], 0, 3);
         $width = 150;
 
         ?>
-        <div style="display: flex; flex-wrap: wrap; width: <?php echo $width * 3 ?>px; background-color: black;">
+        <div style="display: flex; flex-wrap: wrap; width: <?php echo esc_attr($width * 3) ?>px; background-color: black;">
             <?php
             foreach ($colors as $color) {
                 ?>
-                <div id="fs-color-selector-<?php echo $color['slug'] ?>"
-                    onclick="fsCopyColor('<?php echo $color['color'] ?>', this)" class="fs-color-selector"
-                    style="width: <?php echo $width ?>px; background: <?php echo $color['color'] ?>; color: <?php echo self::isDarkColor($color['color']) ? 'white' : 'black' ?>">
-                    <?php echo $color['color'] ?>
+                <div id="fs-color-selector-<?php echo esc_attr($color['slug']) ?>"
+                    onclick="fsCopyColor('<?php echo esc_attr($color['color']) ?>', this)" class="fs-color-selector"
+                    style="width: <?php echo esc_attr($width) ?>px; background: <?php echo esc_attr($color['color']) ?>; color: <?php echo esc_attr(self::isDarkColor($color['color'])) ? 'white' : 'black' ?>">
+                    <?php echo esc_html($color['color']) ?>
                 </div>
                 <?php
             }
@@ -103,14 +103,15 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         ?>
         <tr valign="top">
             <th scope="row" class="titledesc">
-                <label for="<?php echo "woocommerce_{$wc_settings->id}_{$key}" ?>"><?php echo $data['title'] ?>
+                <label
+                    for="<?php echo esc_attr("woocommerce_{$wc_settings->id}_{$key}") ?>"><?php echo esc_html($data['title']) ?>
                     <span class="woocommerce-help-tip" tabindex="0" aria-label="Custom name of gateway"></span>
                 </label>
             </th>
             <td class="forminp">
                 <fieldset style="display: flex; flex-direction: row;">
-                    <legend class="screen-reader-text"><span><?php echo $data['title'] ?></span></legend>
-                    <?php echo $child_component ?>
+                    <legend class="screen-reader-text"><span><?php echo esc_html($data['title']) ?></span></legend>
+                    <?php echo wp_kses_post($child_component) ?>
                 </fieldset>
             </td>
         </tr>
@@ -135,7 +136,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
             <a style="text-decoration: none;" href="https://developer.fiserv.com"><?php echo esc_html__(
                 'Visit developer.fiserv.com',
                 'fisrv-checkout-for-woocommerce'
-                                                                                  ) ?></a>
+            ) ?></a>
         </div>
         <?php
 
@@ -148,41 +149,41 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
 
         ob_start();
         ?>
-        <div style="<?php echo $styles ?>">
+        <div style="<?php echo esc_attr($styles) ?>">
             <?php
             switch ($gateway_id) {
-            case FisrvGateway::GENERIC->value:
-                $icons = json_decode($gateway->get_option('custom_icon'), true);
+                case FisrvGateway::GENERIC->value:
+                    $icons = json_decode($gateway->get_option('custom_icon'), true);
 
-                if (is_null($icons) || count($icons) === 0) {
-                    $icons = array('https://upload.wikimedia.org/wikipedia/commons/8/89/Fiserv_logo.svg');
-                }
+                    if (is_null($icons) || count($icons) === 0) {
+                        $icons = array('https://upload.wikimedia.org/wikipedia/commons/8/89/Fiserv_logo.svg');
+                    }
 
-                foreach ($icons as $index => $icon) {
-                    echo self::render_icon_with_overlay($height, $icon, $index);
-                }
+                    foreach ($icons as $index => $icon) {
+                        echo wp_kses_post(self::render_icon_with_overlay($height, $icon, $index));
+                    }
 
-                break;
+                    break;
 
-            case FisrvGateway::APPLEPAY->value:
-                $image_src =
-                    'https://woocommerce.com/wp-content/plugins/wccom-plugins/payment-gateway-suggestions/images/icons/applepay.svg';
-                echo self::render_icon($height, $image_src);
-                break;
+                case FisrvGateway::APPLEPAY->value:
+                    $image_src =
+                        'https://woocommerce.com/wp-content/plugins/wccom-plugins/payment-gateway-suggestions/images/icons/applepay.svg';
+                    echo wp_kses_post(self::render_icon($height, $image_src));
+                    break;
 
-            case FisrvGateway::GOOGLEPAY->value:
-                $image_src =
-                    'https://woocommerce.com/wp-content/plugins/wccom-plugins/payment-gateway-suggestions/images/icons/googlepay.svg';
-                echo self::render_icon($height, $image_src);
-                break;
+                case FisrvGateway::GOOGLEPAY->value:
+                    $image_src =
+                        'https://woocommerce.com/wp-content/plugins/wccom-plugins/payment-gateway-suggestions/images/icons/googlepay.svg';
+                    echo wp_kses_post(self::render_icon($height, $image_src));
+                    break;
 
-            case FisrvGateway::CREDITCARD->value:
-                $image_src = 'https://icon-library.com/images/credit-card-icon-white/credit-card-icon-white-9.jpg';
-                echo self::render_icon($height, plugins_url('../assets/images/fisrv-credit-card.svg', __FILE__));
-                break;
+                case FisrvGateway::CREDITCARD->value:
+                    $image_src = 'https://icon-library.com/images/credit-card-icon-white/credit-card-icon-white-9.jpg';
+                    echo wp_kses_post(self::render_icon($height, plugins_url('../assets/images/fisrv-credit-card.svg', __FILE__)));
+                    break;
 
-            default:
-                break;
+                default:
+                    break;
             }
             ?>
         </div>
@@ -196,8 +197,9 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         ob_start();
 
         ?>
-        <img style="border-radius: 10%; height: <?php echo $height ?>; margin-right: 5px"
-            src=" <?php echo WC_HTTPS::force_https_url($image_src) ?>" alt=" <?php esc_attr('Fisrv gateway icon') ?>" />
+        <img style="border-radius: 10%; height: <?php echo esc_attr($height) ?>; margin-right: 5px"
+            src=" <?php echo esc_url(WC_HTTPS::force_https_url($image_src)) ?>"
+            alt=" <?php esc_attr('Fisrv gateway icon') ?>" />
         <?php
 
         return ob_get_clean();
@@ -208,13 +210,14 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         ob_start();
 
         ?>
-        <div gateway-id="<?php echo FisrvGateway::GENERIC->value ?>" id="fs-icon-container-<?php echo $index ?>"
-            class="fs-icon-container" onclick="removeImage(<?php echo $index ?>, this)">
-            <div id="fs-icon-overlay-<?php echo $index ?>" class="fs-icon-overlay">🞭 <?php echo esc_html__(
-                'Remove Icon',
-                'fisrv-checkout-for-woocommerce'
-                                     ) ?></div>
-            <?php echo self::render_icon($height, $image_src, $index) ?>
+        <div gateway-id="<?php echo esc_attr(FisrvGateway::GENERIC->value) ?>"
+            id="fs-icon-container-<?php echo esc_attr($index) ?>" class="fs-icon-container"
+            onclick="removeImage(<?php echo esc_attr($index) ?>, this)">
+            <div id="fs-icon-overlay-<?php echo esc_attr($index) ?>" class="fs-icon-overlay">🞭 <?php echo esc_html__(
+                   'Remove Icon',
+                   'fisrv-checkout-for-woocommerce'
+               ) ?></div>
+            <?php echo wp_kses_post(self::render_icon($height, $image_src, $index)) ?>
         </div>
         <?php
 
@@ -228,7 +231,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
 
         ?>
         <div id="fs-health-btn" style="display: flex; color: white;" class="button-primary fs-add-button"
-            onclick="fsFetchHealth('<?php echo $wc_settings->get_option('is_prod') ?>')">
+            onclick="fsFetchHealth('<?php echo esc_attr($wc_settings->get_option('is_prod')) ?>')">
             +
         </div>
         <div style="display: flex; flex-direction: row; margin-left: 1rem; align-items: center;">

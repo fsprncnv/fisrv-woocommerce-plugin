@@ -209,7 +209,7 @@ final class WC_Fisrv_Checkout_Handler
         if ($report->httpCode != 200) {
             $message = $report->error->message;
             WC_Fisrv_Logger::generic_log('API health check reported following error response: ' . $message);
-            WC_Fisrv_Logger::generic_log('Verbose report log: ' . json_encode($report->requestLog));
+            WC_Fisrv_Logger::generic_log('Verbose report log: ' . wp_json_encode($report->requestLog));
         }
 
         return array(
@@ -229,7 +229,7 @@ final class WC_Fisrv_Checkout_Handler
             $report = self::$client->getCheckoutById($checkout_id);
             return [
                 'status' => 'ok',
-                'message' => json_encode($report)
+                'message' => wp_json_encode($report)
             ];
         } catch (\Throwable $th) {
             return [

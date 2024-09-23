@@ -50,7 +50,7 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Fisrv_Payment_Settings
             'fiserv-checkout-order-meta-box',
             'Fiserv Checkout Info ',
             function () use ($order) {
-                echo $this->custom_order_meta_box_callback($order);
+                echo wp_kses_post($this->custom_order_meta_box_callback($order));
             },
             $id,
             'side',
@@ -58,7 +58,7 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Fisrv_Payment_Settings
         );
     }
 
-    public function custom_order_meta_box_callback($order)
+    public function custom_order_meta_box_callback($order): string
     {
         ob_start();
 
@@ -74,14 +74,15 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Fisrv_Payment_Settings
                 <?php
                 foreach ($meta_data as $key => $value) {
                     ?>
-                    <h4><?php echo $key ?></h4>
-                    <span class="order-attribution-total-orders"><?php echo $value ?></span>
+                    <h4><?php echo esc_html($key) ?></h4>
+                    <span class="order-attribution-total-orders"><?php echo esc_html($value) ?></span>
                     <?php
                 }
                 ?>
             </div>
             <div class="fs-checkout-report-button" reported="false"
-                onclick="fetchCheckoutReport('<?php echo $order->get_meta('_fisrv_plugin_checkout_id') ?>', this)">Fetch Full
+                onclick="fetchCheckoutReport('<?php echo esc_html($order->get_meta('_fisrv_plugin_checkout_id')) ?>', this)">
+                Fetch Full
                 Checkout
                 Data</div>
         </div>
@@ -104,7 +105,7 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Fisrv_Payment_Settings
         ) && parent::is_available();
     }
 
-    public function update_option($key, $value = '')
+    public function update_option($key, $value = ''): bool
     {
         WC_Fisrv_Logger::generic_log('update_option() fired');
 
@@ -121,6 +122,8 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Fisrv_Payment_Settings
                 WC_Fisrv_Logger::generic_log('Disabled generic gateway since specific gateways were enabled');
             }
         }
+
+        return true;
     }
 
     private function disable_gateway(WC_Payment_Gateway $gateway): void
@@ -225,9 +228,10 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Fisrv_Payment_Settings
      */
     public function can_refund_order(mixed $order)
     {
-        if (!($order instanceof WC_Order) 
-            || !(str_starts_with($order->get_payment_method(), 'fisrv')) 
-            || is_null($order->get_date_completed()) 
+        if (
+            !($order instanceof WC_Order)
+            || !(str_starts_with($order->get_payment_method(), 'fisrv'))
+            || is_null($order->get_date_completed())
             || !($order->is_paid())
         ) {
             return false;

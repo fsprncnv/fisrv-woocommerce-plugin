@@ -39,8 +39,8 @@ final class WC_Fisrv_Webhook_Handler
 
             $response = new WP_REST_Response(
                 array(
-                'wc_order_id' => $order_id,
-                'events' => $webhook_event,
+                    'wc_order_id' => $order_id,
+                    'events' => $webhook_event,
                 )
             );
             $response->set_status(200);
@@ -61,8 +61,8 @@ final class WC_Fisrv_Webhook_Handler
             self::$webhook_endpoint,
             '/events',
             array(
-            'methods' => 'POST',
-            'callback' => array(self::class, 'consume_events'),
+                'methods' => 'POST',
+                'callback' => array(self::class, 'consume_events'),
             )
         );
     }
@@ -81,7 +81,7 @@ final class WC_Fisrv_Webhook_Handler
 
         if (!$order instanceof WC_Order) {
             /* translators: %s: Order ID */
-            throw new Exception(sprintf('Order with ID %s has not been found.', $order_id));
+            throw new Exception(sprintf('Order with ID %s has not been found.', esc_html($order_id)));
         }
 
         $stored_events_list = json_decode(strval($order->get_meta('_fisrv_plugin_webhook_event')), true);
@@ -103,40 +103,40 @@ final class WC_Fisrv_Webhook_Handler
         $is_autocomplete = $generic_gateway->get_option('autocomplete') === 'yes';
 
         switch ($ipgTransactionStatus) {
-        case TransactionStatus::WAITING:
-            $wc_status = 'wc-on-hold';
+            case TransactionStatus::WAITING:
+                $wc_status = 'wc-on-hold';
 
-            break;
-        case TransactionStatus::PARTIAL:
-            $wc_status = 'wc-on-hold';
+                break;
+            case TransactionStatus::PARTIAL:
+                $wc_status = 'wc-on-hold';
 
-            break;
-        case TransactionStatus::APPROVED:
-            if ($is_autocomplete) {
-                $wc_status = 'wc-processing';
-            } else {
-                $wc_status = 'wc-completed';
-                WC_Fisrv_Logger::log($order, 'Order completed via auto-complete');
-                $order->payment_complete();
-            }
+                break;
+            case TransactionStatus::APPROVED:
+                if ($is_autocomplete) {
+                    $wc_status = 'wc-processing';
+                } else {
+                    $wc_status = 'wc-completed';
+                    WC_Fisrv_Logger::log($order, 'Order completed via auto-complete');
+                    $order->payment_complete();
+                }
 
-            break;
-        case TransactionStatus::PROCESSING_FAILED:
-            $wc_status = 'wc-failed';
+                break;
+            case TransactionStatus::PROCESSING_FAILED:
+                $wc_status = 'wc-failed';
 
-            break;
-        case TransactionStatus::VALIDATION_FAILED:
-            $wc_status = 'wc-failed';
+                break;
+            case TransactionStatus::VALIDATION_FAILED:
+                $wc_status = 'wc-failed';
 
-            break;
-        case TransactionStatus::DECLINED:
-            $wc_status = 'wc-cancelled';
+                break;
+            case TransactionStatus::DECLINED:
+                $wc_status = 'wc-cancelled';
 
-            break;
-        default:
-            $wc_status = 'wc-pending';
+                break;
+            default:
+                $wc_status = 'wc-pending';
 
-            break;
+                break;
         }
 
         $wc_status_unprefixed = substr($wc_status, 3);

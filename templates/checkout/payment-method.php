@@ -27,8 +27,8 @@ if (!defined('ABSPATH')) {
 
     <label style="display: flex; flex-direction: row; justify-content: space-between; width: 100%;"
         for="payment_method_<?php echo esc_attr($gateway->id); ?>">
-        <?php echo $gateway->get_title(); /* phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped */ ?>
-        <?php echo $gateway->get_icon(); /* phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped */ ?>
+        <?php echo esc_html($gateway->get_title()); /* phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped */ ?>
+        <?php echo esc_html($gateway->get_icon()); /* phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped */ ?>
     </label>
 </li>
 <?php if ($gateway->has_fields() || $gateway->get_description()): ?>

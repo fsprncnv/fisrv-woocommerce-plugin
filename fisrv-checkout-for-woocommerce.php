@@ -2,7 +2,7 @@
 
 /**
  * Plugin Name: Fiserv Checkout for WooCommerce
- * Version: 1.0.2
+ * Version: 1.1.0
  * Description: Official Fiserv Checkout WooCommerce plugin
  * Author: Fiserv
  * Author URI: https://developer.fiserv.com/
@@ -18,7 +18,7 @@ defined('ABSPATH') || exit;
 
 require_once plugin_dir_path(__FILE__) . '/vendor/autoload.php';
 
-const FISRV_PLUGIN_VERSION = '1.0.2';
+const FISRV_PLUGIN_VERSION = '1.1.0';
 
 /**
  * WooCommerce fallback notice.
@@ -89,10 +89,10 @@ if (!class_exists('fisrv_checkout_for_woocommerce')) {
             add_action('rest_api_init', [WC_Fisrv_Rest_Routes::class, 'register_checkout_report']);
 
             /** Safely inject style sheet */
-            wp_enqueue_style('fisrv-custom-style', plugins_url('assets\styles\fisrv-custom-style.css', __FILE__));
+            wp_enqueue_style('fisrv-custom-style', plugins_url('assets\styles\fisrv-custom-style.css', __FILE__), [], FISRV_PLUGIN_VERSION);
 
             /** Safely inject scripts */
-            wp_enqueue_script('fisrv-custom-script', plugins_url('assets\scripts\fisrv-custom-script.js', __FILE__));
+            wp_enqueue_script('fisrv-custom-script', plugins_url('assets\scripts\fisrv-custom-script.js', __FILE__), [], FISRV_PLUGIN_VERSION, ['in_footer' => 'true']);
         }
 
         /**
