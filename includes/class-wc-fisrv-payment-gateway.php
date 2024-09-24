@@ -141,7 +141,7 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Fisrv_Payment_Settings
             return $icon;
         }
 
-        return self::render_gateway_icons($gateway_id);
+        return self::render_gateway_icons($gateway_id, true);
     }
 
     public function custom_woocommerce_locate_template($template, $template_name, $template_path)

@@ -120,7 +120,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         ob_start();
 
         ?>
-        <?php echo wp_kses(self::render_gateway_icons($wc_settings->id), self::WP_KSES_ALLOWED) ?>
+        <?php echo wp_kses(self::render_gateway_icons($wc_settings->id, false), self::WP_KSES_ALLOWED) ?>
         <?php
         if ($wc_settings->id === FisrvGateway::GENERIC->value) {
             ?>
@@ -146,7 +146,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         ob_start();
 
         ?>
-        <?php echo self::render_section_header('Restore and Save Settings') ?>
+        <?php echo self::render_section_header('Restore or Save Settings') ?>
         <div style="margin-top: 2em" class="button-primary">
             <?php echo esc_html__('Restore to default', 'fisrv-checkout-for-woocommerce') ?>
         </div>
@@ -243,7 +243,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         return ob_get_clean();
     }
 
-    protected static function render_gateway_icons(string $gateway_id): string
+    protected static function render_gateway_icons(string $gateway_id, bool $small): string
     {
         $gateway = WC()->payment_gateways()->payment_gateways()[FisrvGateway::GENERIC->value];
 
@@ -260,7 +260,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
                     }
 
                     foreach ($icons as $index => $icon) {
-                        echo wp_kses(self::render_icon_with_overlay($icon, $index), self::WP_KSES_ALLOWED);
+                        echo wp_kses(self::render_icon_with_overlay($icon, $index, $small), self::WP_KSES_ALLOWED);
                     }
 
                     break;
@@ -268,18 +268,17 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
                 case FisrvGateway::APPLEPAY->value:
                     $image_src =
                         'https://woocommerce.com/wp-content/plugins/wccom-plugins/payment-gateway-suggestions/images/icons/applepay.svg';
-                    echo wp_kses(self::render_icon($image_src), self::WP_KSES_ALLOWED);
+                    echo wp_kses(self::render_icon($image_src, $small), self::WP_KSES_ALLOWED);
                     break;
 
                 case FisrvGateway::GOOGLEPAY->value:
                     $image_src =
                         'https://woocommerce.com/wp-content/plugins/wccom-plugins/payment-gateway-suggestions/images/icons/googlepay.svg';
-                    echo wp_kses(self::render_icon($image_src), self::WP_KSES_ALLOWED);
+                    echo wp_kses(self::render_icon($image_src, $small), self::WP_KSES_ALLOWED);
                     break;
-
                 case FisrvGateway::CREDITCARD->value:
                     $image_src = 'https://icon-library.com/images/credit-card-icon-white/credit-card-icon-white-9.jpg';
-                    echo wp_kses(self::render_icon(plugins_url('../assets/images/fisrv-credit-card.svg', __FILE__)), self::WP_KSES_ALLOWED);
+                    echo wp_kses(self::render_icon(plugins_url('../assets/images/fisrv-credit-card.svg', __FILE__), $small), self::WP_KSES_ALLOWED);
                     break;
 
                 default:
@@ -292,12 +291,12 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         return ob_get_clean();
     }
 
-    private static function render_icon(string $image_src, int $index = 0): string
+    private static function render_icon(string $image_src, bool $small): string
     {
         ob_start();
 
         ?>
-        <img style="height: 4em; border-radius: 10%; margin-right: 5px"
+        <img style="height: <?php echo esc_attr($small ? '2em' : '4em') ?>; border-radius: 10%; margin-right: 5px"
             src=" <?php echo esc_url(WC_HTTPS::force_https_url($image_src)) ?>"
             alt=" <?php esc_attr('Fisrv gateway icon') ?>" />
         <?php
@@ -305,7 +304,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         return ob_get_clean();
     }
 
-    private static function render_icon_with_overlay(string $image_src, int $index = 0): string
+    private static function render_icon_with_overlay(string $image_src, int $index = 0, bool $small): string
     {
         ob_start();
 
@@ -317,7 +316,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
                    'Remove Icon',
                    'fisrv-checkout-for-woocommerce'
                ) ?></div>
-            <?php echo wp_kses(self::render_icon($image_src, $index), self::WP_KSES_ALLOWED) ?>
+            <?php echo wp_kses(self::render_icon($image_src, $small), self::WP_KSES_ALLOWED) ?>
         </div>
         <?php
 
