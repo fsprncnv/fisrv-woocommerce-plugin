@@ -1,6 +1,6 @@
 async function fsAddImage(button) {
     const input = document.getElementById("fs-icons-data").value;
-    const gateway_id = button.getAttribute("gatewayid");
+    const gateway_id = button.getAttribute("gateway-id");
 
     button.innerHTML = "<span class='fs-loader-status'></span>";
 

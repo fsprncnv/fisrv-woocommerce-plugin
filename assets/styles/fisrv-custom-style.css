@@ -1,9 +1,9 @@
-.fs-add-button {
-    display: flex;
+.fs-button {
+    display: flex !important;
     justify-content: center;
     align-items: center;
     color: white;
-    transition-duration: 0.4s;
+    transition-duration: 0.2s;
     box-sizing: border-box;
     padding: 0.1em;
     text-align: center;
@@ -57,7 +57,7 @@
     border-left: 2px solid #EA4C00;
     font-size: 12px;
     color: #303030;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
     margin-top: 1rem;
     padding: 1.5rem 1.5rem 1.5rem 1.5rem;
     background-size: 55px;
@@ -91,4 +91,16 @@
 
 .fs-color-selector:hover {
     opacity: 0.9;
+}
+
+.fs-color-selector-container {
+    display: flex;
+}
+
+.fs-health-check-container {
+    display: flex; flex-direction: row; margin-left: 1rem; align-items: center;
+}
+
+.fs-row {
+    display: flex; flex-direction: row;
 }

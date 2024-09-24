@@ -2,6 +2,39 @@
 
 abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
 {
+    const WP_KSES_ALLOWED = [
+        'div' => [
+            'onclick' => true,
+            'class' => true,
+            'style' => true,
+            'gateway-id' => true,
+            'id' => true,
+        ],
+        'input' => [
+            'style' => true,
+            'class' => true,
+            'placeholder' => true,
+            'name' => true,
+            'id' => true,
+            'type' => true,
+        ],
+        'img' => [
+            'src' => true,
+            'alt' => true,
+            'style' => true,
+        ],
+        'h1' => [
+            'style' => true,
+        ],
+        'tr' => [
+            'valign' => true,
+        ],
+        'th' => [
+            'scope' => true,
+            'class' => true,
+        ]
+    ];
+
     public function __construct()
     {
         $this->description = esc_html__('Payment will be processed by Fiserv. You will be redirected to an external checkout page.', 'fisrv-checkout-for-woocommerce');
@@ -10,6 +43,69 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
     public static function custom_save_icon_value($settings)
     {
         return $settings;
+    }
+
+    public function admin_options()
+    {
+        ob_start();
+        $onGeneric = $this->id === FisrvGateway::GENERIC->value;
+
+        ?>
+        <?php echo $onGeneric ? wp_kses(self::render_fisrv_header(), self::WP_KSES_ALLOWED) : '' ?>
+        <table class="form-table"> <?php echo $this->generate_settings_html($this->get_form_fields(), false) ?></table>
+        <?php echo $onGeneric ? wp_kses(self::render_restore_button($this->id, $this->get_form_fields()), self::WP_KSES_ALLOWED) : '' ?>
+        <?php
+
+        echo ob_get_clean();
+    }
+
+    public function generate_settings_html($form_fields = array(), $echo = true)
+    {
+        if (empty($form_fields)) {
+            $form_fields = $this->get_form_fields();
+        }
+
+        $html = "<h1>{$this->method_title}</h1><p>{$this->method_description}</p>";
+
+        foreach ($form_fields as $k => $v) {
+            if (str_starts_with($k, 'section-') && $this->id === FisrvGateway::GENERIC->value) {
+                $html .= wp_kses(self::render_section_header($v['title']), self::WP_KSES_ALLOWED);
+                continue;
+            }
+
+            $type = $this->get_field_type($v);
+
+            if (method_exists($this, 'generate_' . $type . '_html')) {
+                $html .= $this->{'generate_' . $type . '_html'}($k, $v);
+            } elseif (has_filter('woocommerce_generate_' . $type . '_html')) {
+                $html .= apply_filters('woocommerce_generate_' . $type . '_html', '', $k, $v, $this);
+            } else {
+                $html .= $this->generate_text_html($k, $v);
+            }
+        }
+
+        if ($echo) {
+            echo $html; // WPCS: XSS ok.
+        } else {
+            return $html;
+        }
+    }
+
+    private static function render_section_header(string $title, bool $top = false): string
+    {
+        ob_start();
+
+        ?>
+        <tr valign="top">
+            <th scope="row" class="titledesc">
+                <h1 style="font-weight: 400; margin-top: <?php echo esc_attr($top ? '0' : '1.5em') ?>">
+                    <?php echo esc_html__($title, 'fisrv-checkout-for-woocommerce') ?>
+                </h1>
+            </th>
+        </tr>
+        <?php
+
+        return ob_get_clean();
     }
 
     /**
@@ -24,15 +120,18 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         ob_start();
 
         ?>
-        <?php echo wp_kses_post(self::render_gateway_icons($wc_settings->id, 'display: flex; flex-direction: row;', '4rem')) ?>
+        <?php echo wp_kses(self::render_gateway_icons($wc_settings->id), self::WP_KSES_ALLOWED) ?>
         <?php
         if ($wc_settings->id === FisrvGateway::GENERIC->value) {
             ?>
-            <input style="margin-left: 8px; margin-right: 8px; padding: 8px 10px; border: none;" class="input-text regular-input"
-                type="text" name="fs-icons-data" id="fs-icons-data"
-                value="<?php echo esc_html(implode(',', json_decode('[]', true))) ?>" placeholder="Enter image URL to add to list">
-            <div style="display: flex;" class="button-primary fs-add-button" gatewayid="<?php echo esc_attr($wc_settings->id) ?>"
-                onclick="fsAddImage(this)">+</div>
+            <div style="height: fit-content;" class="fs-row">
+                <input style="margin-left: 8px; margin-right: 8px; padding: 8px 10px; border: none;"
+                    class="input-text regular-input" type="text" name="fs-icons-data" id="fs-icons-data"
+                    placeholder="Enter image URL to add to list">
+                <div class="fs-button button-primary" gateway-id="<?php echo esc_attr($wc_settings->id) ?>"
+                    onclick="fsAddImage(this)">+
+                </div>
+            </div>
             <?php
         }
         ?>
@@ -42,14 +141,14 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         return self::render_option_tablerow($key, $data, $wc_settings, $component);
     }
 
-    public static function render_restore_button(string $field_html, string $key, array $data, WC_Settings_API $wc_settings): string
+    public static function render_restore_button(string $gateway_id, array $form_fields): string
     {
         ob_start();
 
         ?>
-        <div style="display: flex; align-items: center; width: fit-content;" class="button-primary fs-add-button"
-            onclick="fisrvRestorePaymentSettings('<?php echo esc_attr($wc_settings->id) ?>', '<?php echo esc_attr(base64_encode(wp_json_encode($wc_settings->get_form_fields()))) ?>', this)">
-            <?php echo esc_html__('Restore default settings', 'fisrv-checkout-for-woocommerce') ?>
+        <?php echo self::render_section_header('Restore and Save Settings') ?>
+        <div style="margin-top: 2em" class="button-primary">
+            <?php echo esc_html__('Restore to default', 'fisrv-checkout-for-woocommerce') ?>
         </div>
         <?php
 
@@ -59,12 +158,13 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
     public static function render_wp_theme_data(string $field_html, string $key, array $data, WC_Settings_API $wc_settings): string
     {
         ob_start();
-        $theme = json_decode(wp_remote_get(wp_get_theme()->get_stylesheet_directory_uri() . '/theme.json'), true);
+        $themeResponse = wp_remote_get(wp_get_theme()->get_stylesheet_directory_uri() . '/theme.json');
+        $theme = json_decode($themeResponse['body'], true);
         $colors = array_slice($theme['settings']['color']['palette'], 0, 3);
         $width = 150;
 
         ?>
-        <div style="display: flex; flex-wrap: wrap; width: <?php echo esc_attr($width * 3) ?>px; background-color: black;">
+        <div class="fs-color-selector-container" style="width: <?php echo esc_attr($width * 3) ?>px; background-color: black;">
             <?php
             foreach ($colors as $color) {
                 ?>
@@ -109,9 +209,9 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
                 </label>
             </th>
             <td class="forminp">
-                <fieldset style="display: flex; flex-direction: row;">
+                <fieldset style="display: flex; flex-direction: row; align-items: center;">
                     <legend class="screen-reader-text"><span><?php echo esc_html($data['title']) ?></span></legend>
-                    <?php echo wp_kses_post($child_component) ?>
+                    <?php echo wp_kses($child_component, self::WP_KSES_ALLOWED) ?>
                 </fieldset>
             </td>
         </tr>
@@ -120,7 +220,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         return ob_get_clean();
     }
 
-    public static function render_fisrv_header(string $field_html, string $key, array $data, WC_Settings_API $wc_settings): string
+    public static function render_fisrv_header(): string
     {
         ob_start();
 
@@ -143,13 +243,13 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         return ob_get_clean();
     }
 
-    protected static function render_gateway_icons(string $gateway_id, string $styles = '', string $height = '2rem'): string
+    protected static function render_gateway_icons(string $gateway_id): string
     {
         $gateway = WC()->payment_gateways()->payment_gateways()[FisrvGateway::GENERIC->value];
 
         ob_start();
         ?>
-        <div style="<?php echo esc_attr($styles) ?>">
+        <div class="fs-row">
             <?php
             switch ($gateway_id) {
                 case FisrvGateway::GENERIC->value:
@@ -160,7 +260,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
                     }
 
                     foreach ($icons as $index => $icon) {
-                        echo wp_kses_post(self::render_icon_with_overlay($height, $icon, $index));
+                        echo wp_kses(self::render_icon_with_overlay($icon, $index), self::WP_KSES_ALLOWED);
                     }
 
                     break;
@@ -168,18 +268,18 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
                 case FisrvGateway::APPLEPAY->value:
                     $image_src =
                         'https://woocommerce.com/wp-content/plugins/wccom-plugins/payment-gateway-suggestions/images/icons/applepay.svg';
-                    echo wp_kses_post(self::render_icon($height, $image_src));
+                    echo wp_kses(self::render_icon($image_src), self::WP_KSES_ALLOWED);
                     break;
 
                 case FisrvGateway::GOOGLEPAY->value:
                     $image_src =
                         'https://woocommerce.com/wp-content/plugins/wccom-plugins/payment-gateway-suggestions/images/icons/googlepay.svg';
-                    echo wp_kses_post(self::render_icon($height, $image_src));
+                    echo wp_kses(self::render_icon($image_src), self::WP_KSES_ALLOWED);
                     break;
 
                 case FisrvGateway::CREDITCARD->value:
                     $image_src = 'https://icon-library.com/images/credit-card-icon-white/credit-card-icon-white-9.jpg';
-                    echo wp_kses_post(self::render_icon($height, plugins_url('../assets/images/fisrv-credit-card.svg', __FILE__)));
+                    echo wp_kses(self::render_icon(plugins_url('../assets/images/fisrv-credit-card.svg', __FILE__)), self::WP_KSES_ALLOWED);
                     break;
 
                 default:
@@ -192,12 +292,12 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         return ob_get_clean();
     }
 
-    private static function render_icon(string $height, string $image_src, int $index = 0): string
+    private static function render_icon(string $image_src, int $index = 0): string
     {
         ob_start();
 
         ?>
-        <img style="border-radius: 10%; height: <?php echo esc_attr($height) ?>; margin-right: 5px"
+        <img style="height: 4em; border-radius: 10%; margin-right: 5px"
             src=" <?php echo esc_url(WC_HTTPS::force_https_url($image_src)) ?>"
             alt=" <?php esc_attr('Fisrv gateway icon') ?>" />
         <?php
@@ -205,7 +305,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         return ob_get_clean();
     }
 
-    private static function render_icon_with_overlay(string $height, string $image_src, int $index = 0): string
+    private static function render_icon_with_overlay(string $image_src, int $index = 0): string
     {
         ob_start();
 
@@ -217,7 +317,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
                    'Remove Icon',
                    'fisrv-checkout-for-woocommerce'
                ) ?></div>
-            <?php echo wp_kses_post(self::render_icon($height, $image_src, $index)) ?>
+            <?php echo wp_kses(self::render_icon($image_src, $index), self::WP_KSES_ALLOWED) ?>
         </div>
         <?php
 
@@ -230,11 +330,11 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         ob_start();
 
         ?>
-        <div id="fs-health-btn" style="display: flex; color: white;" class="button-primary fs-add-button"
+        <div id="fs-health-btn" style="display: flex; color: white;" class="button-primary fs-button"
             onclick="fsFetchHealth('<?php echo esc_attr($wc_settings->get_option('is_prod')) ?>')">
             +
         </div>
-        <div style="display: flex; flex-direction: row; margin-left: 1rem; align-items: center;">
+        <div class="fs-health-check-container">
             <div id="fs-status-indicator"
                 style="background-color: lightblue; border-radius: 100%; width: 0.8em; height: 0.8em; margin-right: 1em;">
             </div>
@@ -254,9 +354,9 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
     {
         if ($this->id === FisrvGateway::GENERIC->value) {
             $this->form_fields = array(
-                'header' => array(
-                    'type' => 'fisrv_header',
-                ),
+                'section-1' => [
+                    'title' => 'Basic Settings'
+                ],
                 'api_key' => array(
                     'title' => 'API Key',
                     'type' => 'text',
@@ -291,12 +391,47 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
                     'description' => esc_html__('Get current status of Fiserv API and your configuration', 'fisrv-checkout-for-woocommerce'),
                     'desc_tip' => true,
                 ),
+                'enable_log' => array(
+                    'title' => esc_html__('Enable Developer Logs', 'fisrv-checkout-for-woocommerce'),
+                    'type' => 'checkbox',
+                    'css' => 'padding: 8px 10px; border: none;',
+                    'description' => esc_html__('Enable log messages on WooCommerce', 'fisrv-checkout-for-woocommerce'),
+                    'desc_tip' => true,
+                ),
+                'section-2' => [
+                    'title' => 'Order Settings'
+                ],
                 'autocomplete' => array(
                     'title' => esc_html__('Auto-complete Orders', 'fisrv-checkout-for-woocommerce'),
                     'type' => 'checkbox',
                     'css' => 'padding: 8px 10px; border: none;',
                     'description' => esc_html__('Skip processing order status and set to complete status directly', 'fisrv-checkout-for-woocommerce'),
                     'desc_tip' => true,
+                ),
+                'enable_browser_lang' => array(
+                    'title' => esc_html__('Checkout Page Language', 'fisrv-checkout-for-woocommerce'),
+                    'type' => 'select',
+                    'css' => 'padding: 8px 10px; border: none;',
+                    'default' => 'admin',
+                    'description' => esc_html__('Should language of checkout page be inferred from customer\'s browser or set to admin language', 'fisrv-checkout-for-woocommerce'),
+                    'desc_tip' => true,
+                    'options' => array(
+                        'browser' => esc_html__('Customer\'s preferred language', 'fisrv-checkout-for-woocommerce'),
+                        'admin' => esc_html__('Admin dashboard setting', 'fisrv-checkout-for-woocommerce'),
+                    ),
+                ),
+                'fail_page' => array(
+                    'title' => esc_html__('Redirect after payment failure', 'fisrv-checkout-for-woocommerce'),
+                    'type' => 'select',
+                    'css' => 'padding: 8px 10px; border: none;',
+                    'description' => esc_html__('Where to redirect if payment failed', 'fisrv-checkout-for-woocommerce'),
+                    'default' => 'checkout',
+                    'desc_tip' => true,
+                    'options' => array(
+                        'checkout' => esc_html__('Checkout page', 'fisrv-checkout-for-woocommerce'),
+                        'cart' => esc_html__('Shopping cart', 'fisrv-checkout-for-woocommerce'),
+                        'home' => esc_html__('Home page', 'fisrv-checkout-for-woocommerce'),
+                    ),
                 ),
                 // 'enable_tokens' => array(
                 // 'title' => 'Enable Transaction Tokens',
@@ -312,30 +447,14 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
                     'default' => 'Sale',
                     'css' => 'padding: 8px 10px; border: none; pointer-events: none;',
                 ),
-                'enable_log' => array(
-                    'title' => esc_html__('Enable Developer Logs', 'fisrv-checkout-for-woocommerce'),
-                    'type' => 'checkbox',
-                    'css' => 'padding: 8px 10px; border: none;',
-                    'description' => esc_html__('Enable log messages on WooCommerce', 'fisrv-checkout-for-woocommerce'),
-                    'desc_tip' => true,
-                ),
+                'section-3' => [
+                    'title' => 'Customization'
+                ],
                 'wp_theme_data' => array(
                     'title' => esc_html__('Theme Colors', 'fisrv-checkout-for-woocommerce'),
                     'type' => 'wp_theme_data',
                     'description' => esc_html__('Info about current WordPress theme data which you can use to customize your checkout page on our Virtual Terminal', 'fisrv-checkout-for-woocommerce'),
                     'desc_tip' => true,
-                ),
-                'enable_browser_lang' => array(
-                    'title' => esc_html__('Checkout Page Language', 'fisrv-checkout-for-woocommerce'),
-                    'type' => 'select',
-                    'css' => 'padding: 8px 10px; border: none;',
-                    'default' => 'admin',
-                    'description' => esc_html__('Should language of checkout page be inferred from customer\'s browser or set to admin language', 'fisrv-checkout-for-woocommerce'),
-                    'desc_tip' => true,
-                    'options' => array(
-                        'browser' => esc_html__('Customer\'s preferred language', 'fisrv-checkout-for-woocommerce'),
-                        'admin' => esc_html__('Admin dashboard setting', 'fisrv-checkout-for-woocommerce'),
-                    ),
                 ),
             );
         }
@@ -362,22 +481,6 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
                 'description' => esc_html__('Custom description of gateway', 'fisrv-checkout-for-woocommerce'),
                 'default' => $this->description,
                 'desc_tip' => true,
-            ),
-            'fail_page' => array(
-                'title' => esc_html__('Redirect after payment failure', 'fisrv-checkout-for-woocommerce'),
-                'type' => 'select',
-                'css' => 'padding: 8px 10px; border: none;',
-                'description' => esc_html__('Where to redirect if payment failed', 'fisrv-checkout-for-woocommerce'),
-                'default' => 'checkout',
-                'desc_tip' => true,
-                'options' => array(
-                    'checkout' => esc_html__('Checkout page', 'fisrv-checkout-for-woocommerce'),
-                    'cart' => esc_html__('Shopping cart', 'fisrv-checkout-for-woocommerce'),
-                    'home' => esc_html__('Home page', 'fisrv-checkout-for-woocommerce'),
-                ),
-            ),
-            'restore' => array(
-                'type' => 'restore_settings',
             ),
         );
     }
