@@ -29,6 +29,11 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         'tr' => [
             'valign' => true,
         ],
+        'script' => [
+            'async' => true,
+            'src' => true,
+            'onload' => true,
+        ],
         'th' => [
             'scope' => true,
             'class' => true,
@@ -158,7 +163,15 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
     public static function render_wp_theme_data(string $field_html, string $key, array $data, WC_Settings_API $wc_settings): string
     {
         ob_start();
-        $themeResponse = wp_remote_get(wp_get_theme()->get_stylesheet_directory_uri() . '/theme.json');
+
+        $themeResponse = wp_remote_get(wp_get_theme()->get_stylesheet_directory_uri() . '/theme.json', [
+            'sslverify' => false
+        ]);
+
+        if (is_wp_error($themeResponse)) {
+            throw new Exception($themeResponse->get_error_message());
+        }
+
         $theme = json_decode($themeResponse['body'], true);
         $colors = array_slice($theme['settings']['color']['palette'], 0, 3);
         $width = 150;
