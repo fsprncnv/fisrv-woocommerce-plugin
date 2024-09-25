@@ -2,11 +2,11 @@
 
 use Fisrv\Models\PreSelectedPaymentMethod;
 
+/**
+ * Gateway instance for credit card pre-selection. Inherits from WC_Fisrv_Payment_Gateway.
+ */
 class WC_Fisrv_Gateway_Cards extends WC_Fisrv_Payment_Gateway
 {
-
-
-
     public function __construct()
     {
         $this->selected_method = PreSelectedPaymentMethod::CARDS;

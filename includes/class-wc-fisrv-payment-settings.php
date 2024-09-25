@@ -1,7 +1,18 @@
 <?php
 
+/**
+ * Abstract class that is inherited by WC_Fisrv_Payment_Gateway and inherits
+ * WC_Payment_Gateway. This class contains all render methods (HTML markup) and
+ * logic pertaining to payment gateway settings only.
+ * 
+ * @since 1.1.0
+ */
 abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
 {
+    /**
+     * Used by wp_kses. List of allowed markup tags when sanitized by WP method.
+     * @var array
+     */
     const WP_KSES_ALLOWED = [
         'div' => [
             'onclick' => true,
@@ -50,6 +61,10 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         return $settings;
     }
 
+    /**
+     * {@inheritDoc}
+     * @return void
+     */
     public function admin_options()
     {
         ob_start();
@@ -64,7 +79,13 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         echo ob_get_clean();
     }
 
-    public function generate_settings_html($form_fields = array(), $echo = true)
+    /**
+     * {@inheritDoc}
+     * @param mixed $form_fields
+     * @param mixed $echo
+     * @return string
+     */
+    public function generate_settings_html($form_fields = array(), $echo = true): string
     {
         if (empty($form_fields)) {
             $form_fields = $this->get_form_fields();
@@ -91,11 +112,17 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
 
         if ($echo) {
             echo $html; // WPCS: XSS ok.
-        } else {
-            return $html;
         }
+
+        return $html;
     }
 
+    /**
+     * Render grouped section title heading
+     * @param string $title
+     * @param bool $top
+     * @return string
+     */
     private static function render_section_header(string $title, bool $top = false): string
     {
         ob_start();
@@ -146,6 +173,12 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         return self::render_option_tablerow($key, $data, $wc_settings, $component);
     }
 
+    /**
+     * Render reset to defaults button
+     * @param string $gateway_id
+     * @param array $form_fields
+     * @return string
+     */
     public static function render_restore_button(string $gateway_id, array $form_fields): string
     {
         ob_start();
@@ -160,6 +193,15 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         return ob_get_clean();
     }
 
+    /**
+     * Render color picker (copier) from WP theme data
+     * @param string $field_html
+     * @param string $key
+     * @param array $data
+     * @param WC_Settings_API $wc_settings
+     * @throws \Exception
+     * @return string
+     */
     public static function render_wp_theme_data(string $field_html, string $key, array $data, WC_Settings_API $wc_settings): string
     {
         ob_start();
@@ -196,6 +238,13 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         return self::render_option_tablerow($key, $data, $wc_settings, $component);
     }
 
+    /**
+     * Utiltiy method to check if given color is dark. If true, then color is dark enough to contrast
+     * better with white text (for readability). 
+
+     * @param string $hexColor
+     * @return bool
+     */
     private static function isDarkColor(string $hexColor): bool
     {
         $c = ltrim($hexColor, '#');
@@ -209,6 +258,14 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         return $luma < 40;
     }
 
+    /**
+     * Template method for all option table rows.
+     * @param string $key
+     * @param array $data
+     * @param WC_Settings_API $wc_settings
+     * @param string $child_component
+     * @return bool|string
+     */
     private static function render_option_tablerow(string $key, array $data, WC_Settings_API $wc_settings, string $child_component): bool|string
     {
         ob_start();
@@ -233,6 +290,10 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         return ob_get_clean();
     }
 
+    /**
+     * Render branded header component (banner)
+     * @return string
+     */
     public static function render_fisrv_header(): string
     {
         ob_start();
@@ -256,6 +317,12 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         return ob_get_clean();
     }
 
+    /**
+     * Render icon(s) of payment methods / gatways
+     * @param string $gateway_id
+     * @param bool $small
+     * @return string
+     */
     protected static function render_gateway_icons(string $gateway_id, bool $small): string
     {
         $gateway = WC()->payment_gateways()->payment_gateways()[FisrvGateway::GENERIC->value];
@@ -304,6 +371,12 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         return ob_get_clean();
     }
 
+    /**
+     * Render single icon
+     * @param string $image_src
+     * @param bool $small
+     * @return string
+     */
     private static function render_icon(string $image_src, bool $small): string
     {
         ob_start();
@@ -317,6 +390,14 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         return ob_get_clean();
     }
 
+    /**
+     * Render single icon with an interactable overlay on top. This is used for clickable icons (I.e. when
+     * merchant wants to remove a custom icon).
+     * @param string $image_src
+     * @param int $index
+     * @param bool $small
+     * @return string
+     */
     private static function render_icon_with_overlay(string $image_src, int $index = 0, bool $small): string
     {
         ob_start();
@@ -337,6 +418,14 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
     }
 
 
+    /**
+     * Render API health check section
+     * @param string $field_html
+     * @param string $key
+     * @param array $data
+     * @param WC_Settings_API $wc_settings
+     * @return bool|string
+     */
     public static function render_healthcheck(string $field_html, string $key, array $data, WC_Settings_API $wc_settings)
     {
         ob_start();
@@ -390,6 +479,10 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         );
     }
 
+    /**
+     * Check if log messages are enabled
+     * @return bool True if enabled else false
+     */
     public static function isLoggingEnabled(): bool
     {
         $gateway = WC()->payment_gateways()->payment_gateways()[FisrvGateway::GENERIC->value];

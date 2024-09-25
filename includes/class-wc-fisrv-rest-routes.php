@@ -11,6 +11,10 @@ final class WC_Fisrv_Rest_Routes
 {
     public static string $webhook_endpoint = '/fisrv_woocommerce_plugin/v1';
 
+    /**
+     * Register endpoint for health check
+     * @return void
+     */
     public static function register_health_report(): void
     {
         register_rest_route(
@@ -34,6 +38,12 @@ final class WC_Fisrv_Rest_Routes
         );
     }
 
+    /**
+     * Callback for payment method icon addition
+     * @param WP_REST_Request $request
+     * @throws \Exception
+     * @return WP_REST_Response|WP_Error
+     */
     public static function add_image(WP_REST_Request $request): WP_REST_Response|WP_Error
     {
         try {
@@ -84,6 +94,10 @@ final class WC_Fisrv_Rest_Routes
         );
     }
 
+    /**
+     * Register endpoint for payment icon addition
+     * @return void
+     */
     public static function register_add_image(): void
     {
         register_rest_route(
@@ -96,6 +110,11 @@ final class WC_Fisrv_Rest_Routes
         );
     }
 
+    /**
+     * Callback for custom payment icon removal
+     * @param WP_REST_Request $request
+     * @return WP_REST_Response|WP_Error
+     */
     public static function remove_image(WP_REST_Request $request): WP_REST_Response|WP_Error
     {
         try {
@@ -136,6 +155,11 @@ final class WC_Fisrv_Rest_Routes
         );
     }
 
+
+    /**
+     * Register endpoint for payment icon removal
+     * @return void
+     */
     public static function register_remove_image(): void
     {
         register_rest_route(
@@ -148,6 +172,10 @@ final class WC_Fisrv_Rest_Routes
         );
     }
 
+    /**
+     * Register endpoint for checkout solution details report
+     * @return void
+     */
     public static function register_checkout_report(): void
     {
         register_rest_route(

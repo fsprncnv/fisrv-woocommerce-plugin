@@ -1,9 +1,10 @@
 <?php
 
+/**
+ * Gateway instance for generic option without pre-selection. Inherits from WC_Fisrv_Payment_Gateway.
+ */
 class WC_Fisrv_Payment_Generic extends WC_Fisrv_Payment_Gateway
 {
-
-
     private WC_Fisrv_Gateway_Applepay $gateway_applepay;
     private WC_Fisrv_Gateway_Googlepay $gateway_googlepay;
     private WC_Fisrv_Gateway_Cards $gateway_cards;
@@ -21,6 +22,10 @@ class WC_Fisrv_Payment_Generic extends WC_Fisrv_Payment_Gateway
         parent::__construct();
     }
 
+    /**
+     * Settings form fields exclusive for generic payment method
+     * @return void
+     */
     public function init_form_fields(): void
     {
         $this->form_fields = [

@@ -28,6 +28,12 @@ final class WC_Fisrv_Logger
         wc_get_logger()->notice($message, self::create_log_context($order));
     }
 
+    /**
+     * Generic log without order reference
+     * 
+     * @param string $message
+     * @return void
+     */
     public static function generic_log(string $message): void
     {
         if (!WC_Fisrv_Payment_Settings::isLoggingEnabled()) {

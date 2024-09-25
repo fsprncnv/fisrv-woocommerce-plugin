@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Enum for payment gateway IDs used on WC Gateways.
+ * @since 1.1.0
+ */
 enum FisrvGateway: string
 {
     case GENERIC = 'fisrv-gateway-generic';

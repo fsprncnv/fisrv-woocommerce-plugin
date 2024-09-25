@@ -2,11 +2,11 @@
 
 use Fisrv\Models\PreSelectedPaymentMethod;
 
+/**
+ * Gateway instance for apple pay pre-selection. Inherits from WC_Fisrv_Payment_Gateway.
+ */
 class WC_Fisrv_Gateway_Applepay extends WC_Fisrv_Payment_Gateway
 {
-
-
-
     public function __construct()
     {
         $this->selected_method = PreSelectedPaymentMethod::APPLE;

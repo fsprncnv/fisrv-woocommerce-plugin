@@ -44,6 +44,13 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Fisrv_Payment_Settings
         add_filter('woocommerce_order_button_html', array(WC_Fisrv_Gateway_Googlepay::class, 'replace_order_button_html'), 10, 2);
     }
 
+    /**
+     * UI component used for detailed checkout response report
+     * 
+     * @param mixed $id
+     * @param mixed $order
+     * @return void
+     */
     public function custom_order_meta_box($id, $order)
     {
         add_meta_box(
@@ -58,6 +65,12 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Fisrv_Payment_Settings
         );
     }
 
+    /**
+     * Callback used for custom_order_meta_box. Contains UI markup.
+     * 
+     * @param mixed $order
+     * @return string
+     */
     public function custom_order_meta_box_callback($order): string
     {
         ob_start();
@@ -91,6 +104,12 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Fisrv_Payment_Settings
         return ob_get_clean();
     }
 
+    /**
+     * Check if payment method is available. Disable if API credentials are empty.
+     * Does not validate set values.
+     * 
+     * @return bool True if payment gateway available
+     */
     public function is_available(): bool
     {
         $generic_gateway = WC()->payment_gateways()->payment_gateways()[FisrvGateway::GENERIC->value];
@@ -105,6 +124,14 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Fisrv_Payment_Settings
         ) && parent::is_available();
     }
 
+    /**
+     * Auto-toggle generic payment gateway to disabled if any of the specific (pre-selection) gateways 
+     * have been enabled and vice versa.
+     * 
+     * @param mixed $key
+     * @param mixed $value
+     * @return void
+     */
     private function toggle_exclusive_payment_methods($key, $value)
     {
         if ($key === 'enabled' && $value === 'yes') {
@@ -120,6 +147,11 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Fisrv_Payment_Settings
         }
     }
 
+    /**
+     * Shorthand to disable a given gateway
+     * @param WC_Payment_Gateway $gateway
+     * @return void
+     */
     private function disable_gateway(WC_Payment_Gateway $gateway): void
     {
         if ($gateway->get_option('enabled') === 'yes') {
@@ -137,6 +169,12 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Fisrv_Payment_Settings
         // $this->icon = $this->get_option('icon', $this->get_default_icon());
     }
 
+    /**
+     * Render custom icons on payment selection page
+     * @param mixed $icon
+     * @param mixed $gateway_id
+     * @return mixed
+     */
     public static function custom_payment_gateway_icons($icon, $gateway_id)
     {
         if (!str_starts_with($gateway_id, 'fisrv')) {
@@ -146,6 +184,14 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Fisrv_Payment_Settings
         return self::render_gateway_icons($gateway_id, true);
     }
 
+    /**
+     * Inject payment method template to adjust layout on selection box
+     * 
+     * @param mixed $template
+     * @param mixed $template_name
+     * @param mixed $template_path
+     * @return mixed
+     */
     public function custom_woocommerce_locate_template($template, $template_name, $template_path)
     {
         if (!str_starts_with($this->id, 'fisrv')) {
@@ -162,6 +208,8 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Fisrv_Payment_Settings
     }
 
     /**
+     * {@inheritDoc}
+     * 
      * @return array<string, string>
      */
     public function process_payment($order_id): array
@@ -186,6 +234,15 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Fisrv_Payment_Settings
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @param mixed $order_id
+     * @param mixed $amount
+     * @param mixed $reason
+     * @throws \Exception
+     * @return bool|WP_Error
+     */
     public function process_refund($order_id, $amount = null, $reason = ''): bool|WP_Error
     {
         $order = wc_get_order($order_id);

@@ -2,6 +2,9 @@
 
 use Fisrv\Models\PreSelectedPaymentMethod;
 
+/**
+ * Gateway instance for google pay pre-selection. Inherits from WC_Fisrv_Payment_Gateway.
+ */
 class WC_Fisrv_Gateway_Googlepay extends WC_Fisrv_Payment_Gateway
 {
     public function __construct()
@@ -41,6 +44,12 @@ class WC_Fisrv_Gateway_Googlepay extends WC_Fisrv_Payment_Gateway
         parent::init_form_fields();
     }
 
+    /**
+     * Callback hook to replace default place order button to custom. This is used when
+     * injecting native Google Pay button.
+     * @param mixed $order_button
+     * @return string
+     */
     public static function replace_order_button_html($order_button): string
     {
         $gateway = WC()->payment_gateways()->payment_gateways()[FisrvGateway::GOOGLEPAY->value];

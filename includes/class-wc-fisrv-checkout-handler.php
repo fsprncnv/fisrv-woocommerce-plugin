@@ -26,6 +26,10 @@ final class WC_Fisrv_Checkout_Handler
 
     const FISRV_NONCE = 'fisrv-nonce';
 
+    /**
+     * HTTP client used by Fiserv PHP Client
+     * @var CheckoutClient | null
+     */
     private static ?CheckoutClient $client = null;
 
     /**
@@ -101,6 +105,7 @@ final class WC_Fisrv_Checkout_Handler
 
     /**
      * Inititalize configuraiton parameters of fisrv SDK.
+     * @param WC_Fisrv_Payment_Generic $generic_gateway WC payment gateway object to retrieve stored credentials
      */
     public static function init_api_credentials(WC_Fisrv_Payment_Generic $generic_gateway): array
     {
@@ -168,13 +173,14 @@ final class WC_Fisrv_Checkout_Handler
         }
     }
 
-    private static function pass_transaction_type(WC_Fisrv_Payment_Generic $generic_gateway, CheckoutClientRequest $req)
-    {
-        $req->transactionType = TransactionType::tryFrom($generic_gateway->get_option('transaction_type')) ?? TransactionType::SALE;
-        $req->transactionType = TransactionType::SALE;
-        return $req;
-    }
 
+    /**
+     * Refund checkout
+     * @param WC_Fisrv_Payment_Generic $generic_gateway Gateway object to retrieve stored credentials
+     * @param WC_Order $order WooCommerce order object
+     * @param mixed $amount Amount to refund
+     * @return Fisrv\Models\PaymentsClientResponse Fiserv client response object
+     */
     public static function refund_checkout(WC_Fisrv_Payment_Generic $generic_gateway, WC_Order $order, $amount): PaymentsClientResponse
     {
         self::$client = new CheckoutClient(self::init_api_credentials($generic_gateway));
@@ -193,6 +199,11 @@ final class WC_Fisrv_Checkout_Handler
         return $response;
     }
 
+    /**
+     * Get health report for API health status checker
+     * @param array $credentials API key, secret and store ID
+     * @return array JSON parsable response as array
+     */
     public static function get_health_report(array $credentials): array
     {
         $paymentsClient = new PaymentsClient($credentials);
@@ -266,11 +277,6 @@ final class WC_Fisrv_Checkout_Handler
         }
 
         return $req;
-    }
-
-    private static function truncate($val)
-    {
-        return number_format($val, 2);
     }
 
     /**
@@ -379,6 +385,13 @@ final class WC_Fisrv_Checkout_Handler
         return $req;
     }
 
+    /**
+     * Handle token transactions. This feature is on hold currently.
+     * @param WC_Fisrv_Payment_Generic $generic_gateway
+     * @param Fisrv\Models\CheckoutClientRequest $req
+     * @param WC_Order $order
+     * @return CheckoutClientRequest
+     */
     private static function handle_token_transaction(WC_Fisrv_Payment_Generic $generic_gateway, CheckoutClientRequest $req, WC_Order $order)
     {
         $tokens_enabled = $generic_gateway->get_option('enable_tokens');
