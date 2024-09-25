@@ -401,7 +401,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
      * @param bool $small
      * @return string
      */
-    private static function render_icon_with_overlay(string $image_src, int $index = 0, bool $small = 'false'): string
+    private static function render_icon_with_overlay(string $image_src, int $index = 0, bool $small = false): string
     {
         ob_start();
 
