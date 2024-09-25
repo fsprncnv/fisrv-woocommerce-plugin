@@ -67,11 +67,14 @@ if (!class_exists('fisrv_checkout_for_woocommerce')) {
         {
             add_filter('woocommerce_payment_gateways', [$this, 'payment_gateways_callback']);
 
-            /** Callback on failed payment, retry flow */
-            add_action('before_woocommerce_pay_form', [WC_Fisrv_Checkout_Handler::class, 'retry_payment'], 1, 3);
+            /** Callback on failed payment, retry flow on checkout */
+            add_action('before_woocommerce_pay_form', [WC_Fisrv_Redirect_Back_Handler::class, 'retry_payment_on_checkout'], 1, 3);
+
+            /** Callback on failed payment, retry flow on shopping cart */
+            add_action('woocommerce_before_cart_table', [WC_Fisrv_Redirect_Back_Handler::class, 'retry_payment_on_cart'], 1);
 
             /** Callback on completed order */
-            add_action('woocommerce_thankyou', [WC_Fisrv_Checkout_Handler::class, 'order_complete_callback'], 1, 1);
+            add_action('woocommerce_thankyou', [WC_Fisrv_Redirect_Back_Handler::class, 'order_complete_callback'], 1, 1);
 
             /** Register webhook consumer */
             add_action('rest_api_init', [WC_Fisrv_Webhook_Handler::class, 'register_consume_events']);

@@ -11,7 +11,7 @@ class WC_Fisrv_Payment_Generic extends WC_Fisrv_Payment_Gateway
 
     public function __construct()
     {
-        $this->id = FisrvGateway::GENERIC->value;
+        $this->id = Fisrv_Identifiers::GATEWAY_GENERIC->value;
 
         $this->method_title = 'Fiserv Checkout';
         $this->method_description = esc_html__('Generic option shows all supported methods on redirect page.', 'fisrv-checkout-for-woocommerce');
@@ -85,18 +85,18 @@ class WC_Fisrv_Payment_Generic extends WC_Fisrv_Payment_Gateway
                 'description' => esc_html__('Skip processing order status and set to complete status directly', 'fisrv-checkout-for-woocommerce'),
                 'desc_tip' => true,
             ),
-            'enable_browser_lang' => array(
-                'title' => esc_html__('Checkout Page Language', 'fisrv-checkout-for-woocommerce'),
-                'type' => 'select',
-                'css' => 'padding: 8px 10px; border: none;',
-                'default' => 'admin',
-                'description' => esc_html__('Should language of checkout page be inferred from customer\'s browser or set to admin language', 'fisrv-checkout-for-woocommerce'),
-                'desc_tip' => true,
-                'options' => array(
-                    'browser' => esc_html__('Customer\'s preferred language', 'fisrv-checkout-for-woocommerce'),
-                    'admin' => esc_html__('Admin dashboard setting', 'fisrv-checkout-for-woocommerce'),
-                ),
-            ),
+            // 'enable_browser_lang' => array(
+            //     'title' => esc_html__('Checkout Page Language', 'fisrv-checkout-for-woocommerce'),
+            //     'type' => 'select',
+            //     'css' => 'padding: 8px 10px; border: none;',
+            //     'default' => 'admin',
+            //     'description' => esc_html__('Should language of checkout page be inferred from customer\'s browser or set to admin language', 'fisrv-checkout-for-woocommerce'),
+            //     'desc_tip' => true,
+            //     'options' => array(
+            //         'browser' => esc_html__('Customer browser\'s preferred language', 'fisrv-checkout-for-woocommerce'),
+            //         'admin' => esc_html__('Apply WordPress language', 'fisrv-checkout-for-woocommerce'),
+            //     ),
+            // ),
             'fail_page' => array(
                 'title' => esc_html__('Redirect after payment failure', 'fisrv-checkout-for-woocommerce'),
                 'type' => 'select',
@@ -107,7 +107,6 @@ class WC_Fisrv_Payment_Generic extends WC_Fisrv_Payment_Gateway
                 'options' => array(
                     'checkout' => esc_html__('Checkout page', 'fisrv-checkout-for-woocommerce'),
                     'cart' => esc_html__('Shopping cart', 'fisrv-checkout-for-woocommerce'),
-                    'home' => esc_html__('Home page', 'fisrv-checkout-for-woocommerce'),
                 ),
             ),
             'transaction_type' => array(

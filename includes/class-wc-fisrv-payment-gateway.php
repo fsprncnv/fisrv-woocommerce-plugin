@@ -82,26 +82,26 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Fisrv_Payment_Settings
         ];
 
         ?>
-        <div class="customer-history order-attribution-metabox">
-            <div id="fs-checkout-info-container">
-                <?php
-                foreach ($meta_data as $key => $value) {
-                    ?>
-                    <h4><?php echo esc_html($key) ?></h4>
-                    <span class="order-attribution-total-orders"><?php echo esc_html($value) ?></span>
-                    <?php
-                }
-                ?>
-            </div>
-            <div class="fs-checkout-report-button" reported="false"
-                onclick="fetchCheckoutReport('<?php echo esc_html($order->get_meta('_fisrv_plugin_checkout_id')) ?>', this)">
-                Fetch Full
-                Checkout
-                Data</div>
-        </div>
-        <?php
+                        <div class="customer-history order-attribution-metabox">
+                            <div id="fs-checkout-info-container">
+                                <?php
+                                foreach ($meta_data as $key => $value) {
+                                    ?>
+                                            <h4><?php echo esc_html($key) ?></h4>
+                                            <span class="order-attribution-total-orders"><?php echo esc_html($value) ?></span>
+                                            <?php
+                                }
+                                ?>
+                            </div>
+                            <div class="fs-checkout-report-button" reported="false"
+                                onclick="fetchCheckoutReport('<?php echo esc_html($order->get_meta('_fisrv_plugin_checkout_id')) ?>', this)">
+                                Fetch Full
+                                Checkout
+                                Data</div>
+                        </div>
+                        <?php
 
-        return ob_get_clean();
+                        return ob_get_clean();
     }
 
     /**
@@ -112,7 +112,7 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Fisrv_Payment_Settings
      */
     public function is_available(): bool
     {
-        $generic_gateway = WC()->payment_gateways()->payment_gateways()[FisrvGateway::GENERIC->value];
+        $generic_gateway = WC()->payment_gateways()->payment_gateways()[Fisrv_Identifiers::GATEWAY_GENERIC->value];
 
         return !in_array(
             '',
@@ -135,7 +135,7 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Fisrv_Payment_Settings
     private function toggle_exclusive_payment_methods($key, $value)
     {
         if ($key === 'enabled' && $value === 'yes') {
-            if ($this->id === FisrvGateway::GENERIC->value) {
+            if ($this->id === Fisrv_Identifiers::GATEWAY_GENERIC->value) {
                 $this->disable_gateway(new WC_Fisrv_Gateway_Applepay());
                 $this->disable_gateway(new WC_Fisrv_Gateway_Googlepay());
                 $this->disable_gateway(new WC_Fisrv_Gateway_Cards());
