@@ -26,8 +26,22 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
             'class' => true,
             'placeholder' => true,
             'name' => true,
+            'value' => true,
             'id' => true,
             'type' => true,
+        ],
+        'table' => [
+            'class' => true,
+        ],
+        'td' => [
+            'class' => true,
+        ],
+        'tr' => [
+            'valign' => true,
+        ],
+        'th' => [
+            'scope' => true,
+            'class' => true,
         ],
         'img' => [
             'src' => true,
@@ -37,18 +51,32 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         'h1' => [
             'style' => true,
         ],
-        'tr' => [
-            'valign' => true,
-        ],
         'script' => [
             'async' => true,
             'src' => true,
             'onload' => true,
         ],
-        'th' => [
-            'scope' => true,
+        'tbody' => true,
+        'fieldset' => [
+            'style' => true,
             'class' => true,
-        ]
+        ],
+        'span' => [
+            'class' => true,
+        ],
+        'legend' => [
+            'class' => true,
+        ],
+        'select' => [
+            'class' => true,
+        ],
+        'option' => [
+            'class' => true,
+        ],
+        'label' => [
+            'for' => true,
+            'class' => true,
+        ],
     ];
 
     public function __construct()
@@ -79,6 +107,11 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         <?php
 
         echo wp_kses(ob_get_clean(), self::WP_KSES_ALLOWED);
+    }
+
+    public function generate_transaction_type_html(string $key, array $data): string
+    {
+        return self::render_option_tablerow('transaction_type', $data, $this, 'SALE');
     }
 
     /**
@@ -171,8 +204,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         ?>
         <?php
 
-        $component = ob_get_clean();
-        return self::render_option_tablerow($key, $data, $wc_settings, $component);
+        return self::render_option_tablerow($key, $data, $wc_settings, ob_get_clean());
     }
 
     /**
@@ -237,8 +269,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         </div>
         <?php
 
-        $component = ob_get_clean();
-        return self::render_option_tablerow($key, $data, $wc_settings, $component);
+        return self::render_option_tablerow($key, $data, $wc_settings, ob_get_clean());
     }
 
     /**
@@ -282,7 +313,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
                 </label>
             </th>
             <td class="forminp">
-                <fieldset style="display: flex; flex-direction: row; align-items: center;">
+                <fieldset class="fs-row" style="align-items: center;">
                     <legend class="screen-reader-text"><span><?php echo esc_html($data['title']) ?></span></legend>
                     <?php echo wp_kses($child_component, self::WP_KSES_ALLOWED) ?>
                 </fieldset>
@@ -434,7 +465,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         ob_start();
 
         ?>
-        <div id=" fs-health-btn" style="display: flex; color: white;" class="button-primary fs-button"
+        <div id="fs-health-btn" style="display: flex; color: white;" class="button-primary fs-button"
             onclick="fsFetchHealth('<?php echo esc_attr($wc_settings->get_option('is_prod')) ?>')">
             +
         </div>
@@ -447,8 +478,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         </div>
         <?php
 
-        $component = ob_get_clean();
-        return self::render_option_tablerow($key, $data, $wc_settings, $component);
+        return self::render_option_tablerow($key, $data, $wc_settings, ob_get_clean());
     }
 
     /**
@@ -466,7 +496,6 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
             'title' => array(
                 'title' => esc_html__('Gateway Name', 'fisrv-checkout-for-woocommerce'),
                 'type' => 'text',
-                'css' => 'padding: 8px 10px; border: none;',
                 'description' => esc_html__('Custom name of gateway', 'fisrv-checkout-for-woocommerce'),
                 'default' => $this->title,
                 'desc_tip' => true,
@@ -474,7 +503,6 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
             'description' => array(
                 'title' => esc_html__('Gateway Description', 'fisrv-checkout-for-woocommerce'),
                 'type' => 'text',
-                'css' => 'padding: 8px 10px; border: none;',
                 'description' => esc_html__('Custom description of gateway', 'fisrv-checkout-for-woocommerce'),
                 'default' => $this->description,
                 'desc_tip' => true,

@@ -36,28 +36,24 @@ class WC_Fisrv_Payment_Generic extends WC_Fisrv_Payment_Gateway
             'api_key' => array(
                 'title' => 'API Key',
                 'type' => 'text',
-                'css' => 'padding: 8px 10px; border: none;',
                 'description' => esc_html__('Acquire API Key from Developer Portal', 'fisrv-checkout-for-woocommerce'),
                 'desc_tip' => true,
             ),
             'api_secret' => array(
                 'title' => 'API Secret',
                 'type' => 'password',
-                'css' => 'padding: 8px 10px; border: none;',
                 'description' => esc_html__('Acquire API Secret from Developer Portal', 'fisrv-checkout-for-woocommerce'),
                 'desc_tip' => true,
             ),
             'store_id' => array(
                 'title' => 'Store ID',
                 'type' => 'text',
-                'css' => 'padding: 8px 10px; border: none;',
                 'description' => esc_html__('Your Store ID for Checkout', 'fisrv-checkout-for-woocommerce'),
                 'desc_tip' => true,
             ),
             'is_prod' => array(
                 'title' => esc_html__('Production Mode', 'fisrv-checkout-for-woocommerce'),
                 'type' => 'checkbox',
-                'css' => 'padding: 8px 10px; border: none;',
                 'description' => esc_html__('Use Live (Production) Mode or Test (Sandbox) Mode', 'fisrv-checkout-for-woocommerce'),
                 'desc_tip' => true,
             ),
@@ -70,7 +66,7 @@ class WC_Fisrv_Payment_Generic extends WC_Fisrv_Payment_Gateway
             'enable_log' => array(
                 'title' => esc_html__('Enable Developer Logs', 'fisrv-checkout-for-woocommerce'),
                 'type' => 'checkbox',
-                'css' => 'padding: 8px 10px; border: none;',
+                'default' => false,
                 'description' => esc_html__('Enable log messages on WooCommerce', 'fisrv-checkout-for-woocommerce'),
                 'desc_tip' => true,
             ),
@@ -81,7 +77,6 @@ class WC_Fisrv_Payment_Generic extends WC_Fisrv_Payment_Gateway
             'autocomplete' => array(
                 'title' => esc_html__('Auto-complete Orders', 'fisrv-checkout-for-woocommerce'),
                 'type' => 'checkbox',
-                'css' => 'padding: 8px 10px; border: none;',
                 'description' => esc_html__('Skip processing order status and set to complete status directly', 'fisrv-checkout-for-woocommerce'),
                 'desc_tip' => true,
             ),
@@ -100,7 +95,6 @@ class WC_Fisrv_Payment_Generic extends WC_Fisrv_Payment_Gateway
             'fail_page' => array(
                 'title' => esc_html__('Redirect after payment failure', 'fisrv-checkout-for-woocommerce'),
                 'type' => 'select',
-                'css' => 'padding: 8px 10px; border: none;',
                 'description' => esc_html__('Where to redirect if payment failed', 'fisrv-checkout-for-woocommerce'),
                 'default' => 'checkout',
                 'desc_tip' => true,
@@ -111,11 +105,11 @@ class WC_Fisrv_Payment_Generic extends WC_Fisrv_Payment_Gateway
             ),
             'transaction_type' => array(
                 'title' => esc_html__('Transaction Type', 'fisrv-checkout-for-woocommerce'),
-                'type' => 'text',
+                'type' => 'transaction_type',
                 'description' => esc_html__('Set transaction type. Currently, only SALE transactions are available.', 'fisrv-checkout-for-woocommerce'),
                 'desc_tip' => true,
                 'default' => 'Sale',
-                'css' => 'padding: 8px 10px; border: none; pointer-events: none;',
+                'css' => 'disabled; pointer-events: none;',
             ),
             'section-3' => [
                 'title' => esc_html__('Customization', 'fisrv-checkout-for-woocommerce'),

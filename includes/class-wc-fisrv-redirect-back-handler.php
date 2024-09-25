@@ -35,7 +35,7 @@ final class WC_Fisrv_Redirect_Back_Handler
 
     public static function retry_payment_on_cart(): void
     {
-        if (!check_admin_referer(Fisrv_Identifiers::FISRV_NONCE->value)) {
+        if (!wp_verify_nonce(Fisrv_Identifiers::FISRV_NONCE->value)) {
             return;
         }
 
