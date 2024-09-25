@@ -30,7 +30,7 @@ class WC_Fisrv_Payment_Generic extends WC_Fisrv_Payment_Gateway
     {
         $this->form_fields = [
             'section-1' => [
-                'title' => 'Basic Settings',
+                'title' => esc_html__('Basic Settings', 'fisrv-checkout-for-woocommerce'),
                 'type' => 'section_header'
             ],
             'api_key' => array(
@@ -75,7 +75,7 @@ class WC_Fisrv_Payment_Generic extends WC_Fisrv_Payment_Gateway
                 'desc_tip' => true,
             ),
             'section-2' => [
-                'title' => 'Order Settings',
+                'title' => esc_html__('Order Settings', 'fisrv-checkout-for-woocommerce'),
                 'type' => 'section_header'
             ],
             'autocomplete' => array(
@@ -118,7 +118,7 @@ class WC_Fisrv_Payment_Generic extends WC_Fisrv_Payment_Gateway
                 'css' => 'padding: 8px 10px; border: none; pointer-events: none;',
             ),
             'section-3' => [
-                'title' => 'Customization',
+                'title' => esc_html__('Customization', 'fisrv-checkout-for-woocommerce'),
                 'type' => 'section_header'
             ],
             'wp_theme_data' => array(

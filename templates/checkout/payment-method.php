@@ -18,6 +18,11 @@
 if (!defined('ABSPATH')) {
     exit;
 }
+
+if (!isset($gateway)) {
+    exit;
+}
+
 ?>
 <li style="display: flex; align-items: baseline;"
     class="wc_payment_method payment_method_<?php echo esc_attr($gateway->id); ?>">

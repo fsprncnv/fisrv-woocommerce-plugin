@@ -13,7 +13,11 @@ final class WC_Fisrv_Redirect_Back_Handler
      */
     public static function retry_payment_on_checkout(WC_Order $order, string $order_button_text, array $available_gateways): array|false
     {
-        if (!isset($_GET['transaction_approved']) || $_GET['transaction_approved'] !== 'false') {
+        if (!check_admin_referer(Fisrv_Identifiers::FISRV_NONCE->value)) {
+            return false;
+        }
+
+        if (!isset($_GET['transaction_approved']) || sanitize_text_field(wp_unslash($_GET['transaction_approved'])) !== 'false') {
             return false;
         }
 
@@ -31,15 +35,19 @@ final class WC_Fisrv_Redirect_Back_Handler
 
     public static function retry_payment_on_cart(): void
     {
-        if (!isset($_GET['transaction_approved']) || $_GET['transaction_approved'] !== 'false') {
+        if (!check_admin_referer(Fisrv_Identifiers::FISRV_NONCE->value)) {
             return;
         }
 
-        if (!isset($_GET['wc_order_id'])) {
+        if (
+            !isset($_GET['transaction_approved']) ||
+            sanitize_text_field($_GET['transaction_approved']) !== 'false' ||
+            !isset($_GET['wc_order_id'])
+        ) {
             return;
         }
 
-        $order = wc_get_order($_GET['wc_order_id']);
+        $order = wc_get_order(sanitize_text_field($_GET['wc_order_id']));
 
         if (!($order instanceof WC_Order)) {
             return;
@@ -51,6 +59,10 @@ final class WC_Fisrv_Redirect_Back_Handler
 
     private static function display_error_message(WC_Order $order): bool
     {
+        if (!check_admin_referer(Fisrv_Identifiers::FISRV_NONCE->value)) {
+            return false;
+        }
+
         if (isset($_GET['message']) && isset($_GET['code'])) {
             if (!check_admin_referer(Fisrv_Identifiers::FISRV_NONCE->value)) {
                 return false;
