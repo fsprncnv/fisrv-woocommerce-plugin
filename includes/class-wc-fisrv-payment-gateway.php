@@ -40,6 +40,8 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Fisrv_Payment_Settings
         add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array(WC_Fisrv_Payment_Settings::class, 'custom_save_icon_value'), 10, 1);
         add_filter('woocommerce_locate_template', array($this, 'custom_woocommerce_locate_template'), 10, 3);
         // add_filter('woocommerce_generate_text_html', array(WC_Fisrv_Payment_Settings::class, 'render_text_field'), 1, 4);
+
+        add_filter('woocommerce_order_button_html', array(WC_Fisrv_Gateway_Googlepay::class, 'replace_order_button_html'), 10, 2);
     }
 
     public function custom_order_meta_box($id, $order)

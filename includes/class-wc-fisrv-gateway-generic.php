@@ -16,6 +16,8 @@ class WC_Fisrv_Payment_Generic extends WC_Fisrv_Payment_Gateway
         $this->method_description = esc_html__('Generic option shows all supported methods on redirect page.', 'fisrv-checkout-for-woocommerce');
         $this->title = 'Fiserv Checkout';
 
+        wp_enqueue_script('fisrv-custom-script');
+
         parent::__construct();
     }
 
