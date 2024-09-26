@@ -158,3 +158,27 @@ msgstr "Statut de la transaction modifié via webhook"
 
 msgid "Fiserv webhook has updated order to %s"
 msgstr "Le webhook Fiserv a mis à jour la commande à %s"
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-gateway-generic.php
+msgid "Basic Settings"
+msgstr "Paramètres de base"
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-gateway-generic.php
+msgid "API Key"
+msgstr "Clé API"
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-gateway-generic.php
+msgid "Theme Colors"
+msgstr "Couleurs du thème"
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-gateway-generic.php
+msgid "Order Settings"
+msgstr "Paramètres de commande"
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-gateway-generic.php
+msgid "Customization"
+msgstr "Personnalisation"
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-gateway-generic.php
+msgid "Restore or Save Settings"
+msgstr "Restaurer ou enregistrer les paramètres"

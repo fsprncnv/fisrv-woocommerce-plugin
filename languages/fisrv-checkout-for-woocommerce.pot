@@ -208,3 +208,27 @@ msgstr ""
 #: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-webhook-handler.php
 msgid "Fiserv webhook has updated order to %s"
 msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-gateway-generic.php
+msgid "Basic Settings"
+msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-gateway-generic.php
+msgid "API Key"
+msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-gateway-generic.php
+msgid "Theme Colors"
+msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-gateway-generic.php
+msgid "Order Settings"
+msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-gateway-generic.php
+msgid "Customization"
+msgstr ""
+
+#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-gateway-generic.php
+msgid "Restore or Save Settings"
+msgstr ""

@@ -34,7 +34,7 @@ class WC_Fisrv_Payment_Generic extends WC_Fisrv_Payment_Gateway
                 'type' => 'section_header'
             ],
             'api_key' => array(
-                'title' => 'API Key',
+                'title' => esc_html__('API Key', 'fisrv-checkout-for-woocommerce'),
                 'type' => 'text',
                 'description' => esc_html__('Acquire API Key from Developer Portal', 'fisrv-checkout-for-woocommerce'),
                 'desc_tip' => true,
