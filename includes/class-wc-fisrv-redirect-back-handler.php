@@ -35,7 +35,7 @@ final class WC_Fisrv_Redirect_Back_Handler
 
     public static function retry_payment_on_cart(): void
     {
-        if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_REQUEST['_wpnonce'])), Fisrv_Identifiers::FISRV_NONCE->value)) {
+        if (!isset($_REQUEST['_wpnonce']) && !wp_verify_nonce(sanitize_text_field(wp_unslash($_REQUEST['_wpnonce'])), Fisrv_Identifiers::FISRV_NONCE->value)) {
             return;
         }
 
@@ -100,16 +100,17 @@ final class WC_Fisrv_Redirect_Back_Handler
         if (check_admin_referer(Fisrv_Identifiers::FISRV_NONCE->value)) {
             $generic_gateway = new WC_Fisrv_Payment_Generic();
 
-            if (isset($_GET['transaction_approved']) && sanitize_text_field(wp_unslash($_GET['transaction_approved']))) {
+            if (isset($_GET['transaction_approved']) && sanitize_text_field(wp_unslash($_GET['transaction_approved'])) === 'true') {
                 if ($generic_gateway->get_option('autocomplete') === 'no') {
                     $order->update_status('wc-processing', __('Order was paid sucessfully.', 'fisrv-checkout-for-woocommerce'));
+                    WC_Fisrv_Logger::log($order, 'Payment complete. Order processing. (auto-complete off)');
                     return;
                 }
 
                 $has_completed = $order->payment_complete();
                 if ($has_completed) {
                     $order->update_status('wc-completed', __('Order was paid sucessfully and set to completed (auto-complete).', 'fisrv-checkout-for-woocommerce'));
-                    WC_Fisrv_Logger::log($order, __('Order auto-completed.', 'fisrv-checkout-for-woocommerce'));
+                    WC_Fisrv_Logger::log($order, 'Payment complete. Order completeg. (auto-complete on)');
                 }
             }
         }

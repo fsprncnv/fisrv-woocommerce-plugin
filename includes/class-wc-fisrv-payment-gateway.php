@@ -57,7 +57,21 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Fisrv_Payment_Settings
             'fiserv-checkout-order-meta-box',
             'Fiserv Checkout Info ',
             function () use ($order) {
-                echo wp_kses_post($this->custom_order_meta_box_callback($order));
+                echo wp_kses($this->custom_order_meta_box_callback($order), [
+                    'div' => [
+                        'class' => true,
+                        'id' => true,
+                        'onclick' => true,
+                        'reported' => true,
+                    ],
+                    'a' => [
+                        'href' => true
+                    ],
+                    'span' => [
+                        'class' => true
+                    ],
+                    'h4' => true,
+                ]);
             },
             $id,
             'side',
@@ -82,26 +96,26 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Fisrv_Payment_Settings
         ];
 
         ?>
-                        <div class="customer-history order-attribution-metabox">
-                            <div id="fs-checkout-info-container">
-                                <?php
-                                foreach ($meta_data as $key => $value) {
-                                    ?>
-                                            <h4><?php echo esc_html($key) ?></h4>
-                                            <span class="order-attribution-total-orders"><?php echo esc_html($value) ?></span>
-                                            <?php
-                                }
-                                ?>
-                            </div>
-                            <div class="fs-checkout-report-button" reported="false"
-                                onclick="fetchCheckoutReport('<?php echo esc_html($order->get_meta('_fisrv_plugin_checkout_id')) ?>', this)">
-                                Fetch Full
-                                Checkout
-                                Data</div>
-                        </div>
-                        <?php
+        <div class="customer-history order-attribution-metabox">
+            <div id="fs-checkout-info-container">
+                <?php
+                foreach ($meta_data as $key => $value) {
+                    ?>
+                    <h4><?php echo esc_html($key) ?></h4>
+                    <span class="order-attribution-total-orders"><?php echo wp_kses($value, ['a' => ['href' => true]]) ?></span>
+                    <?php
+                }
+                ?>
+            </div>
+            <div class="fs-checkout-report-button" reported="false"
+                onclick="fetchCheckoutReport('<?php echo esc_html($order->get_meta('_fisrv_plugin_checkout_id')) ?>', this)">
+                Fetch Full
+                Checkout
+                Data</div>
+        </div>
+        <?php
 
-                        return ob_get_clean();
+        return ob_get_clean();
     }
 
     /**

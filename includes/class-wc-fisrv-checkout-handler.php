@@ -251,10 +251,7 @@ final class WC_Fisrv_Checkout_Handler
 
         WC_Fisrv_Logger::log(
             $order,
-            'TOTAL: ' . $req->transactionAmount->total .
-            ' SUBTOTAL: ' . $req->transactionAmount->components->subtotal .
-            ' VAT: ' . $req->transactionAmount->components->vatAmount .
-            ' SHIP: ' . $req->transactionAmount->components->shipping
+            'Requesting transaction in the amount of : ' . $req->transactionAmount->currency->value . ' ' . $req->transactionAmount->total
         );
 
         /**
@@ -280,7 +277,8 @@ final class WC_Fisrv_Checkout_Handler
         $req->checkoutSettings->redirectBackUrls->failureUrl = add_query_arg(
             array(
                 '_wpnonce' => $nonce,
-                'transaction_approved' => 'false',
+                'transaction_approved' => 'true',
+                // 'transaction_approved' => 'false',
                 'wc_order_id' => $order->get_id(),
             ),
             $selectedFailurePage
