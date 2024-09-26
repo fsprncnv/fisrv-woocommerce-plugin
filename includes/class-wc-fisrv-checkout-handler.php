@@ -277,8 +277,7 @@ final class WC_Fisrv_Checkout_Handler
         $req->checkoutSettings->redirectBackUrls->failureUrl = add_query_arg(
             array(
                 '_wpnonce' => $nonce,
-                'transaction_approved' => 'true',
-                // 'transaction_approved' => 'false',
+                'transaction_approved' => 'false',
                 'wc_order_id' => $order->get_id(),
             ),
             $selectedFailurePage
