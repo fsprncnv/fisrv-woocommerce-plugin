@@ -29,6 +29,7 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
             'value' => true,
             'id' => true,
             'type' => true,
+            'checked' => true,
         ],
         'table' => [
             'class' => true,
@@ -69,9 +70,12 @@ abstract class WC_Fisrv_Payment_Settings extends WC_Payment_Gateway
         ],
         'select' => [
             'class' => true,
+            'name' => true,
+            'id' => true,
         ],
         'option' => [
-            'class' => true,
+            'value' => true,
+            'selected' => true,
         ],
         'label' => [
             'for' => true,

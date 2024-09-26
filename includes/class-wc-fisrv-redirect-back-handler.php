@@ -35,19 +35,19 @@ final class WC_Fisrv_Redirect_Back_Handler
 
     public static function retry_payment_on_cart(): void
     {
-        if (!wp_verify_nonce(Fisrv_Identifiers::FISRV_NONCE->value)) {
+        if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_REQUEST['_wpnonce'])), Fisrv_Identifiers::FISRV_NONCE->value)) {
             return;
         }
 
         if (
             !isset($_GET['transaction_approved']) ||
-            sanitize_text_field($_GET['transaction_approved']) !== 'false' ||
+            sanitize_text_field(wp_unslash($_GET['transaction_approved'])) !== 'false' ||
             !isset($_GET['wc_order_id'])
         ) {
             return;
         }
 
-        $order = wc_get_order(sanitize_text_field($_GET['wc_order_id']));
+        $order = wc_get_order(sanitize_text_field(wp_unslash($_GET['wc_order_id'])));
 
         if (!($order instanceof WC_Order)) {
             return;
@@ -100,7 +100,7 @@ final class WC_Fisrv_Redirect_Back_Handler
         if (check_admin_referer(Fisrv_Identifiers::FISRV_NONCE->value)) {
             $generic_gateway = new WC_Fisrv_Payment_Generic();
 
-            if (sanitize_text_field($_GET['transaction_approved'])) {
+            if (isset($_GET['transaction_approved']) && sanitize_text_field(wp_unslash($_GET['transaction_approved']))) {
                 if ($generic_gateway->get_option('autocomplete') === 'no') {
                     $order->update_status('wc-processing', __('Order was paid sucessfully.', 'fisrv-checkout-for-woocommerce'));
                     return;
