@@ -9,16 +9,16 @@ use Fisrv\Models\WebhookEvent\WebhookEvent;
  *
  * @package  WooCommerce
  * @category Payment Gateways
- * @author   fisrv
+ * @author   fiserv
  * @since    1.0.0
  */
-final class WC_Fisrv_Webhook_Handler
+final class WC_Fiserv_Webhook_Handler
 {
 
-    public static string $webhook_endpoint = '/fisrv_woocommerce_plugin/v1';
+    public static string $webhook_endpoint = '/fiserv_woocommerce_plugin/v1';
 
     /**
-     * Receive event from fisrv checkout solution
+     * Receive event from fiserv checkout solution
      *
      * @param  WP_REST_Request<array<string, mixed>> $request Event data
      * @return WP_REST_Response Reponse acknowledging sent data
@@ -52,8 +52,8 @@ final class WC_Fisrv_Webhook_Handler
     }
 
     /**
-     * Register POST route at /wp-json/fisrv_woocommerce_plugin/v1/api.
-     * Receive from events from fisrv checkout solution
+     * Register POST route at /wp-json/fiserv_woocommerce_plugin/v1/api.
+     * Receive from events from fiserv checkout solution
      */
     public static function register_consume_events(): void
     {
@@ -84,7 +84,7 @@ final class WC_Fisrv_Webhook_Handler
             throw new Exception(sprintf('Order with ID %s has not been found.', esc_html($order_id)));
         }
 
-        $stored_events_list = json_decode(strval($order->get_meta('_fisrv_plugin_webhook_event')), true);
+        $stored_events_list = json_decode(strval($order->get_meta('_fiserv_plugin_webhook_event')), true);
         $events_list = array();
 
         if (is_array($stored_events_list)) {
@@ -95,11 +95,11 @@ final class WC_Fisrv_Webhook_Handler
         $event_list_json = wp_json_encode($events_list);
 
         if (is_string($event_list_json)) {
-            $order->update_meta_data('_fisrv_plugin_webhook_event', $event_list_json);
+            $order->update_meta_data('_fiserv_plugin_webhook_event', $event_list_json);
         }
 
         $ipgTransactionStatus = $event->transactionStatus;
-        $generic_gateway = new WC_Fisrv_Payment_Generic();
+        $generic_gateway = new WC_Fiserv_Payment_Generic();
         $is_autocomplete = $generic_gateway->get_option('autocomplete') === 'yes';
 
         switch ($ipgTransactionStatus) {
@@ -116,7 +116,7 @@ final class WC_Fisrv_Webhook_Handler
                     $wc_status = 'wc-processing';
                 } else {
                     $wc_status = 'wc-completed';
-                    WC_Fisrv_Logger::log($order, 'Order completed via auto-complete');
+                    WC_Fiserv_Logger::log($order, 'Order completed via auto-complete');
                     $order->payment_complete();
                 }
 
@@ -143,16 +143,16 @@ final class WC_Fisrv_Webhook_Handler
 
         if ($order->has_status('completed') || $order->has_status('cancelled')) {
             /* translators: %1$s: Prior status ID %2$s: Current status */
-            WC_Fisrv_Logger::log($order, sprintf('Attempted to change status of order that has been processed already. Prior status: %1$s Attempted status change: %2$s', $order->get_status(), $wc_status_unprefixed));
+            WC_Fiserv_Logger::log($order, sprintf('Attempted to change status of order that has been processed already. Prior status: %1$s Attempted status change: %2$s', $order->get_status(), $wc_status_unprefixed));
 
             return;
         }
 
-        $order->update_status($wc_status, __('Transaction status changed via webhook', 'fisrv-checkout-for-woocommerce'));
+        $order->update_status($wc_status, __('Transaction status changed via webhook', 'fiserv-checkout-for-woocommerce'));
         /* translators: %s: Staus without prefix */
-        $order->add_order_note(sprintf(__('Fiserv webhook has updated order to %s', 'fisrv-checkout-for-woocommerce'), $wc_status_unprefixed));
+        $order->add_order_note(sprintf(__('Fiserv webhook has updated order to %s', 'fiserv-checkout-for-woocommerce'), $wc_status_unprefixed));
         /* translators: %1$s: Order ID %2$s: Order status */
-        WC_Fisrv_Logger::log($order, sprintf('Order %s changed to status %s via webhook', $order->get_id(), $order->get_status()));
+        WC_Fiserv_Logger::log($order, sprintf('Order %s changed to status %s via webhook', $order->get_id(), $order->get_status()));
 
         $order->save_meta_data();
     }

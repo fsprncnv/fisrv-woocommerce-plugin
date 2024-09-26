@@ -1,5 +1,5 @@
 {
-  "name": "extension/fisrv-checkout-for-woocommerce",
+  "name": "extension/fiserv-checkout-for-woocommerce",
   "description": "Fiserv payment plugin for WooCommerce",
   "version": "1.1.0",
   "minimum-stability": "dev",
@@ -32,7 +32,7 @@
     }
   },
   "archive": {
-    "name": "fisrv-checkout-for-woocommerce",
+    "name": "fiserv-checkout-for-woocommerce",
     "exclude": [
       ".gitlab-ci.yml",
       ".gitignore",

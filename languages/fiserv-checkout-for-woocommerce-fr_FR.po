@@ -1,9 +1,9 @@
-# Copyright (C) 2024 fisrv
+# Copyright (C) 2024 fiserv
 # This file is distributed under the GNU General Public License v3.0.
 msgid ""
 msgstr ""
 "Project-Id-Version: Fiserv Checkout for WooCommerce 1.0.0\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/fisrv-checkout-for-woocommerce\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/fiserv-checkout-for-woocommerce\n"
 "POT-Creation-Date: 2024-06-26T08:43:20+00:00\n"
 "PO-Revision-Date: 2024-09-17 10:42+0200\n"
 "Last-Translator: \n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.4.4\n"
-"X-Domain: fisrv-checkout-for-woocommerce\n"
+"X-Domain: fiserv-checkout-for-woocommerce\n"
 
 msgid "Fiserv Checkout for WooCommerce"
 msgstr "Fiserv Checkout for WooCommerce"
@@ -159,26 +159,26 @@ msgstr "Statut de la transaction modifié via webhook"
 msgid "Fiserv webhook has updated order to %s"
 msgstr "Le webhook Fiserv a mis à jour la commande à %s"
 
-#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-gateway-generic.php
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-generic.php
 msgid "Basic Settings"
 msgstr "Paramètres de base"
 
-#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-gateway-generic.php
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-generic.php
 msgid "API Key"
 msgstr "Clé API"
 
-#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-gateway-generic.php
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-generic.php
 msgid "Theme Colors"
 msgstr "Couleurs du thème"
 
-#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-gateway-generic.php
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-generic.php
 msgid "Order Settings"
 msgstr "Paramètres de commande"
 
-#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-gateway-generic.php
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-generic.php
 msgid "Customization"
 msgstr "Personnalisation"
 
-#: fisrv-checkout-for-woocommerce\includes\class-wc-fisrv-gateway-generic.php
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-generic.php
 msgid "Restore or Save Settings"
 msgstr "Restaurer ou enregistrer les paramètres"

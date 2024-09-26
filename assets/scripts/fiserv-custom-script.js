@@ -4,7 +4,7 @@ async function fsAddImage(button) {
 
     button.innerHTML = "<span class='fs-loader-status'></span>";
 
-    const res = await fetch(`/wp-json/fisrv_woocommerce_plugin/v1/image?gateway-id=${gateway_id}&data=${input}`, {
+    const res = await fetch(`/wp-json/fiserv_woocommerce_plugin/v1/image?gateway-id=${gateway_id}&data=${input}`, {
         method: "POST",
     });
     const data = await res.json();
@@ -24,7 +24,7 @@ async function removeImage(index, node) {
     const overlay = document.getElementById(`fs-icon-overlay-${index}`);
     overlay.innerHTML = "<span class='fs-loader-status'></span>";
 
-    const res = await fetch(`/wp-json/fisrv_woocommerce_plugin/v1/image?gateway-id=${gateway_id}&icon-id=${index}`, {
+    const res = await fetch(`/wp-json/fiserv_woocommerce_plugin/v1/image?gateway-id=${gateway_id}&icon-id=${index}`, {
         method: "DELETE",
     });
     const data = await res.json();
@@ -36,10 +36,10 @@ async function fsFetchHealth(is_prod) {
     const indicator = document.getElementById("fs-status-indicator");
     const text = document.getElementById("fs-status-text");
     const fetchHealthBtn = document.getElementById("fs-health-btn");
-    const readField = (key) => document.getElementById(`woocommerce_fisrv-gateway-generic_${key}`).value;
+    const readField = (key) => document.getElementById(`woocommerce_fiserv-gateway-generic_${key}`).value;
 
     fetchHealthBtn.innerHTML = "<span class='fs-loader-status'></span>";
-    const res = await fetch(`/wp-json/fisrv_woocommerce_plugin/v1/health?is_prod=${is_prod}&api_key=${readField('api_key')}&api_secret=${readField('api_secret')}&store_id=${readField('store_id')}`, {
+    const res = await fetch(`/wp-json/fiserv_woocommerce_plugin/v1/health?is_prod=${is_prod}&api_key=${readField('api_key')}&api_secret=${readField('api_secret')}&store_id=${readField('store_id')}`, {
         method: "GET",
     });
     const data = await res.json();
@@ -54,7 +54,7 @@ async function fsFetchHealth(is_prod) {
     }
 }
 
-async function fisrvRestorePaymentSettings(gateway_id, wc_settings_data, button) {
+async function fiservRestorePaymentSettings(gateway_id, wc_settings_data, button) {
     const settingsObject = JSON.parse(atob(wc_settings_data));
     for (let key in settingsObject) {
         let option = settingsObject[key];
@@ -78,7 +78,7 @@ async function fetchCheckoutReport(checkout_id, button) {
     const container = document.getElementById('fs-checkout-info-container');
     button.innerHTML = "<span class='fs-loader-status'></span>";
 
-    const res = await fetch(`/wp-json/fisrv_woocommerce_plugin/v1/checkout-details?checkout-id=${checkout_id}`, {
+    const res = await fetch(`/wp-json/fiserv_woocommerce_plugin/v1/checkout-details?checkout-id=${checkout_id}`, {
         method: "GET",
     });
     const data = await res.json();

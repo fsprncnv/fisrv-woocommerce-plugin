@@ -1,6 +1,6 @@
 <?php
 
-final class WC_Fisrv_Redirect_Back_Handler
+final class WC_Fiserv_Redirect_Back_Handler
 {
     /**
      * Triggered right before the Pay for Order form, after validation of the order and customer.
@@ -21,8 +21,8 @@ final class WC_Fisrv_Redirect_Back_Handler
             return false;
         }
 
-        $order_button_text = esc_html__('Retry payment', 'fisrv-checkout-for-woocommerce');
-        $order->update_status('wc-pending', esc_html__('Retrying payment', 'fisrv-checkout-for-woocommerce'));
+        $order_button_text = esc_html__('Retry payment', 'fiserv-checkout-for-woocommerce');
+        $order->update_status('wc-pending', esc_html__('Retrying payment', 'fiserv-checkout-for-woocommerce'));
 
         self::display_error_message($order);
 
@@ -53,7 +53,7 @@ final class WC_Fisrv_Redirect_Back_Handler
             return;
         }
 
-        $order->update_status('wc-pending', esc_html__('Retrying payment', 'fisrv-checkout-for-woocommerce'));
+        $order->update_status('wc-pending', esc_html__('Retrying payment', 'fiserv-checkout-for-woocommerce'));
         self::display_error_message($order);
     }
 
@@ -68,15 +68,15 @@ final class WC_Fisrv_Redirect_Back_Handler
                 return false;
             }
 
-            $fisrv_error_message = sanitize_text_field(wp_unslash($_GET['message']));
-            $fisrv_error_code = sanitize_text_field(wp_unslash($_GET['code']));
+            $fiserv_error_message = sanitize_text_field(wp_unslash($_GET['message']));
+            $fiserv_error_code = sanitize_text_field(wp_unslash($_GET['code']));
         }
 
         /* translators: %s: Fisrv error message */
-        wc_add_notice(sprintf(esc_html__('Payment has failed: %s', 'fisrv-checkout-for-woocommerce'), $fisrv_error_message ?? 'Internal error'), 'error');
+        wc_add_notice(sprintf(esc_html__('Payment has failed: %s', 'fiserv-checkout-for-woocommerce'), $fiserv_error_message ?? 'Internal error'), 'error');
         wc_print_notices();
         /* translators: %1$s: Fisrv error message %2$s: Fisrv error message */
-        WC_Fisrv_Logger::error($order, sprintf('Payment failed of checkout %s, retrying on checkout page: (%s - %s)', $order->get_meta('_fisrv_plugin_checkout_id') ?? 'No checkout ID created', $fisrv_error_message ?? 'No error message provided', $fisrv_error_code ?? 'No code provided'));
+        WC_Fiserv_Logger::error($order, sprintf('Payment failed of checkout %s, retrying on checkout page: (%s - %s)', $order->get_meta('_fiserv_plugin_checkout_id') ?? 'No checkout ID created', $fiserv_error_message ?? 'No error message provided', $fiserv_error_code ?? 'No code provided'));
 
         return true;
     }
@@ -95,22 +95,22 @@ final class WC_Fisrv_Redirect_Back_Handler
             return;
         }
 
-        WC_Fisrv_Logger::log($order, __('Payment successful via Fiserv Checkout.', 'fisrv-checkout-for-woocommerce'));
+        WC_Fiserv_Logger::log($order, __('Payment successful via Fiserv Checkout.', 'fiserv-checkout-for-woocommerce'));
 
         if (check_admin_referer(Fisrv_Identifiers::FISRV_NONCE->value)) {
-            $generic_gateway = new WC_Fisrv_Payment_Generic();
+            $generic_gateway = new WC_Fiserv_Payment_Generic();
 
             if (isset($_GET['transaction_approved']) && sanitize_text_field(wp_unslash($_GET['transaction_approved'])) === 'true') {
                 if ($generic_gateway->get_option('autocomplete') === 'no') {
-                    $order->update_status('wc-processing', __('Order was paid sucessfully.', 'fisrv-checkout-for-woocommerce'));
-                    WC_Fisrv_Logger::log($order, 'Payment complete. Order processing. (auto-complete off)');
+                    $order->update_status('wc-processing', __('Order was paid sucessfully.', 'fiserv-checkout-for-woocommerce'));
+                    WC_Fiserv_Logger::log($order, 'Payment complete. Order processing. (auto-complete off)');
                     return;
                 }
 
                 $has_completed = $order->payment_complete();
                 if ($has_completed) {
-                    $order->update_status('wc-completed', __('Order was paid sucessfully and set to completed (auto-complete).', 'fisrv-checkout-for-woocommerce'));
-                    WC_Fisrv_Logger::log($order, 'Payment complete. Order completeg. (auto-complete on)');
+                    $order->update_status('wc-completed', __('Order was paid sucessfully and set to completed (auto-complete).', 'fiserv-checkout-for-woocommerce'));
+                    WC_Fiserv_Logger::log($order, 'Payment complete. Order completeg. (auto-complete on)');
                 }
             }
         }

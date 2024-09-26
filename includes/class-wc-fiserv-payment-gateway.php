@@ -8,10 +8,10 @@ use Fisrv\Models\PreSelectedPaymentMethod;
  *
  * @package  WooCommerce
  * @category Payment Gateways
- * @author   fisrv
+ * @author   fiserv
  * @since    1.0.0
  */
-abstract class WC_Fisrv_Payment_Gateway extends WC_Fisrv_Payment_Settings
+abstract class WC_Fiserv_Payment_Gateway extends WC_Fiserv_Payment_Settings
 {
 
     protected ?PreSelectedPaymentMethod $selected_method = null;
@@ -34,14 +34,14 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Fisrv_Payment_Settings
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
 
         add_filter('woocommerce_gateway_icon', array($this, 'custom_payment_gateway_icons'), 10, 2);
-        add_filter('woocommerce_generate_custom_icon_html', array(WC_Fisrv_Payment_Settings::class, 'render_icons_component'), 1, 4);
-        add_filter('woocommerce_generate_wp_theme_data_html', array(WC_Fisrv_Payment_Settings::class, 'render_wp_theme_data'), 1, 4);
-        add_filter('woocommerce_generate_healthcheck_html', array(WC_Fisrv_Payment_Settings::class, 'render_healthcheck'), 10, 4);
-        add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array(WC_Fisrv_Payment_Settings::class, 'custom_save_icon_value'), 10, 1);
+        add_filter('woocommerce_generate_custom_icon_html', array(WC_Fiserv_Payment_Settings::class, 'render_icons_component'), 1, 4);
+        add_filter('woocommerce_generate_wp_theme_data_html', array(WC_Fiserv_Payment_Settings::class, 'render_wp_theme_data'), 1, 4);
+        add_filter('woocommerce_generate_healthcheck_html', array(WC_Fiserv_Payment_Settings::class, 'render_healthcheck'), 10, 4);
+        add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array(WC_Fiserv_Payment_Settings::class, 'custom_save_icon_value'), 10, 1);
         add_filter('woocommerce_locate_template', array($this, 'custom_woocommerce_locate_template'), 10, 3);
-        // add_filter('woocommerce_generate_text_html', array(WC_Fisrv_Payment_Settings::class, 'render_text_field'), 1, 4);
+        // add_filter('woocommerce_generate_text_html', array(WC_Fiserv_Payment_Settings::class, 'render_text_field'), 1, 4);
 
-        add_filter('woocommerce_order_button_html', array(WC_Fisrv_Gateway_Googlepay::class, 'replace_order_button_html'), 10, 2);
+        add_filter('woocommerce_order_button_html', array(WC_Fiserv_Gateway_Googlepay::class, 'replace_order_button_html'), 10, 2);
     }
 
     /**
@@ -90,32 +90,32 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Fisrv_Payment_Settings
         ob_start();
 
         $meta_data = [
-            'Checkout Link' => "<a href='" . $order->get_meta('_fisrv_plugin_checkout_link') . "'>Go to checkout page</a>",
-            'Checkout ID' => $order->get_meta('_fisrv_plugin_checkout_id'),
-            'Trace ID' => $order->get_meta('_fisrv_plugin_trace_id'),
+            'Checkout Link' => "<a href='" . $order->get_meta('_fiserv_plugin_checkout_link') . "'>Go to checkout page</a>",
+            'Checkout ID' => $order->get_meta('_fiserv_plugin_checkout_id'),
+            'Trace ID' => $order->get_meta('_fiserv_plugin_trace_id'),
         ];
 
         ?>
-        <div class="customer-history order-attribution-metabox">
-            <div id="fs-checkout-info-container">
-                <?php
-                foreach ($meta_data as $key => $value) {
-                    ?>
-                    <h4><?php echo esc_html($key) ?></h4>
-                    <span class="order-attribution-total-orders"><?php echo wp_kses($value, ['a' => ['href' => true]]) ?></span>
-                    <?php
-                }
-                ?>
-            </div>
-            <div class="fs-checkout-report-button" reported="false"
-                onclick="fetchCheckoutReport('<?php echo esc_html($order->get_meta('_fisrv_plugin_checkout_id')) ?>', this)">
-                Fetch Full
-                Checkout
-                Data</div>
-        </div>
-        <?php
+                                <div class="customer-history order-attribution-metabox">
+                                    <div id="fs-checkout-info-container">
+                                        <?php
+                                        foreach ($meta_data as $key => $value) {
+                                            ?>
+                                                        <h4><?php echo esc_html($key) ?></h4>
+                                                        <span class="order-attribution-total-orders"><?php echo wp_kses($value, ['a' => ['href' => true]]) ?></span>
+                                                        <?php
+                                        }
+                                        ?>
+                                    </div>
+                                    <div class="fs-checkout-report-button" reported="false"
+                                        onclick="fetchCheckoutReport('<?php echo esc_html($order->get_meta('_fiserv_plugin_checkout_id')) ?>', this)">
+                                        Fetch Full
+                                        Checkout
+                                        Data</div>
+                                </div>
+                                <?php
 
-        return ob_get_clean();
+                                return ob_get_clean();
     }
 
     /**
@@ -150,13 +150,13 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Fisrv_Payment_Settings
     {
         if ($key === 'enabled' && $value === 'yes') {
             if ($this->id === Fisrv_Identifiers::GATEWAY_GENERIC->value) {
-                $this->disable_gateway(new WC_Fisrv_Gateway_Applepay());
-                $this->disable_gateway(new WC_Fisrv_Gateway_Googlepay());
-                $this->disable_gateway(new WC_Fisrv_Gateway_Cards());
-                WC_Fisrv_Logger::generic_log('Disabled specific gateways since generic gateway was enabled');
+                $this->disable_gateway(new WC_Fiserv_Gateway_Applepay());
+                $this->disable_gateway(new WC_Fiserv_Gateway_Googlepay());
+                $this->disable_gateway(new WC_Fiserv_Gateway_Cards());
+                WC_Fiserv_Logger::generic_log('Disabled specific gateways since generic gateway was enabled');
             } else {
-                $this->disable_gateway(new WC_Fisrv_Payment_Generic());
-                WC_Fisrv_Logger::generic_log('Disabled generic gateway since specific gateways were enabled');
+                $this->disable_gateway(new WC_Fiserv_Payment_Generic());
+                WC_Fiserv_Logger::generic_log('Disabled generic gateway since specific gateways were enabled');
             }
         }
     }
@@ -191,7 +191,7 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Fisrv_Payment_Settings
      */
     public static function custom_payment_gateway_icons($icon, $gateway_id)
     {
-        if (!str_starts_with($gateway_id, 'fisrv')) {
+        if (!str_starts_with($gateway_id, 'fiserv')) {
             return $icon;
         }
 
@@ -208,7 +208,7 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Fisrv_Payment_Settings
      */
     public function custom_woocommerce_locate_template($template, $template_name, $template_path)
     {
-        if (!str_starts_with($this->id, 'fisrv')) {
+        if (!str_starts_with($this->id, 'fiserv')) {
             return $template;
         }
 
@@ -231,17 +231,17 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Fisrv_Payment_Settings
         $order = wc_get_order($order_id);
 
         if (!$order instanceof WC_Order) {
-            throw new Exception(esc_html__('Processing payment failed. Order is invalid.', 'fisrv-checkout-for-woocommerce'));
+            throw new Exception(esc_html__('Processing payment failed. Order is invalid.', 'fiserv-checkout-for-woocommerce'));
         }
 
         try {
-            $checkout_link = WC_Fisrv_Checkout_Handler::create_checkout_link($order, $this->selected_method);
+            $checkout_link = WC_Fiserv_Checkout_Handler::create_checkout_link($order, $this->selected_method);
             return array(
                 'result' => 'success',
                 'redirect' => $checkout_link,
             );
         } catch (\Throwable $th) {
-            WC_Fisrv_Logger::error($order, $th->getMessage());
+            WC_Fiserv_Logger::error($order, $th->getMessage());
             return array(
                 'result' => 'failure',
             );
@@ -262,11 +262,11 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Fisrv_Payment_Settings
         $order = wc_get_order($order_id);
 
         if (!$order instanceof WC_Order) {
-            throw new Exception(esc_html__('Processing payment failed. Order is invalid.', 'fisrv-checkout-for-woocommerce'));
+            throw new Exception(esc_html__('Processing payment failed. Order is invalid.', 'fiserv-checkout-for-woocommerce'));
         }
 
         try {
-            $response = WC_Fisrv_Checkout_Handler::refund_checkout($this, $order, $amount);
+            $response = WC_Fiserv_Checkout_Handler::refund_checkout($this, $order, $amount);
 
             if (isset($response->error)) {
                 $order->add_order_note("Refund failed due to {($response->error->title ?? 'server error')}. Check debug logs for detailed report." . (($reason !== '') ? (" Refund reason given: $reason") : ''));
@@ -277,9 +277,9 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Fisrv_Payment_Settings
 
             return true;
         } catch (ErrorResponse $e) {
-            WC_Fisrv_Logger::log($order, 'Refund has failed on API client (or server) level: ' . $e->getMessage());
+            WC_Fiserv_Logger::log($order, 'Refund has failed on API client (or server) level: ' . $e->getMessage());
         } catch (\Throwable $th) {
-            WC_Fisrv_Logger::log($order, 'Refund has failed on backend level: ' . $th->getMessage());
+            WC_Fiserv_Logger::log($order, 'Refund has failed on backend level: ' . $th->getMessage());
         }
 
         return false;
@@ -295,7 +295,7 @@ abstract class WC_Fisrv_Payment_Gateway extends WC_Fisrv_Payment_Settings
     {
         if (
             !($order instanceof WC_Order)
-            || !(str_starts_with($order->get_payment_method(), 'fisrv'))
+            || !(str_starts_with($order->get_payment_method(), 'fiserv'))
             || is_null($order->get_date_completed())
             || !($order->is_paid())
         ) {

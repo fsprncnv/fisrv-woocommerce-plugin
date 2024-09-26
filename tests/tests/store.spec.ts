@@ -108,8 +108,10 @@ async function fillOutPaymentFormOnHostedPaymentPage(
 }
 
 async function createSuccessfulOrder(page: Page): Promise<any> {
-  if (await page.locator('#payment_method_fisrv-gateway-generic').isVisible()) {
-    await page.locator('#payment_method_fisrv-gateway-generic').click();
+  if (
+    await page.locator('#payment_method_fiserv-gateway-generic').isVisible()
+  ) {
+    await page.locator('#payment_method_fiserv-gateway-generic').click();
   }
 
   await page.locator('#place_order').click();
@@ -121,7 +123,7 @@ async function createSuccessfulOrder(page: Page): Promise<any> {
   await page.locator("[appdataautomationid='payment_button']").click();
 
   await page.waitForURL(
-    'http://fisrv-plugin-dev.com/checkout/order-received/**'
+    'http://fiserv-plugin-dev.com/checkout/order-received/**'
   );
 
   //await expect(

@@ -4,12 +4,12 @@
  *
  * @package  WooCommerce
  * @category Payment Gateways
- * @author   fisrv
+ * @author   fiserv
  * @since    1.0.1
  */
-final class WC_Fisrv_Rest_Routes
+final class WC_Fiserv_Rest_Routes
 {
-    public static string $webhook_endpoint = '/fisrv_woocommerce_plugin/v1';
+    public static string $webhook_endpoint = '/fiserv_woocommerce_plugin/v1';
 
     /**
      * Register endpoint for health check
@@ -24,7 +24,7 @@ final class WC_Fisrv_Rest_Routes
                 'methods' => WP_REST_Server::READABLE,
                 'callback' => function (WP_REST_Request $request) {
                     return new WP_REST_Response(
-                        WC_Fisrv_Checkout_Handler::get_health_report(
+                        WC_Fiserv_Checkout_Handler::get_health_report(
                             [
                                 'is_prod' => $request->get_param('is_prod') === 'yes' ? true : false,
                                 'api_key' => $request->get_param('api_key'),
@@ -185,7 +185,7 @@ final class WC_Fisrv_Rest_Routes
                 'methods' => WP_REST_Server::READABLE,
                 'callback' => function (WP_REST_Request $request) {
                     $checkout_id = (string) $request->get_param('checkout-id');
-                    return new WP_REST_Response(WC_Fisrv_Checkout_Handler::get_checkout_details($checkout_id));
+                    return new WP_REST_Response(WC_Fiserv_Checkout_Handler::get_checkout_details($checkout_id));
                 },
             )
         );

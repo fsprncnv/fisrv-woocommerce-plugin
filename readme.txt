@@ -39,7 +39,7 @@ To make use of the plugins these tasks need to be completed:
 - Get API Credentials
 
 A detailed description of each task can be found in Fiserv’s Developer Portal.
-For more useful information you can visit the Fiserv [forum](https://wordpress.org/support/plugin/fisrv-checkout-for-woocommerce/)
+For more useful information you can visit the Fiserv [forum](https://wordpress.org/support/plugin/fiserv-checkout-for-woocommerce/)
 
 ### Steps for manual installation
 If you decide to install the Fiserv Checkout for WooCommerce plugin manually, you can upload the ZIP file from WordPress administration environment. For this approach please follow the following steps: 

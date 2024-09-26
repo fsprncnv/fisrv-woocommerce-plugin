@@ -17,10 +17,10 @@ use Fisrv\Payments\PaymentsClient;
  *
  * @package  WooCommerce
  * @category Payment Gateways
- * @author   fisrv
+ * @author   fiserv
  * @since    1.0.0
  */
-final class WC_Fisrv_Checkout_Handler
+final class WC_Fiserv_Checkout_Handler
 {
     /**
      * HTTP client used by Fiserv PHP Client
@@ -29,16 +29,16 @@ final class WC_Fisrv_Checkout_Handler
     private static ?CheckoutClient $client = null;
 
     /**
-     * Inititalize configuraiton parameters of fisrv SDK.
-     * @param WC_Fisrv_Payment_Generic $generic_gateway WC payment gateway object to retrieve stored credentials
+     * Inititalize configuraiton parameters of fiserv SDK.
+     * @param WC_Fiserv_Payment_Generic $generic_gateway WC payment gateway object to retrieve stored credentials
      */
-    public static function init_api_credentials(WC_Fisrv_Payment_Generic $generic_gateway): array
+    public static function init_api_credentials(WC_Fiserv_Payment_Generic $generic_gateway): array
     {
-        if (!($generic_gateway instanceof WC_Fisrv_Payment_Gateway)) {
+        if (!($generic_gateway instanceof WC_Fiserv_Payment_Gateway)) {
             throw new Exception('Could not retrieve payment settings');
         }
 
-        $plugin_data = get_plugin_data(__DIR__ . '\..\fisrv-checkout-for-woocommerce.php');
+        $plugin_data = get_plugin_data(__DIR__ . '\..\fiserv-checkout-for-woocommerce.php');
         $plugin_version = $plugin_data['Version'];
 
         return array(
@@ -58,13 +58,13 @@ final class WC_Fisrv_Checkout_Handler
      *
      * @return string URL of hosted payment page
      *
-     * @throws Exception Error thrown from fisrv SDK (Request Errors). Error is caught by setting
+     * @throws Exception Error thrown from fiserv SDK (Request Errors). Error is caught by setting
      * returned checkout link to '#' (no redirect)
      */
     public static function create_checkout_link(WC_Order $order, ?PreSelectedPaymentMethod $method): string
     {
         try {
-            $generic_gateway = new WC_Fisrv_Payment_Generic();
+            $generic_gateway = new WC_Fiserv_Payment_Generic();
             self::$client = new CheckoutClient(self::init_api_credentials($generic_gateway));
 
             $request = self::$client->createBasicCheckoutRequest(0, '', '');
@@ -80,18 +80,18 @@ final class WC_Fisrv_Checkout_Handler
             $checkout_link = $response->checkout->redirectionUrl;
             $trace_id = $response->traceId;
 
-            $order->update_meta_data('_fisrv_plugin_checkout_link', $checkout_link);
-            $order->update_meta_data('_fisrv_plugin_checkout_id', $checkout_id);
-            $order->update_meta_data('_fisrv_plugin_trace_id', $response->traceId);
+            $order->update_meta_data('_fiserv_plugin_checkout_link', $checkout_link);
+            $order->update_meta_data('_fiserv_plugin_checkout_id', $checkout_id);
+            $order->update_meta_data('_fiserv_plugin_trace_id', $response->traceId);
             $order->save_meta_data();
             /* translators: %1$s: Checkout link %2$s: Checkout ID %3$s: Checkout trace ID */
-            $order->add_order_note(sprintf(esc_html__('Fiserv checkout link %1$s created with checkout ID %2$s and trace ID %3$s.', 'fisrv-checkout-for-woocommerce'), $checkout_link, $checkout_id, $trace_id));
+            $order->add_order_note(sprintf(esc_html__('Fiserv checkout link %1$s created with checkout ID %2$s and trace ID %3$s.', 'fiserv-checkout-for-woocommerce'), $checkout_link, $checkout_id, $trace_id));
 
             return $checkout_link;
         } catch (Throwable $th) {
             if (str_starts_with($th->getMessage(), '401')) {
                 /* translators: %s: Method value */
-                throw new Exception(esc_html__('Payment method failed. Please check on settings page if API credentials are set correctly.', 'fisrv-checkout-for-woocommerce'));
+                throw new Exception(esc_html__('Payment method failed. Please check on settings page if API credentials are set correctly.', 'fiserv-checkout-for-woocommerce'));
             }
 
             throw $th;
@@ -101,12 +101,12 @@ final class WC_Fisrv_Checkout_Handler
 
     /**
      * Refund checkout
-     * @param WC_Fisrv_Payment_Generic $generic_gateway Gateway object to retrieve stored credentials
+     * @param WC_Fiserv_Payment_Generic $generic_gateway Gateway object to retrieve stored credentials
      * @param WC_Order $order WooCommerce order object
      * @param mixed $amount Amount to refund
      * @return Fisrv\Models\PaymentsClientResponse Fiserv client response object
      */
-    public static function refund_checkout(WC_Fisrv_Payment_Generic $generic_gateway, WC_Order $order, $amount): PaymentsClientResponse
+    public static function refund_checkout(WC_Fiserv_Payment_Generic $generic_gateway, WC_Order $order, $amount): PaymentsClientResponse
     {
         self::$client = new CheckoutClient(self::init_api_credentials($generic_gateway));
         $response = self::$client->refundCheckout(
@@ -118,7 +118,7 @@ final class WC_Fisrv_Checkout_Handler
                     ),
                 )
             ),
-            $order->get_meta('_fisrv_plugin_checkout_id')
+            $order->get_meta('_fiserv_plugin_checkout_id')
         );
 
         return $response;
@@ -144,8 +144,8 @@ final class WC_Fisrv_Checkout_Handler
 
         if ($report->httpCode != 200) {
             $message = $report->error->message;
-            WC_Fisrv_Logger::generic_log('API health check reported following error response: ' . $message);
-            WC_Fisrv_Logger::generic_log('Verbose report log: ' . wp_json_encode($report->requestLog));
+            WC_Fiserv_Logger::generic_log('API health check reported following error response: ' . $message);
+            WC_Fiserv_Logger::generic_log('Verbose report log: ' . wp_json_encode($report->requestLog));
         }
 
         return array(
@@ -249,7 +249,7 @@ final class WC_Fisrv_Checkout_Handler
         $req->transactionAmount->components->vatAmount = $order->get_total_tax();
         $req->transactionAmount->components->shipping = floatval($order->get_shipping_total());
 
-        WC_Fisrv_Logger::log(
+        WC_Fiserv_Logger::log(
             $order,
             'Requesting transaction in the amount of : ' . $req->transactionAmount->currency->value . ' ' . $req->transactionAmount->total
         );
@@ -270,7 +270,7 @@ final class WC_Fisrv_Checkout_Handler
         $selectedFailurePage = $order->get_checkout_payment_url();
         $gateway = WC()->payment_gateways()->payment_gateways()[Fisrv_Identifiers::GATEWAY_GENERIC->value];
 
-        if ($gateway instanceof WC_Fisrv_Payment_Gateway && $gateway->get_option('fail_page') === 'cart') {
+        if ($gateway instanceof WC_Fiserv_Payment_Gateway && $gateway->get_option('fail_page') === 'cart') {
             $selectedFailurePage = wc_get_cart_url();
         }
 
@@ -293,7 +293,7 @@ final class WC_Fisrv_Checkout_Handler
                 '_wpnonce' => $nonce,
                 'wc_order_id' => $order->get_id(),
             ),
-            WC_Fisrv_Webhook_Handler::$webhook_endpoint . '/events'
+            WC_Fiserv_Webhook_Handler::$webhook_endpoint . '/events'
         );
 
         if ($order->get_payment_method() !== Fisrv_Identifiers::GATEWAY_GENERIC->value) {
@@ -305,12 +305,12 @@ final class WC_Fisrv_Checkout_Handler
 
     /**
      * Handle token transactions. This feature is on hold currently.
-     * @param WC_Fisrv_Payment_Generic $generic_gateway
+     * @param WC_Fiserv_Payment_Generic $generic_gateway
      * @param Fisrv\Models\CheckoutClientRequest $req
      * @param WC_Order $order
      * @return CheckoutClientRequest
      */
-    private static function handle_token_transaction(WC_Fisrv_Payment_Generic $generic_gateway, CheckoutClientRequest $req, WC_Order $order)
+    private static function handle_token_transaction(WC_Fiserv_Payment_Generic $generic_gateway, CheckoutClientRequest $req, WC_Order $order)
     {
         $tokens_enabled = $generic_gateway->get_option('enable_tokens');
 
@@ -318,21 +318,21 @@ final class WC_Fisrv_Checkout_Handler
             return $req;
         }
 
-        WC_Fisrv_Logger::generic_log('Attempting token handling');
+        WC_Fiserv_Logger::generic_log('Attempting token handling');
 
         $wp_user_id = $order->get_user_id();
 
         if ($wp_user_id === '' || is_null($wp_user_id)) {
-            WC_Fisrv_Logger::generic_log('Token: No user logged in');
+            WC_Fiserv_Logger::generic_log('Token: No user logged in');
             return $req;
         }
 
-        $token = get_user_meta($wp_user_id, '_fisrv_plugin_card_token', true);
+        $token = get_user_meta($wp_user_id, '_fiserv_plugin_card_token', true);
 
         if ($token === '' || is_null($token)) {
             $token = wp_create_nonce();
-            WC_Fisrv_Logger::generic_log("Token: Storing token $token on user $wp_user_id");
-            add_user_meta($wp_user_id, '_fisrv_plugin_card_token', $token);
+            WC_Fiserv_Logger::generic_log("Token: Storing token $token on user $wp_user_id");
+            add_user_meta($wp_user_id, '_fiserv_plugin_card_token', $token);
 
             $req->paymentMethodDetails->cards->createToken->toBeUsedFor = ToBeUsedFor::UNSCHEDULED;
             $req->paymentMethodDetails->cards->createToken->customTokenValue = $token;
@@ -340,7 +340,7 @@ final class WC_Fisrv_Checkout_Handler
             return $req;
         }
 
-        WC_Fisrv_Logger::generic_log('Token: Token was found and will be used for subsequent transaction');
+        WC_Fiserv_Logger::generic_log('Token: Token was found and will be used for subsequent transaction');
         $req->paymentMethodDetails->cards->tokenBasedTransaction->value = $token;
 
         return $req;

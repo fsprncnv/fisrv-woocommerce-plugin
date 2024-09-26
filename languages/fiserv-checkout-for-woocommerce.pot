@@ -1,0 +1,234 @@
+# Copyright (C) 2024 fiserv
+# This file is distributed under the GNU General Public License v3.0.
+msgid ""
+msgstr ""
+"Project-Id-Version: Fiserv Checkout for WooCommerce 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/fiserv-checkout-for-woocommerce\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2024-06-26T08:43:20+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.10.0\n"
+"X-Domain: fiserv-checkout-for-woocommerce\n"
+
+#. Plugin Name of the plugin
+#: fiserv-checkout-for-woocommerce\fiserv-checkout-for-woocommerce.php
+msgid "Fiserv Checkout for WooCommerce"
+msgstr ""
+
+#. Description of the plugin
+#: fiserv-checkout-for-woocommerce\fiserv-checkout-for-woocommerce.php
+msgid "Official Fiserv Checkout WooCommerce plugin"
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-checkout-handler.php
+msgid "Retry payment"
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-checkout-handler.php
+msgid "Retrying payment"
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-checkout-handler.php
+msgid "Payment has failed: %s"
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-checkout-handler.php
+msgid "Payment successful via Fiserv Checkout."
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-checkout-handler.php
+msgid "Order was paid sucessfully."
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-checkout-handler.php
+msgid "Order was paid sucessfully and set to completed (auto-complete)."
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-checkout-handler.php
+msgid "Order auto-completed."
+msgstr "Fiserv checkout link %1$s created with checkout ID %2$s and trace ID %3$s."
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-checkout-handler.php
+msgid "Payment method failed. Please check on settings page if API credentials are set correctly."
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-applepay.php
+msgid "Pay with Apple Pay via Fiserv"
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-cards.php
+msgid "Pay with Credit/Debit via Fiserv"
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-cards.php
+msgid "Credit/Debit Card"
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-generic.php
+msgid "Generic option shows all supported methods on redirect page."
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-googlepay.php
+msgid "Pay with Google Pay via Fiserv"
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-gateway.php
+msgid "Processing payment failed. Order is invalid."
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-settings.php
+msgid "Payment will be processed by Fiserv. You will be redirected to an external checkout page."
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-settings.php
+msgid "Restore default settings"
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-settings.php
+msgid "Pay securely with Fiserv Checkout. Acquire API credentials on our developer portal"
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-settings.php
+msgid "Visit developer.fiserv.com"
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-settings.php
+msgid "Remove Icon"
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-settings.php
+msgid "Check status"
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-settings.php
+msgid "Acquire API Key from Developer Portal"
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-settings.php
+msgid "Acquire API Secret from Developer Portal"
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-settings.php
+msgid "Your Store ID for Checkout"
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-settings.php
+msgid "Production Mode"
+msgstr ""
+
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-settings.php
+msgid "Use Live (Production) Mode or Test (Sandbox) Mode"
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-settings.php
+msgid "API Health"
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-settings.php
+msgid "Get current status of Fiserv API and your configuration"
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-settings.php
+msgid "Auto-complete Orders"
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-settings.php
+msgid "Skip processing order status and set to complete status directly"
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-settings.php
+msgid "Transaction Type"
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-settings.php
+msgid "Set transaction type. Currently, only SALE transactions are available."
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-settings.php
+msgid "Enable Developer Logs"
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-settings.php
+msgid "Enable log messages on WooCommerce"
+msgstr "Enable log messages. Errors will be logged regardless."
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-settings.php
+msgid "Gateway Icon"
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-settings.php
+msgid "Image URL for asset"
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-settings.php
+msgid "Gateway Name"
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-settings.php
+msgid "Custom name of gateway"
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-settings.php
+msgid "Gateway Description"
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-settings.php
+msgid "Custom description of gateway"
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-settings.php
+msgid "Redirect after payment failure"
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-settings.php
+msgid "Where to redirect if payment failed"
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-settings.php
+msgid "Checkout page"
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-settings.php
+msgid "Shopping cart"
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-settings.php
+msgid "Home page"
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-webhook-handler.php
+msgid "Transaction status changed via webhook"
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-webhook-handler.php
+msgid "Fiserv webhook has updated order to %s"
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-generic.php
+msgid "Basic Settings"
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-generic.php
+msgid "API Key"
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-generic.php
+msgid "Theme Colors"
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-generic.php
+msgid "Order Settings"
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-generic.php
+msgid "Customization"
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-generic.php
+msgid "Restore or Save Settings"
+msgstr ""
