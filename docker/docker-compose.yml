@@ -5,7 +5,7 @@ services:
     image: mariadb:11
     container_name: fiserv-woocommerce-db
     command: '--default-authentication-plugin=mysql_native_password'
-    mem_limit: '128M'
+    mem_limit: '256M'
     restart: always
     environment:
       - MYSQL_ROOT_PASSWORD=somewordpress
@@ -19,7 +19,7 @@ services:
   apache:
     image: registry.gitlab.mherrm.de/cgi/fiserv-woocommerce-plugin:latest
     container_name: fiserv-woocommerce-apache
-    mem_limit: '128M'
+    mem_limit: '256M'
     restart: always
     labels:
       - 'traefik.enable=true'
