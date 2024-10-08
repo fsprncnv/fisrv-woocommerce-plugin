@@ -101,7 +101,6 @@ class WC_Fiserv_Payment_Generic extends WC_Fiserv_Payment_Gateway
                 'type' => 'select',
                 'description' => esc_html__('Where to redirect if payment failed', 'fiserv-checkout-for-woocommerce'),
                 'default' => 'checkout',
-                'desc_tip' => true,
                 'options' => array(
                     'checkout' => esc_html__('Checkout page', 'fiserv-checkout-for-woocommerce'),
                     'cart' => esc_html__('Shopping cart', 'fiserv-checkout-for-woocommerce'),
@@ -111,7 +110,6 @@ class WC_Fiserv_Payment_Generic extends WC_Fiserv_Payment_Gateway
                 'title' => esc_html__('Transaction Type', 'fiserv-checkout-for-woocommerce'),
                 'type' => 'transaction_type',
                 'description' => esc_html__('Set transaction type. Currently, only SALE transactions are available.', 'fiserv-checkout-for-woocommerce'),
-                'desc_tip' => true,
                 'default' => 'Sale',
                 'css' => 'disabled; pointer-events: none;',
             ),
@@ -123,8 +121,8 @@ class WC_Fiserv_Payment_Generic extends WC_Fiserv_Payment_Gateway
                 'title' => esc_html__('Theme Colors', 'fiserv-checkout-for-woocommerce'),
                 'type' => 'wp_theme_data',
                 'description' => esc_html__('Info about current WordPress theme data which you can use to customize your checkout page on our Virtual Terminal', 'fiserv-checkout-for-woocommerce'),
-                'desc_tip' => true,
             ),
+
         ];
 
         parent::init_form_fields();

@@ -111,7 +111,6 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
         <table class="form-table">
             <?php echo wp_kses($this->generate_settings_html($this->get_form_fields(), false), self::WP_KSES_ALLOWED) ?>
         </table>
-        <?php echo $onGeneric ? wp_kses(self::render_restore_button($this->id, $this->get_form_fields()), self::WP_KSES_ALLOWED) : '' ?>
         <?php
 
         echo wp_kses(ob_get_clean(), self::WP_KSES_ALLOWED);
@@ -213,26 +212,6 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
         <?php
 
         return self::render_option_tablerow($key, $data, $wc_settings, ob_get_clean());
-    }
-
-    /**
-     * Render reset to defaults button
-     * @param string $gateway_id
-     * @param array $form_fields
-     * @return string
-     */
-    public static function render_restore_button(string $gateway_id, array $form_fields): string
-    {
-        ob_start();
-
-        ?>
-        <?php echo wp_kses(self::render_section_header(__('Restore or Save Settings', 'fiserv-checkout-for-woocommerce')), self::WP_KSES_ALLOWED) ?>
-        <div style="margin-top: 2em" class="button-primary">
-            <?php echo esc_html__('Restore to default', 'fiserv-checkout-for-woocommerce') ?>
-        </div>
-        <?php
-
-        return ob_get_clean();
     }
 
     /**
@@ -476,6 +455,17 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
         return self::render_option_tablerow($key, $data, $wc_settings, ob_get_clean());
     }
 
+    public function generate_reset_settings_html($key, $data)
+    {
+        ob_start();
+        ?>
+        <div class="button-primary">
+            <?php echo esc_html__('Restore to default', 'fiserv-checkout-for-woocommerce') ?>
+        </div>
+        <?php
+        return self::render_option_tablerow($key, $data, $this, ob_get_clean());
+    }
+
     /**
      * Initialize form text fields on gateway options page
      */
@@ -501,6 +491,14 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
                 'description' => esc_html__('Custom description of gateway', 'fiserv-checkout-for-woocommerce'),
                 'default' => $this->description,
                 'desc_tip' => true,
+            ),
+            'section-4' => [
+                'title' => esc_html__('Restore or Save Settings', 'fiserv-checkout-for-woocommerce'),
+                'type' => 'section_header'
+            ],
+            'reset' => array(
+                'title' => esc_html__('Restore default settings', 'fiserv-checkout-for-woocommerce'),
+                'type' => 'reset_settings',
             ),
         );
     }

@@ -201,6 +201,10 @@ msgstr "Einkaufswagen"
 msgid "Home page"
 msgstr "Hauptseite"
 
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-settings.php
+msgid "Restore to default"
+msgstr "Einstellungen zurücksetzen"
+
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-webhook-handler.php
 msgid "Transaction status changed via webhook"
 msgstr "Transaktionsstatus über Webhook geändert"
@@ -231,4 +235,4 @@ msgstr "Anpassung"
 
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-generic.php
 msgid "Restore or Save Settings"
-msgstr "Einstellungen wiederherstellen oder speichern"
+msgstr "Einstellungen wiederherstellen"

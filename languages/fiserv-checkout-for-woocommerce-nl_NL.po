@@ -14,6 +14,10 @@
 "X-Generator: Poedit 3.4.4\n"
 "X-Domain: fiserv-checkout-for-woocommerce\n"
 
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-settings.php
+msgid "Restore to default"
+msgstr "Standaardinstellingen herstellen"
+
 #. Plugin Name of the plugin
 #: fiserv-checkout-for-woocommerce\fiserv-checkout-for-woocommerce.php
 msgid "Fiserv Checkout for WooCommerce"
@@ -230,4 +234,4 @@ msgstr "Aanpassing"
 
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-generic.php
 msgid "Restore or Save Settings"
-msgstr "Instellingen herstellen of opslaan"
+msgstr "Instellingen herstellen"
