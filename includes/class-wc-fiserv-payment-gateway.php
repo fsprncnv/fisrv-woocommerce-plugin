@@ -1,5 +1,9 @@
 <?php
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 use Fisrv\Exception\ErrorResponse;
 use Fisrv\Models\PreSelectedPaymentMethod;
 
@@ -96,26 +100,26 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Fiserv_Payment_Settings
         ];
 
         ?>
-                                <div class="customer-history order-attribution-metabox">
-                                    <div id="fs-checkout-info-container">
-                                        <?php
-                                        foreach ($meta_data as $key => $value) {
-                                            ?>
-                                                        <h4><?php echo esc_html($key) ?></h4>
-                                                        <span class="order-attribution-total-orders"><?php echo wp_kses($value, ['a' => ['href' => true]]) ?></span>
-                                                        <?php
-                                        }
-                                        ?>
-                                    </div>
-                                    <div class="fs-checkout-report-button" reported="false"
-                                        onclick="fetchCheckoutReport('<?php echo esc_html($order->get_meta('_fiserv_plugin_checkout_id')) ?>', this)">
-                                        Fetch Full
-                                        Checkout
-                                        Data</div>
-                                </div>
-                                <?php
+        <div class="customer-history order-attribution-metabox">
+            <div id="fs-checkout-info-container">
+                <?php
+                foreach ($meta_data as $key => $value) {
+                    ?>
+                    <h4><?php echo esc_html($key) ?></h4>
+                    <span class="order-attribution-total-orders"><?php echo wp_kses($value, ['a' => ['href' => true]]) ?></span>
+                    <?php
+                }
+                ?>
+            </div>
+            <div class="fs-checkout-report-button" reported="false"
+                onclick="fetchCheckoutReport('<?php echo esc_html($order->get_meta('_fiserv_plugin_checkout_id')) ?>', this)">
+                Fetch Full
+                Checkout
+                Data</div>
+        </div>
+        <?php
 
-                                return ob_get_clean();
+        return ob_get_clean();
     }
 
     /**

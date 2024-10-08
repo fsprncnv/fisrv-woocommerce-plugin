@@ -1,5 +1,9 @@
 <?php
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 final class WC_Fiserv_Redirect_Back_Handler
 {
     /**

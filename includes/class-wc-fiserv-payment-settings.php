@@ -1,5 +1,9 @@
 <?php
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 /**
  * Abstract class that is inherited by WC_Fiserv_Payment_Gateway and inherits
  * WC_Payment_Gateway. This class contains all render methods (HTML markup) and

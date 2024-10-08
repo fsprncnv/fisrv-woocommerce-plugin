@@ -1,5 +1,9 @@
 <?php
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 use Fisrv\Models\TransactionStatus;
 use Fisrv\Models\WebhookEvent\WebhookEvent;
 

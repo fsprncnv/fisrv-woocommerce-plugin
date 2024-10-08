@@ -1,5 +1,9 @@
 <?php
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 /**
  * Class that handles creation of webhook consumers to receive order
  * webhook event sent by Checkout Solution.

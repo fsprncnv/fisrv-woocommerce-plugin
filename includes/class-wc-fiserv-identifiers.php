@@ -1,5 +1,9 @@
 <?php
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 /**
  * Enum for payment gateway IDs used on WC Gateways.
  * @since 1.1.0

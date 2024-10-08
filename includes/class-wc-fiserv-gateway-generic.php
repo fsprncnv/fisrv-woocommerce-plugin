@@ -1,5 +1,9 @@
 <?php
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 /**
  * Gateway instance for generic option without pre-selection. Inherits from WC_Fiserv_Payment_Gateway.
  */
