@@ -362,7 +362,7 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
 
     private static function get_method_icon(string $method, string $image_type = 'svg'): string
     {
-        return plugin_dir_url(__FILE__) . "assets/images/{$method}.{$image_type}";
+        return plugin_dir_url(__FILE__) . "../assets/images/{$method}.{$image_type}";
     }
 
     /**

@@ -1,7 +1,5 @@
 # Copyright (C) 2024 fiserv
 # This file is distributed under the GNU General Public License v3.0.
-msgid ""
-msgstr ""
 "Project-Id-Version: Fiserv Checkout for WooCommerce 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/fiserv-checkout-"
 "for-woocommerce\n"
@@ -48,21 +46,15 @@ msgstr "Bestelling is succesvol betaald."
 
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-checkout-handler.php
 msgid "Order was paid sucessfully and set to completed (auto-complete)."
-msgstr ""
-"Bestelling is succesvol betaald en ingesteld op voltooid (automatisch "
-"aanvullen)."
+msgstr "Bestelling is succesvol betaald en ingesteld op voltooid (automatisch aanvullen)."
 
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-checkout-handler.php
 msgid "Order auto-completed."
 msgstr "Bestelling automatisch voltooid."
 
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-checkout-handler.php
-msgid ""
-"Payment method failed. Please check on settings page if API credentials are "
-"set correctly."
-msgstr ""
-"Betalingsmethode mislukt. Controleer op de instellingenpagina of de API-"
-"referenties correct zijn ingesteld."
+msgid "Payment method failed. Please check on settings page if API credentials are set correctly."
+msgstr "Betalingsmethode mislukt. Controleer op de instellingenpagina of de API-referenties correct zijn ingesteld."
 
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-applepay.php
 msgid "Pay with Apple Pay via Fiserv"
@@ -78,8 +70,7 @@ msgstr "Creditcard/Debetaalpas"
 
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-generic.php
 msgid "Generic option shows all supported methods on redirect page."
-msgstr ""
-"De algemene optie toont alle ondersteunde methoden op de omleidingspagina."
+msgstr "De algemene optie toont alle ondersteunde methoden op de omleidingspagina."
 
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-googlepay.php
 msgid "Pay with Google Pay via Fiserv"
@@ -90,24 +81,16 @@ msgid "Processing payment failed. Order is invalid."
 msgstr "Verwerking betaling mislukt. Bestelling is ongeldig."
 
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-settings.php
-msgid ""
-"Payment will be processed by Fiserv. You will be redirected to an external "
-"checkout page."
-msgstr ""
-"De betaling wordt verwerkt door Fiserv. Je wordt omgeleid naar een externe "
-"afrekenpagina."
+msgid "Payment will be processed by Fiserv. You will be redirected to an external checkout page."
+msgstr "De betaling wordt verwerkt door Fiserv. Je wordt omgeleid naar een externe afrekenpagina."
 
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-settings.php
 msgid "Restore default settings"
 msgstr "Standaardinstellingen herstellen"
 
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-settings.php
-msgid ""
-"Pay securely with Fiserv Checkout. Acquire API credentials on our developer "
-"portal"
-msgstr ""
-"Betaal veilig met Fiserv Checkout. API-referenties verkrijgen op onze "
-"ontwikkelaarsportal"
+msgid "Pay securely with Fiserv Checkout. Acquire API credentials on our developer portal"
+msgstr "Betaal veilig met Fiserv Checkout. API-referenties verkrijgen op onze ontwikkelaarsportal"
 
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-settings.php
 msgid "Visit developer.fiserv.com"
@@ -155,8 +138,7 @@ msgstr "Orders automatisch aanvullen"
 
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-settings.php
 msgid "Skip processing order status and set to complete status directly"
-msgstr ""
-"Orderstatus verwerken overslaan en direct instellen op status voltooid"
+msgstr "Orderstatus verwerken overslaan en direct instellen op status voltooid"
 
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-settings.php
 msgid "Transaction Type"
@@ -164,9 +146,7 @@ msgstr "Soort transactie"
 
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-settings.php
 msgid "Set transaction type. Currently, only SALE transactions are available."
-msgstr ""
-"Transactietype instellen. Momenteel zijn alleen SALE-transacties "
-"beschikbaar."
+msgstr "Transactietype instellen. Momenteel zijn alleen SALE-transacties beschikbaar."
 
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-settings.php
 msgid "Enable Developer Logs"
