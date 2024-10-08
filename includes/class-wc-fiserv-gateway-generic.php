@@ -35,7 +35,7 @@ class WC_Fiserv_Payment_Generic extends WC_Fiserv_Payment_Gateway
         $this->form_fields = [
             'section-1' => [
                 'title' => esc_html__('Basic Settings', 'fiserv-checkout-for-woocommerce'),
-                'type' => 'section_header'
+                'type' => 'section_heading'
             ],
             'api_key' => array(
                 'title' => esc_html__('API Key', 'fiserv-checkout-for-woocommerce'),
@@ -76,7 +76,7 @@ class WC_Fiserv_Payment_Generic extends WC_Fiserv_Payment_Gateway
             ),
             'section-2' => [
                 'title' => esc_html__('Order Settings', 'fiserv-checkout-for-woocommerce'),
-                'type' => 'section_header'
+                'type' => 'section_heading'
             ],
             'autocomplete' => array(
                 'title' => esc_html__('Auto-complete Orders', 'fiserv-checkout-for-woocommerce'),
@@ -115,7 +115,7 @@ class WC_Fiserv_Payment_Generic extends WC_Fiserv_Payment_Gateway
             ),
             'section-3' => [
                 'title' => esc_html__('Customization', 'fiserv-checkout-for-woocommerce'),
-                'type' => 'section_header'
+                'type' => 'section_heading'
             ],
             'wp_theme_data' => array(
                 'title' => esc_html__('Theme Colors', 'fiserv-checkout-for-woocommerce'),

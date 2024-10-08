@@ -136,11 +136,6 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
         $html = "<h1>{$this->method_title}</h1><p>{$this->method_description}</p>";
 
         foreach ($form_fields as $k => $v) {
-            if (str_starts_with($k, 'section-') && $this->id === Fisrv_Identifiers::GATEWAY_GENERIC->value) {
-                $html .= wp_kses(self::render_section_header($v['title']), self::WP_KSES_ALLOWED);
-                continue;
-            }
-
             $type = $this->get_field_type($v);
 
             if (method_exists($this, 'generate_' . $type . '_html')) {
@@ -165,15 +160,15 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
      * @param bool $top
      * @return string
      */
-    private static function render_section_header(string $title, bool $top = false): string
+    private static function generate_section_heading_html($key, $data): string
     {
         ob_start();
 
         ?>
         <tr valign=" top">
             <th scope="row" class="titledesc">
-                <h1 style="font-weight: 400; margin-top: <?php echo esc_attr($top ? '0' : '1.5em') ?>">
-                    <?php echo esc_html($title) ?>
+                <h1 style="font-weight: 400; margin-top: 1.5em">
+                    <?php echo esc_html($data['title']) ?>
                 </h1>
             </th>
         </tr>
@@ -494,7 +489,7 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
             ),
             'section-4' => [
                 'title' => esc_html__('Restore or Save Settings', 'fiserv-checkout-for-woocommerce'),
-                'type' => 'section_header'
+                'type' => 'section_heading'
             ],
             'reset' => array(
                 'title' => esc_html__('Restore default settings', 'fiserv-checkout-for-woocommerce'),
