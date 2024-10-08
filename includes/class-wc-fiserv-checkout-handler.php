@@ -238,9 +238,6 @@ final class WC_Fiserv_Checkout_Handler
         $req->merchantTransactionId = strval($order->get_id());
         $req->order->orderDetails->purchaseOrderNumber = strval($order->get_id());
 
-        ini_set('precision', 8);
-        ini_set('serialize_precision', -1);
-
         /**
          * Order totals 
          */
