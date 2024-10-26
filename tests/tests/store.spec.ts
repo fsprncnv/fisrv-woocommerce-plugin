@@ -25,7 +25,17 @@ test('Setup plugin and successful API health check (success flow)', async ({
   page,
 }) => {});
 
-test('Exclusively on enable either generic method or one or more specific method', async ({
+test('Copy color from WP theme data', async ({ page }) => {});
+
+test('Select redirect page on failed payment', async ({ page }) => {});
+
+test('Webhook event without valid signature (unauthenticated) gets rejected', async ({
+  page,
+}) => {});
+
+test('Webhook event updates order status', async ({ page }) => {});
+
+test('Payment success event without valid signature (unauthenticated) gets rejected', async ({
   page,
 }) => {});
 
@@ -55,15 +65,13 @@ test.describe('Successful order and partial refund', () => {
     //await expect(page.locator('#deactivate-woocommerce')).toBeVisible();
   });
 
-  test('01. Fill cart and fill in billing info in guest session', async ({
-    page,
-  }) => {
+  test('01. Setup guest session shopping cart', async ({ page }) => {
     // await page.goto('/?add-to-cart=12');
     // await page.goto('/checkout');
     // await fillOutBillingFormOnStore(page);
   });
 
-  test('02. Select payment, successful redirect to hosted checkout page and redirect back to thank you page', async ({
+  test('02. Successful redirect to hosted checkout page and redirect back to thank you page', async ({
     page,
   }) => {
     // orderNumber = await createSuccessfulOrder(page);

@@ -78,6 +78,7 @@ final class WC_Fiserv_Checkout_Handler
             // $request = self::pass_transaction_type($generic_gateway, $request);
             // $request = self::handle_token_transaction($generic_gateway, $request, $order);
 
+            WC_Fiserv_Logger::generic_log((string) $request);
             $response = self::$client->createCheckout($request);
 
             $checkout_id = $response->checkout->checkoutId;
@@ -149,7 +150,7 @@ final class WC_Fiserv_Checkout_Handler
         if ($report->httpCode != 200) {
             $message = $report->error->message;
             WC_Fiserv_Logger::generic_log('API health check reported following error response: ' . $message);
-            WC_Fiserv_Logger::generic_log('Verbose report log: ' . wp_json_encode($report->requestLog));
+            WC_Fiserv_Logger::generic_log('Verbose report log: ' . $report->requestLog);
         }
 
         return array(

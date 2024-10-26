@@ -30,7 +30,7 @@ final class WC_Fiserv_Rest_Routes
                     return new WP_REST_Response(
                         WC_Fiserv_Checkout_Handler::get_health_report(
                             [
-                                'is_prod' => $request->get_param('is_prod') === 'yes' ? true : false,
+                                'is_prod' => $request->get_param('is_prod') === 'yes',
                                 'api_key' => $request->get_param('api_key'),
                                 'api_secret' => $request->get_param('api_secret'),
                                 'store_id' => $request->get_param('store_id'),
