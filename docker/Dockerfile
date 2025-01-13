@@ -27,7 +27,7 @@ RUN echo 'Header always set Strict-Transport-Security "max-age=31536000; include
 RUN echo 'Header always set X-XSS-Protection "1; mode=block"' >> security.conf
 RUN echo 'Header always set X-Permitted-Cross-Domain-Policies "none"' >> security.conf
 RUN echo 'Header always set Referrer-Policy "no-referrer-when-downgrade"' >> security.conf
-RUN echo 'Header always set Content-Security-Policy "default-src 'https:'; script-src 'unsafe-inline'"' >> security.conf
+RUN echo 'Header always set Content-Security-Policy "default-src 'https:'; style-src 'self' 'unsafe-inline'; script-src 'unsafe-inline'"' >> security.conf
 RUN echo 'Header always set Permissions-Policy "geolocation=(),midi=(),sync-xhr=(),microphone=(),camera=(),magnetometer=(),gyroscope=(),fullscreen=(self),payment=()"' >> security.conf
 
 # ---------------------------------------------------
