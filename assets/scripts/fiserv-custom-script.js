@@ -102,7 +102,7 @@ function renderObjectFields(report, container, currency) {
             currency = report[key];
         }
 
-        if (['traceId', 'httpCode', 'checkoutId', 'orderId', 'requestSent', 'month', 'year', 'currency'].includes(key)) {
+        if (['traceId', 'httpCode', 'checkoutId', 'requestSent', 'month', 'year', 'currency'].includes(key)) {
             continue;
         }
 

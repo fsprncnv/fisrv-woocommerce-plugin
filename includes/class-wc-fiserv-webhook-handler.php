@@ -19,7 +19,7 @@ use Fisrv\Models\WebhookEvent\WebhookEvent;
 final class WC_Fiserv_Webhook_Handler
 {
 
-    public static string $webhook_endpoint = '/fiserv_woocommerce_plugin/v1';
+    public static $webhook_path = '/fiserv_woocommerce_plugin/v1';
 
     /**
      * Receive event from fiserv checkout solution
@@ -62,7 +62,7 @@ final class WC_Fiserv_Webhook_Handler
     public static function register_consume_events(): void
     {
         register_rest_route(
-            self::$webhook_endpoint,
+            self::$webhook_path,
             '/events',
             array(
                 'methods' => 'POST',

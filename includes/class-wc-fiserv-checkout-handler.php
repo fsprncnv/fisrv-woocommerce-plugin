@@ -240,7 +240,6 @@ final class WC_Fiserv_Checkout_Handler
         /**
          * WC order numbers, IDs 
          */
-        $req->merchantTransactionId = strval($order->get_id());
         $req->order->orderDetails->purchaseOrderNumber = strval($order->get_id());
 
         /**
@@ -255,6 +254,8 @@ final class WC_Fiserv_Checkout_Handler
             $order,
             'Requesting transaction in the amount of : ' . $req->transactionAmount->currency->value . ' ' . $req->transactionAmount->total
         );
+
+        WC_Fiserv_Logger::log($order, (string) $req);
 
         /**
          * Redirect URLs 
@@ -295,7 +296,7 @@ final class WC_Fiserv_Checkout_Handler
                 '_wpnonce' => $nonce,
                 'wc_order_id' => $order->get_id(),
             ),
-            WC_Fiserv_Webhook_Handler::$webhook_endpoint . '/events'
+            home_url() . WC_Fiserv_Webhook_Handler::$webhook_path . '/events'
         );
 
         if ($order->get_payment_method() !== Fisrv_Identifiers::GATEWAY_GENERIC->value) {
