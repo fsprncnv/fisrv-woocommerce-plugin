@@ -296,7 +296,7 @@ final class WC_Fiserv_Checkout_Handler
                 '_wpnonce' => $nonce,
                 'wc_order_id' => $order->get_id(),
             ),
-            home_url() . WC_Fiserv_Webhook_Handler::$webhook_path . '/events'
+            get_rest_url(null, WC_Fiserv_Webhook_Handler::$webhook_path . '/events')
         );
 
         if ($order->get_payment_method() !== Fisrv_Identifiers::GATEWAY_GENERIC->value) {
