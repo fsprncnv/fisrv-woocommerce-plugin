@@ -2,7 +2,7 @@
 
 /**
  * Plugin Name: Fiserv Checkout for WooCommerce
- * Version: 1.1.0
+ * Version: 1.1.1
  * Description: Official Fiserv Checkout WooCommerce plugin
  * Author: Fiserv
  * Author URI: https://developer.fiserv.com/
