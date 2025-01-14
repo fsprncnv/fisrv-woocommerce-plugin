@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
  */
 final class WC_Fiserv_Rest_Routes
 {
-    public static string $webhook_endpoint = '/fiserv_woocommerce_plugin/v1';
+    public static string $plugin_rest_path = '/fiserv_woocommerce_plugin/v1';
 
     /**
      * Register endpoint for health check
@@ -22,7 +22,7 @@ final class WC_Fiserv_Rest_Routes
     public static function register_health_report(): void
     {
         register_rest_route(
-            self::$webhook_endpoint,
+            self::$plugin_rest_path,
             '/health',
             array(
                 'methods' => WP_REST_Server::READABLE,
@@ -38,6 +38,9 @@ final class WC_Fiserv_Rest_Routes
                         )
                     );
                 },
+                'permission_callback' => function () {
+                    return current_user_can('administrator');
+                }
             )
         );
     }
@@ -105,11 +108,14 @@ final class WC_Fiserv_Rest_Routes
     public static function register_add_image(): void
     {
         register_rest_route(
-            self::$webhook_endpoint,
+            self::$plugin_rest_path,
             '/image',
             array(
                 'methods' => WP_REST_Server::CREATABLE,
                 'callback' => array(self::class, 'add_image'),
+                'permission_callback' => function () {
+                    return current_user_can('administrator');
+                }
             )
         );
     }
@@ -167,11 +173,14 @@ final class WC_Fiserv_Rest_Routes
     public static function register_remove_image(): void
     {
         register_rest_route(
-            self::$webhook_endpoint,
+            self::$plugin_rest_path,
             '/image',
             array(
                 'methods' => WP_REST_Server::DELETABLE,
                 'callback' => array(self::class, 'remove_image'),
+                'permission_callback' => function () {
+                    return current_user_can('administrator');
+                }
             )
         );
     }
@@ -183,7 +192,7 @@ final class WC_Fiserv_Rest_Routes
     public static function register_checkout_report(): void
     {
         register_rest_route(
-            self::$webhook_endpoint,
+            self::$plugin_rest_path,
             '/checkout-details',
             array(
                 'methods' => WP_REST_Server::READABLE,
@@ -191,6 +200,9 @@ final class WC_Fiserv_Rest_Routes
                     $checkout_id = (string) $request->get_param('checkout-id');
                     return new WP_REST_Response(WC_Fiserv_Checkout_Handler::get_checkout_details($checkout_id));
                 },
+                'permission_callback' => function () {
+                    return current_user_can('administrator');
+                }
             )
         );
     }

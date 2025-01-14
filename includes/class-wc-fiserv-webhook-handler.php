@@ -18,9 +18,6 @@ use Fisrv\Models\WebhookEvent\WebhookEvent;
  */
 final class WC_Fiserv_Webhook_Handler
 {
-
-    public static $webhook_path = '/fiserv_woocommerce_plugin/v1';
-
     /**
      * Receive event from fiserv checkout solution
      *
@@ -32,12 +29,15 @@ final class WC_Fiserv_Webhook_Handler
     {
         $request_body = $request->get_body();
         $order_id = $request->get_param('wc_order_id');
+        $signature = $request->get_param('_sign');
 
         try {
             if (!is_string($order_id)) {
                 throw new Exception('Query parameter (order ID) is malformed');
             }
-
+            if (!is_string($signature) || (base64_decode($signature) !== $order_id)) {
+                throw new Exception('Signature is invalid ' . base64_encode($order_id));
+            }
             $webhook_event = new WebhookEvent($request_body);
             self::update_order($order_id, $webhook_event);
 
@@ -51,7 +51,8 @@ final class WC_Fiserv_Webhook_Handler
 
             return $response;
         } catch (Exception $e) {
-            return new WP_Error('Webhook handling has failed', $e->getMessage(), array('status' => 403));
+            WC_Fiserv_Logger::generic_log('Webhook call has failed: ' . $e->getMessage());
+            return new WP_Error('Webhook call has failed', $e->getMessage(), array('status' => 403));
         }
     }
 
@@ -62,12 +63,12 @@ final class WC_Fiserv_Webhook_Handler
     public static function register_consume_events(): void
     {
         register_rest_route(
-            self::$webhook_path,
+            WC_Fiserv_Rest_Routes::$plugin_rest_path,
             '/events',
             array(
                 'methods' => 'POST',
-                'callback' => array(self::class, 'consume_events'),
-            )
+                'callback' => array(self::class, 'consume_events')
+            ),
         );
     }
 

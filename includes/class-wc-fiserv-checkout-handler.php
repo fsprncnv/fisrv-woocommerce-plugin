@@ -293,10 +293,10 @@ final class WC_Fiserv_Checkout_Handler
 
         $req->checkoutSettings->webHooksUrl = add_query_arg(
             array(
-                '_wpnonce' => $nonce,
+                '_sign' => base64_encode($order->get_id()),
                 'wc_order_id' => $order->get_id(),
             ),
-            get_rest_url(null, WC_Fiserv_Webhook_Handler::$webhook_path . '/events')
+            get_rest_url(null, WC_Fiserv_Rest_Routes::$plugin_rest_path . '/events')
         );
 
         if ($order->get_payment_method() !== Fisrv_Identifiers::GATEWAY_GENERIC->value) {
