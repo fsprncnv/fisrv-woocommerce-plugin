@@ -1,10 +1,12 @@
+const restBasePath = document.querySelector('link[rel="https://api.w.org/"%5D').href + 'fiserv_woocommerce_plugin/v1';
+
 async function fsAddImage(button) {
     const input = document.getElementById("fs-icons-data").value;
     const gateway_id = button.getAttribute("gateway-id");
 
     button.innerHTML = "<span class='fs-loader-status'></span>";
 
-    const res = await fetch(`/wp-json/fiserv_woocommerce_plugin/v1/image?gateway-id=${gateway_id}&data=${input}`, {
+    const res = await fetch(`${restBasePath}/image?gateway-id=${gateway_id}&data=${input}`, {
         method: "POST",
     });
     const data = await res.json();
@@ -24,7 +26,7 @@ async function removeImage(index, node) {
     const overlay = document.getElementById(`fs-icon-overlay-${index}`);
     overlay.innerHTML = "<span class='fs-loader-status'></span>";
 
-    const res = await fetch(`/wp-json/fiserv_woocommerce_plugin/v1/image?gateway-id=${gateway_id}&icon-id=${index}`, {
+    const res = await fetch(`${restBasePath}/image?gateway-id=${gateway_id}&icon-id=${index}`, {
         method: "DELETE",
     });
     const data = await res.json();
@@ -40,7 +42,7 @@ async function fsFetchHealth(is_prod) {
 
     fetchHealthBtn.innerHTML = "<span class='fs-loader-status'></span>";
 
-    const res = await fetch(`/wp-json/fiserv_woocommerce_plugin/v1/health?is_prod=${is_prod}&api_key=${readField('api_key')}&api_secret=${readField('api_secret')}&store_id=${readField('store_id')}`, {
+    const res = await fetch(`${restBasePath}/health?is_prod=${is_prod}&api_key=${readField('api_key')}&api_secret=${readField('api_secret')}&store_id=${readField('store_id')}`, {
         method: "GET",
     });
 
@@ -82,7 +84,7 @@ async function fetchCheckoutReport(checkout_id, button) {
     const container = document.getElementById('fs-checkout-info-container');
     button.innerHTML = "<span class='fs-loader-status'></span>";
 
-    const res = await fetch(`/wp-json/fiserv_woocommerce_plugin/v1/checkout-details?checkout-id=${checkout_id}`, {
+    const res = await fetch(`${restBasePath}/checkout-details?checkout-id=${checkout_id}`, {
         method: "GET",
     });
     const data = await res.json();
