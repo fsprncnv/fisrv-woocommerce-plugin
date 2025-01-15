@@ -99,6 +99,7 @@ class WC_Fiserv_Payment_Generic extends WC_Fiserv_Payment_Gateway
             'fail_page' => array(
                 'title' => esc_html__('Redirect after payment failure', 'fiserv-checkout-for-woocommerce'),
                 'type' => 'select',
+                'desc_tip' => true,
                 'description' => esc_html__('Where to redirect if payment failed', 'fiserv-checkout-for-woocommerce'),
                 'default' => 'checkout',
                 'options' => array(

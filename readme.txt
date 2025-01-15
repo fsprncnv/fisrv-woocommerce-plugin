@@ -53,6 +53,8 @@ A detailed description of each task can be found on the [Fiserv Developer Portal
 == Frequently Asked Questions ==
 =  Can't install the plugin =
 * Make sure to check compatibility of PHP, WordPress and WooCommerce. Also, ensure to disable Block layout.
+=  Plugin UI loaders are stuck or webhook events are not received properly =
+* Try switching Permalink type in WordPress admin settings to 'Post name'
 
 == Changelog ==
 ** 1.1.0 **

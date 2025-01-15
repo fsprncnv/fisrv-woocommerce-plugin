@@ -18,7 +18,7 @@ defined('ABSPATH') || exit;
 
 require_once plugin_dir_path(__FILE__) . '/vendor/autoload.php';
 
-const FISRV_PLUGIN_VERSION = '1.1.0';
+const FISRV_PLUGIN_VERSION = '1.1.1';
 
 /**
  * WooCommerce fallback notice.

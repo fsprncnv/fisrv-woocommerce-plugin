@@ -1,4 +1,4 @@
-const restBasePath = document.querySelector('link[rel="https://api.w.org/"%5D').href + 'fiserv_woocommerce_plugin/v1';
+const restBasePath = '/fiserv_woocommerce_plugin/v1';
 
 async function fsAddImage(button) {
     const input = document.getElementById("fs-icons-data").value;
@@ -6,10 +6,10 @@ async function fsAddImage(button) {
 
     button.innerHTML = "<span class='fs-loader-status'></span>";
 
-    const res = await fetch(`${restBasePath}/image?gateway-id=${gateway_id}&data=${input}`, {
+    const data = await wp.apiFetch({
         method: "POST",
+        path: `${restBasePath}/image?gateway-id=${gateway_id}&data=${input}`,
     });
-    const data = await res.json();
 
     if (data["status"] === "ok") {
         button.innerHTML = "✓";
@@ -26,10 +26,10 @@ async function removeImage(index, node) {
     const overlay = document.getElementById(`fs-icon-overlay-${index}`);
     overlay.innerHTML = "<span class='fs-loader-status'></span>";
 
-    const res = await fetch(`${restBasePath}/image?gateway-id=${gateway_id}&icon-id=${index}`, {
+    await wp.apiFetch({
         method: "DELETE",
+        path: `${restBasePath}/image?gateway-id=${gateway_id}&icon-id=${index}`
     });
-    const data = await res.json();
 
     node.innerHTML = '';
 }
@@ -42,13 +42,10 @@ async function fsFetchHealth(is_prod) {
 
     fetchHealthBtn.innerHTML = "<span class='fs-loader-status'></span>";
 
-    const res = await fetch(`${restBasePath}/health?is_prod=${is_prod}&api_key=${readField('api_key')}&api_secret=${readField('api_secret')}&store_id=${readField('store_id')}`, {
+    const data = await wp.apiFetch({
         method: "GET",
+        path: `${restBasePath}/health?is_prod=${is_prod}&api_key=${readField('api_key')}&api_secret=${readField('api_secret')}&store_id=${readField('store_id')}`
     });
-
-    console.log(res.url);
-
-    const data = await res.json();
     text.innerHTML = data["message"];
 
     if (data["status"] !== "ok") {
@@ -84,10 +81,10 @@ async function fetchCheckoutReport(checkout_id, button) {
     const container = document.getElementById('fs-checkout-info-container');
     button.innerHTML = "<span class='fs-loader-status'></span>";
 
-    const res = await fetch(`${restBasePath}/checkout-details?checkout-id=${checkout_id}`, {
-        method: "GET",
+    const data = await wp.apiFetch({
+        method: 'GET',
+        path: `${restBasePath}/checkout-details?checkout-id=${checkout_id}`
     });
-    const data = await res.json();
 
     if (data["status"] !== "ok") {
         button.innerHTML = "🞭 Sorry, something went wrong";

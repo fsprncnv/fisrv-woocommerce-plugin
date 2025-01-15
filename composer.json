@@ -10,7 +10,7 @@
     ]
   },
   "require": {
-    "fisrv/php-client": "@stable"
+    "fiserv-ipg/php-client": "@stable"
   },
   "require-dev": {
     "automattic/jetpack-autoloader": "@stable",
@@ -23,12 +23,6 @@
     "allow-plugins": {
       "automattic/jetpack-autoloader": true,
       "dealerdirect/phpcodesniffer-composer-installer": true
-    }
-  },
-  "repositories": {
-    "80": {
-      "type": "composer",
-      "url": "https://gitlab.mherrm.de/api/v4/group/80/-/packages/composer/packages.json"
     }
   },
   "archive": {
