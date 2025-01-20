@@ -1,7 +1,7 @@
 services:
   database:
     image: mariadb:11
-    container_name: fiserv-woocommerce-db
+    container_name: fisv-woocommerce-db
     command: '--default-authentication-plugin=mysql_native_password'
     mem_limit: '256M'
     restart: always
@@ -16,16 +16,16 @@ services:
       - db:/var/lib/mysql
   apache:
     image: registry.gitlab.mherrm.de/cgi/fisrv-woocommerce-plugin:latest
-    container_name: fisrv-woocommerce-apache
+    container_name: fisv-woocommerce-apache
     mem_limit: '256M'
     restart: always
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.fiwoo-secure.entrypoints=http,https'
-      - 'traefik.http.routers.fiwoo-secure.rule=Host(`fiwoo.mherrm.de`)'
-      - 'traefik.http.routers.fiwoo-secure.tls=true'
-      - 'traefik.http.routers.fiwoo-secure.tls.certresolver=letsencrypt'
-      - 'traefik.http.routers.fiwoo-secure.service=fiwoo'
+      - 'traefik.http.routers.fisv-woocommerce-secure.entrypoints=http,https'
+      - 'traefik.http.routers.fisv-woocommerce-secure.rule=Host(`woocommerce.fisv.mherrm.de`)'
+      - 'traefik.http.routers.fisv-woocommerce-secure.tls=true'
+      - 'traefik.http.routers.fisv-woocommerce-secure.tls.certresolver=letsencrypt'
+      - 'traefik.http.routers.fisv-woocommerce-secure.service=fiwoo'
       - 'traefik.http.services.fiwoo.loadbalancer.server.scheme=https'
       - 'traefik.http.services.fiwoo.loadbalancer.server.port=443'
       - 'traefik.docker.network=traefik'
