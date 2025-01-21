@@ -39,7 +39,7 @@ RUN mv wp-cli.phar /usr/local/bin/wp
 
 WORKDIR /var/www/html/
 RUN wp core download --allow-root --path=. --locale=en_US
-RUN wp config create --allow-root --skip-check --dbhost=fisv-woocommerce-db --dbname=wordpress --dbuser=wordpress --dbpass="w,H<em*+;vCX-6u$SgcRy3"
+RUN wp config create --allow-root --skip-check --dbhost=fisv-woocommerce-db --dbname=wordpress --dbuser=wordpress --dbpass='Q73sCm6=Vlk|'
 
 # ---------------------------------------------------
 # Copy Plugins
