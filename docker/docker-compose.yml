@@ -6,10 +6,10 @@ services:
     mem_limit: '256M'
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD='Xi&K959@E>pO'
+      MYSQL_ROOT_PASSWORD=wordpress
       MYSQL_DATABASE=wordpress
       MYSQL_USER=wordpress
-      MYSQL_PASSWORD='Q73sCm6=Vlk|'
+      MYSQL_PASSWORD=wordpress
     networks:
       - default
     volumes:
