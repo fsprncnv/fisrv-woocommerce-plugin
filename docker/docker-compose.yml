@@ -5,8 +5,11 @@ services:
     command: '--default-authentication-plugin=mysql_native_password'
     mem_limit: '256M'
     restart: always
-    env_file:
-      - .env
+    environment:
+      MYSQL_ROOT_PASSWORD='Xi&K959@E>pO'
+      MYSQL_DATABASE=wordpress
+      MYSQL_USER=wordpress
+      MYSQL_PASSWORD='Q73sCm6=Vlk|'
     networks:
       - default
     volumes:
