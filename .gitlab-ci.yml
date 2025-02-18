@@ -1,18 +1,18 @@
 include:
-  - project: 'default/base'
-    ref: 'main'
-    file: '.php.gitlab-ci.yml'
+  - project: "default/base"
+    ref: "main"
+    file: ".php.gitlab-ci.yml"
 
 variables:
   IMAGE_TAG: $CI_REGISTRY_IMAGE:latest
-  DOCKERFILE: 'docker/Dockerfile'
-  SKIP_PHPUNIT: 'true'
-  MYSQL_DATABASE: 'wordpress'
-  MYSQL_ROOT_PASSWORD: 'wordpress'
-  MYSQL_USER: 'wordpress'
-  MYSQL_PASSWORD: 'wordpress'
+  DOCKERFILE: "docker/Dockerfile"
+  SKIP_PHPUNIT: "true"
+  MYSQL_DATABASE: "wordpress"
+  MYSQL_ROOT_PASSWORD: "wordpress"
+  MYSQL_USER: "wordpress"
+  MYSQL_PASSWORD: "wordpress"
   MYSQL_HOST: fisrv_mysql
-  WP_URL: https://fiwoo.mherrm.de/
+  WP_URL: https://woocommerce.fisv.mherrm.de/
 
 validate:
   extends: .base_validate

@@ -5,7 +5,7 @@
  * Version: 1.1.1
  * Description: Official Fiserv Checkout WooCommerce plugin
  * Author: Fiserv
- * Author URI: https://developer.fiserv.com/
+ * Author URI: https://www.fiserv.com/en-em.html
  * License: GNU General Public License v3.0
  * License URI: http://www.gnu.org/licenses/gpl-3.0.html
  * Text Domain: fiserv-checkout-for-woocommerce

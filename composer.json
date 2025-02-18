@@ -2,7 +2,6 @@
   "name": "extension/fiserv-checkout-for-woocommerce",
   "description": "Fiserv payment plugin for WooCommerce",
   "version": "1.1.1",
-  "minimum-stability": "dev",
   "license": "GNU General Public License v3.0",
   "autoload": {
     "classmap": [
@@ -14,10 +13,7 @@
   },
   "require-dev": {
     "automattic/jetpack-autoloader": "@stable",
-    "php-stubs/wordpress-stubs": "@stable",
-    "phpstan/phpstan": "@stable",
-    "php-stubs/woocommerce-stubs": "@stable",
-    "wp-coding-standards/wpcs": "3.0"
+    "php-stubs/wordpress-stubs": "@stable"
   },
   "config": {
     "allow-plugins": {
