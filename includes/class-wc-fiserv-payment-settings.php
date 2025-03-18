@@ -17,7 +17,7 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
      * Used by wp_kses. List of allowed markup tags when sanitized by WP method.
      * @var array
      */
-    const WP_KSES_ALLOWED = [
+    private static $WP_KSES_ALLOWED = [
         'div' => [
             'onclick' => true,
             'class' => true,
@@ -66,12 +66,6 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
             'style' => true,
             'class' => true,
         ],
-        'span' => [
-            'class' => true,
-        ],
-        'legend' => [
-            'class' => true,
-        ],
         'select' => [
             'class' => true,
             'name' => true,
@@ -87,8 +81,11 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
         ],
     ];
 
+    private $uh = [];
+
     public function __construct()
     {
+        self::$WP_KSES_ALLOWED = array_merge(wp_kses_allowed_html('post'), self::$WP_KSES_ALLOWED);
         $this->description = esc_html__('Payment will be processed by Fiserv. You will be redirected to an external checkout page.', 'fiserv-checkout-for-woocommerce');
     }
 
@@ -107,13 +104,13 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
         $onGeneric = $this->id === Fisrv_Identifiers::GATEWAY_GENERIC->value;
 
         ?>
-        <?php echo $onGeneric ? wp_kses(self::render_fiserv_header(), self::WP_KSES_ALLOWED) : '' ?>
+        <?php echo $onGeneric ? wp_kses(self::render_fiserv_header(), self::$WP_KSES_ALLOWED) : '' ?>
         <table class="form-table">
-            <?php echo wp_kses($this->generate_settings_html($this->get_form_fields(), false), self::WP_KSES_ALLOWED) ?>
+            <?php echo wp_kses($this->generate_settings_html($this->get_form_fields(), false), self::$WP_KSES_ALLOWED) ?>
         </table>
         <?php
 
-        echo wp_kses(ob_get_clean(), self::WP_KSES_ALLOWED);
+        echo wp_kses(ob_get_clean(), self::$WP_KSES_ALLOWED);
     }
 
     public function generate_transaction_type_html(string $key, array $data): string
@@ -148,7 +145,7 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
         }
 
         if ($echo) {
-            echo wp_kses($html, self::WP_KSES_ALLOWED); // WPCS: XSS ok.
+            echo wp_kses($html, self::$WP_KSES_ALLOWED); // WPCS: XSS ok.
         }
 
         return $html;
@@ -189,7 +186,7 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
         ob_start();
 
         ?>
-        <?php echo wp_kses(self::render_gateway_icons($wc_settings->id, false), self::WP_KSES_ALLOWED) ?>
+        <?php echo wp_kses(self::render_gateway_icons($wc_settings->id, false), self::$WP_KSES_ALLOWED) ?>
         <?php
         if ($wc_settings->id === Fisrv_Identifiers::GATEWAY_GENERIC->value) {
             ?>
@@ -242,7 +239,7 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
                 ?>
                 <div id="fs-color-selector-<?php echo esc_attr($color['slug']) ?>"
                     onclick="fsCopyColor('<?php echo esc_attr($color['color']) ?>', this)" class="fs-color-selector" style="width: <?php echo esc_attr($width) ?>px; background: <?php echo esc_attr($color['color']) ?>; color:
-            <?php echo esc_attr(self::isDarkColor($color['color'])) ? 'white' : 'black' ?>">
+                    <?php echo esc_attr(self::isDarkColor($color['color'])) ? 'white' : 'black' ?>">
                     <?php echo esc_html($color['color']) ?>
                 </div>
                 <?php
@@ -290,14 +287,15 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
         <tr valign="top">
             <th scope="row" class="titledesc">
                 <label
-                    for="<?php echo esc_attr("woocommerce_{$wc_settings->id}_{$key}") ?>"><?php echo esc_html($data['title']) ?>
-                    <span class="woocommerce-help-tip" tabindex="0" aria-label="Custom name of gateway"></span>
+                    for="<?php echo esc_attr("woocommerce_{$wc_settings->id}_{$key}"); ?>"><?php echo wp_kses_post($data['title']); ?>
+                    <?php echo $wc_settings->get_tooltip_html($data); // WPCS: XSS ok. ?>
                 </label>
             </th>
             <td class="forminp">
                 <fieldset class="fs-row" style="align-items: center;">
                     <legend class="screen-reader-text"><span><?php echo esc_html($data['title']) ?></span></legend>
-                    <?php echo wp_kses($child_component, self::WP_KSES_ALLOWED) ?>
+                    <?php echo wp_kses($child_component, self::$WP_KSES_ALLOWED) ?>
+                    <?php echo $wc_settings->get_description_html($data); // WPCS: XSS ok. ?>
                 </fieldset>
             </td>
         </tr>
@@ -355,17 +353,14 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
             <?php
             if ($gateway_id === Fisrv_Identifiers::GATEWAY_GENERIC->value) {
                 $icons = json_decode($gateway->get_option('custom_icon'), true);
-
                 if (is_null($icons) || count($icons) === 0) {
                     $icons = array(self::get_method_icon($gateway_id));
                 }
-
                 foreach ($icons as $index => $icon) {
-                    echo wp_kses(self::render_icon_with_overlay($icon, $index, $small), self::WP_KSES_ALLOWED);
+                    echo wp_kses(self::render_icon_with_overlay($icon, $index, $small), self::$WP_KSES_ALLOWED);
                 }
-
             } else {
-                echo wp_kses(self::render_icon(self::get_method_icon($gateway_id), $small), self::WP_KSES_ALLOWED);
+                echo wp_kses(self::render_icon(self::get_method_icon($gateway_id), $small), self::$WP_KSES_ALLOWED);
             }
             ?>
         </div>
@@ -413,7 +408,7 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
                    'Remove Icon',
                    'fiserv-checkout-for-woocommerce'
                ) ?></div>
-            <?php echo wp_kses(self::render_icon($image_src, $small), self::WP_KSES_ALLOWED) ?>
+            <?php echo wp_kses(self::render_icon($image_src, $small), self::$WP_KSES_ALLOWED) ?>
         </div>
         <?php
 
@@ -493,6 +488,8 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
             ],
             'reset' => array(
                 'title' => esc_html__('Restore default settings', 'fiserv-checkout-for-woocommerce'),
+                'description' => esc_html__('Restore to initial values', 'fiserv-checkout-for-woocommerce'),
+                'desc_tip' => true,
                 'type' => 'reset_settings',
             ),
         );

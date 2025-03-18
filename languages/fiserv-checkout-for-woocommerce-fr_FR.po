@@ -50,10 +50,10 @@ msgstr "Le mode de paiement a échoué. Veuillez vérifier sur la page des param
 msgid "Pay with Apple Pay via Fiserv"
 msgstr "Payer avec Apple Pay via Fiserv"
 
-msgid "Pay with Credit/Debit via Fiserv"
+msgid "Pay with Credit / Debit Card via Fiserv"
 msgstr "Payer par carte de crédit/débit via Fiserv"
 
-msgid "Credit/Debit Card"
+msgid "Credit / Debit Card"
 msgstr "Carte de crédit/débit"
 
 msgid "Generic option shows all supported methods on redirect page."

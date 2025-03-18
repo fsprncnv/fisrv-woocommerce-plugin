@@ -65,11 +65,11 @@ msgid "Pay with Apple Pay via Fiserv"
 msgstr "Betaal met Apple Pay via Fiserv"
 
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-cards.php
-msgid "Pay with Credit/Debit via Fiserv"
+msgid "Pay with Credit / Debit Card via Fiserv"
 msgstr "Betalen met creditcard/debetkaart via Fiserv"
 
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-cards.php
-msgid "Credit/Debit Card"
+msgid "Credit / Debit Card"
 msgstr "Creditcard/Debetaalpas"
 
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-generic.php

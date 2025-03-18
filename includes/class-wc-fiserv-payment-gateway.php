@@ -182,9 +182,17 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Fiserv_Payment_Settings
      */
     protected function init_properties(): void
     {
+        $credit_title = 'Credit / Debit Card';
+        if ($this->id === Fisrv_Identifiers::GATEWAY_CREDITCARD->value) {
+            if ($this->title !== $credit_title) {
+                $this->title = $credit_title;
+                $this->update_option('title', $credit_title);
+            }
+            $this->description = $this->get_option('description');
+            return;
+        }
         $this->title = $this->get_option('title');
         $this->description = $this->get_option('description');
-        // $this->icon = $this->get_option('icon', $this->get_default_icon());
     }
 
     /**
@@ -264,28 +272,22 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Fiserv_Payment_Settings
     public function process_refund($order_id, $amount = null, $reason = ''): bool|WP_Error
     {
         $order = wc_get_order($order_id);
-
         if (!$order instanceof WC_Order) {
             throw new Exception(esc_html__('Processing payment failed. Order is invalid.', 'fiserv-checkout-for-woocommerce'));
         }
-
         try {
-            $response = WC_Fiserv_Checkout_Handler::refund_checkout($this, $order, $amount);
-
+            $response = WC_Fiserv_Checkout_Handler::refund_checkout($order, $amount);
             if (isset($response->error)) {
                 $order->add_order_note("Refund failed due to {($response->error->title ?? 'server error')}. Check debug logs for detailed report." . (($reason !== '') ? (" Refund reason given: $reason") : ''));
                 return false;
             }
-
             $order->add_order_note("Order refunded via Fiserv Gateway. Refunded amount: {$response->approvedAmount->total} {$response->approvedAmount->currency->value} Transaction ID: {$response->ipgTransactionId}" . (($reason !== '') ? (" Refund reason given: $reason") : ''));
-
             return true;
         } catch (ErrorResponse $e) {
             WC_Fiserv_Logger::log($order, 'Refund has failed on API client (or server) level: ' . $e->getMessage());
         } catch (\Throwable $th) {
             WC_Fiserv_Logger::log($order, 'Refund has failed on backend level: ' . $th->getMessage());
         }
-
         return false;
     }
 

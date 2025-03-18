@@ -34,16 +34,16 @@ final class WC_Fiserv_Checkout_Handler
 
     /**
      * Inititalize configuraiton parameters of fiserv SDK.
-     * @param WC_Fiserv_Payment_Generic $generic_gateway WC payment gateway object to retrieve stored credentials
+     * @param WC_Fiserv_Payment_Gateway $generic_gateway WC payment gateway object to retrieve stored credentials
      */
-    public static function init_api_credentials(WC_Fiserv_Payment_Generic $generic_gateway): array
+    public static function init_api_credentials(WC_Fiserv_Payment_Gateway $generic_gateway): array
     {
         if (!($generic_gateway instanceof WC_Fiserv_Payment_Gateway)) {
             throw new Exception('Could not retrieve payment settings');
         }
 
-        $plugin_data = get_plugin_data(__DIR__ . '\..\fiserv-checkout-for-woocommerce.php');
-        $plugin_version = $plugin_data['Version'];
+        $plugin_data = get_plugin_data(__DIR__ . '/../fiserv-checkout-for-woocommerce.php');
+        $plugin_version = $plugin_data['Version'] ?? FISRV_PLUGIN_VERSION;
 
         return array(
             'user' => 'WooCommercePlugin/' . $plugin_version,
@@ -105,14 +105,14 @@ final class WC_Fiserv_Checkout_Handler
 
 
     /**
-     * Refund checkout
-     * @param WC_Fiserv_Payment_Generic $generic_gateway Gateway object to retrieve stored credentials
+     * Refund checkout via IPG Rest API. Retrieve order by checkout ID.
      * @param WC_Order $order WooCommerce order object
      * @param mixed $amount Amount to refund
      * @return Fisrv\Models\PaymentsClientResponse Fiserv client response object
      */
-    public static function refund_checkout(WC_Fiserv_Payment_Generic $generic_gateway, WC_Order $order, $amount): PaymentsClientResponse
+    public static function refund_checkout(WC_Order $order, $amount): PaymentsClientResponse
     {
+        $generic_gateway = new WC_Fiserv_Payment_Generic();
         self::$client = new CheckoutClient(self::init_api_credentials($generic_gateway));
         $response = self::$client->refundCheckout(
             new PaymentsClientRequest(
@@ -125,7 +125,7 @@ final class WC_Fiserv_Checkout_Handler
             ),
             $order->get_meta('_fiserv_plugin_checkout_id')
         );
-
+        WC_Fiserv_Logger::generic_log('Refund response: ' . $response);
         return $response;
     }
 

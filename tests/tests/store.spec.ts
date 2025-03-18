@@ -9,7 +9,6 @@ async function restartWoocommercePlugin(page: Page) {
     await page.locator("#activate-woocommerce").click();
     return;
   }
-
   await page.goto("/wp-admin/plugins.php");
   await page.locator("#deactivate-woocommerce").click();
   await page.waitForLoadState("load");
@@ -55,24 +54,15 @@ test.describe("Successful order and partial refund", () => {
   test.beforeAll(async ({ browser }) => {
     page = await browser.newPage();
     await authenticate(page);
-    // await restartWoocommercePlugin(page);
   });
 
-  test("00. Woocommerce and Fiserv plugin are installed and activated properly", async ({
-    page,
-  }) => {
-    //await expect(page.locator('#deactivate-woocommerce')).toBeVisible();
-  });
-
-  test("01. Setup guest session shopping cart", async ({ page }) => {
-    await page.goto("/?add-to-cart=12");
+  test("01. Setup guest session shopping cart", async () => {
+    await page.goto("/?add-to-cart=13");
     await page.goto("/checkout");
     await fillOutBillingFormOnStore(page);
   });
 
-  test("02. Successful redirect to hosted checkout page and redirect back to thank you page", async ({
-    page,
-  }) => {
+  test("02. Successful redirect to hosted checkout page and redirect back to thank you page", async () => {
     orderNumber = await createSuccessfulOrder(page);
   });
 
@@ -88,11 +78,11 @@ test.describe("Successful order and partial refund", () => {
   test("05. Refund order", async ({ page }) => {});
 });
 
-test("Autocomplete sets order status to complete", async ({ page }) => {});
+// test("Autocomplete sets order status to complete", async ({ page }) => {});
 
-test("Checkout details report box on order page", async ({ page }) => {});
+// test("Checkout details report box on order page", async ({ page }) => {});
 
-test("Change generic payment icon and revert back", async ({ page }) => {});
+// test("Change generic payment icon and revert back", async ({ page }) => {});
 
 async function fillOutBillingFormOnStore(page: Page) {
   await page.locator("#billing_first_name").fill("Frodo");
@@ -120,23 +110,14 @@ async function createSuccessfulOrder(page: Page): Promise<any> {
   ) {
     await page.locator("#payment_method_fiserv-gateway-generic").click();
   }
-
   await page.locator("#place_order").click();
-
   await page.waitForURL("https://ci.checkout-lane.com/#/?checkoutId=**");
-
   await fillOutPaymentFormOnHostedPaymentPage(page, "5424180279791732");
-
   await page.locator("[appdataautomationid='payment_button']").click();
-
-  await page.waitForURL(
-    "http://fiserv-plugin-dev.com/checkout/order-received/**"
-  );
-
+  await page.waitForURL("/checkout/order-received/**");
   //await expect(
   //  page.locator("[data-block-name='woocommerce/order-confirmation-status']")
   //).toBeVisible();
-
   return page
     .locator(".wc-block-order-confirmation-summary-list-item__value")
     .first()
@@ -148,10 +129,7 @@ async function authenticate(page: Page) {
 
   if (page.url().match(/.*wp-login.*$/)) {
     await page.locator("#user_login").fill("admin");
-    await page
-      .locator("#user_pass")
-      .fill(process.env.WP_PASSWORD ?? "password");
-
+    await page.locator("#user_pass").fill(process.env.WP_PASSWORD ?? "admin");
     await page.getByRole("button", { name: "Log In" }).click();
     await page.waitForURL(/.*wp-admin.*$/);
   }

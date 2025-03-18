@@ -114,7 +114,7 @@ final class WC_Fiserv_Redirect_Back_Handler
                 $has_completed = $order->payment_complete();
                 if ($has_completed) {
                     $order->update_status('wc-completed', __('Order was paid sucessfully and set to completed (auto-complete).', 'fiserv-checkout-for-woocommerce'));
-                    WC_Fiserv_Logger::log($order, 'Payment complete. Order completeg. (auto-complete on)');
+                    WC_Fiserv_Logger::log($order, 'Payment complete. Order completed. (auto-complete on)');
                 }
             }
         }

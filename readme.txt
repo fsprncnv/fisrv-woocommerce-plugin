@@ -4,7 +4,7 @@ Requires at least: 5.4
 Tested up to: 6.7
 License: GNU General Public License v3.0 
 License URI: http://www.gnu.org/licenses/gpl-3.0.html 
-Stable tag: 1.1.1
+Stable tag: 1.1.2
 Requires PHP: 8.1
 Contributors: ipgpluginsupportfiserv
 
@@ -57,7 +57,13 @@ A detailed description of each task can be found on the [Fiserv Developer Portal
 * Try switching Permalink type in WordPress admin settings to 'Post name'
 
 == Changelog ==
-** 1.1.0 **
-* Initial version
+** 1.1.2 **
+* Change wording from credit/debit to credit / debit card and remove option to edit gateway payment method name
+* Fix description hints in settings
+* Clean-up filtered markup tags
+* Fix plugin version trace
+* Fix refunds for non-generic payments
 ** 1.1.1 **
 * Fix retrieval of order ID and webhook route
+** 1.1.0 **
+* Initial version
