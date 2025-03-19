@@ -63,6 +63,7 @@ A detailed description of each task can be found on the [Fiserv Developer Portal
 * Clean-up filtered markup tags
 * Fix plugin version trace
 * Fix refunds for non-generic payments
+* Improve theme data palette stability 
 ** 1.1.1 **
 * Fix retrieval of order ID and webhook route
 ** 1.1.0 **

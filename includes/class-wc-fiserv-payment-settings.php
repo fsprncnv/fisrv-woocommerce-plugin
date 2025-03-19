@@ -218,19 +218,30 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
     public static function render_wp_theme_data(string $field_html, string $key, array $data, WC_Settings_API $wc_settings): string
     {
         ob_start();
-
-        $themeResponse = wp_remote_get(wp_get_theme()->get_stylesheet_directory_uri() . '/theme.json', [
-            'sslverify' => false
-        ]);
-
-        if (is_wp_error($themeResponse)) {
-            throw new Exception(esc_html($themeResponse->get_error_message()));
-        }
-
-        $theme = json_decode($themeResponse['body'], true);
-        $colors = array_slice($theme['settings']['color']['palette'], 0, 3);
+        $fallback_colors = [
+            ['color' => '#FF6600', 'slug' => 'none'],
+            ['color' => '#000000', 'slug' => 'none'],
+            ['color' => '#FFFFFF', 'slug' => 'none'],
+        ];
         $width = 150;
-
+        try {
+            $themeResponse = wp_remote_get(wp_get_theme()->get_stylesheet_directory_uri() . '/theme.json', [
+                'sslverify' => false
+            ]);
+            if (is_wp_error($themeResponse)) {
+                throw new Exception(esc_html($themeResponse->get_error_message()));
+            }
+            $theme = json_decode($themeResponse['body'], true);
+            $palette = $theme['settings']['color']['palette'];
+            $colors = array_slice(
+                array_merge($palette, $fallback_colors),
+                0,
+                min(3, count($fallback_colors))
+            );
+        } catch (Throwable $th) {
+            $colors = $fallback_colors;
+            WC_Fiserv_Logger::generic_log('Could not retrieve theme colors, using fallback: ' . $th->getMessage());
+        }
         ?>
         <div class="fs-color-selector-container" style="width: <?php echo esc_attr($width * 3) ?>px; background-color:
         black;">
@@ -247,7 +258,6 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
             ?>
         </div>
         <?php
-
         return self::render_option_tablerow($key, $data, $wc_settings, ob_get_clean());
     }
 
