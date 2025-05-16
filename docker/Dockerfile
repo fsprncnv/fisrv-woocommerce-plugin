@@ -1,8 +1,9 @@
 # ---------------------------------------------------
 # Global Arguments
 # ---------------------------------------------------
-ARG CI_COMMIT_SHA="TEST"
 FROM php:apache-bookworm
+ARG CI_COMMIT_SHA
+ENV CI_COMMIT_SHA $CI_COMMIT_SHA
 
 # ---------------------------------------------------
 # Self-Signed Certificate Generation
