@@ -13,7 +13,8 @@
   },
   "require-dev": {
     "automattic/jetpack-autoloader": "@stable",
-    "php-stubs/wordpress-stubs": "@stable"
+    "php-stubs/wordpress-stubs": "@stable",
+    "php-stubs/woocommerce-stubs": "@stable"
   },
   "config": {
     "allow-plugins": {
