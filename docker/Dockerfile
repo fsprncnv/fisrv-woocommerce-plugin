@@ -31,6 +31,16 @@ RUN echo 'Header always set Referrer-Policy "no-referrer-when-downgrade"' >> sec
 RUN echo 'Header always set Permissions-Policy "geolocation=(),midi=(),sync-xhr=(),microphone=(),camera=(),magnetometer=(),gyroscope=(),fullscreen=(self),payment=()"' >> security.conf
 
 # ---------------------------------------------------
+# PHP Configurations
+# ---------------------------------------------------
+WORKDIR /usr/local/etc/php
+RUN cp php.ini-production php.ini
+RUN sed -i 's/;zend_extension=opcache/zend_extension=opcache/g' php.ini
+RUN sed -i 's/;opcache.enable=1/opcache.enable=1/g' php.ini
+RUN sed -i 's/expose_php = On/expose_php = Off/g' php.ini
+RUN cat php.ini
+
+# ---------------------------------------------------
 # Install Wordpress CLI
 # ---------------------------------------------------
 ADD https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar wp-cli.phar
@@ -54,15 +64,6 @@ RUN unzip -qq plugin.zip -d fiserv/
 RUN rm -f plugin.zip
 
 RUN chown -R www-data:www-data /var/www
-
-# ---------------------------------------------------
-# PHP Configurations
-# ---------------------------------------------------
-WORKDIR /usr/local/etc/php
-RUN cp php.ini-production php.ini
-RUN sed -i 's/;zend_extension=opcache/zend_extension=opcache/g' php.ini
-RUN sed -i 's/;opcache.enable=1/opcache.enable=1/g' php.ini
-RUN sed -i 's/expose_php = On/expose_php = Off/g' php.ini
 
 USER www-data
 
