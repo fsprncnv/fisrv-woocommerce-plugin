@@ -29,6 +29,7 @@ RUN echo 'Header always set X-Permitted-Cross-Domain-Policies "none"' >> securit
 RUN echo 'Header always set Referrer-Policy "no-referrer-when-downgrade"' >> security.conf
 #RUN echo 'Header always set Content-Security-Policy "default-src *; style-src 'self' 'unsafe-inline' 'unsafe-hashes'; script-src 'self' 'unsafe-inline' 'unsafe-hashes'; script-src-elem 'self' *.mherrm.de"' >> security.conf
 RUN echo 'Header always set Permissions-Policy "geolocation=(),midi=(),sync-xhr=(),microphone=(),camera=(),magnetometer=(),gyroscope=(),fullscreen=(self),payment=()"' >> security.conf
+RUN echo 'Header always set X-Commit: "test"' >> security.conf
 
 # ---------------------------------------------------
 # PHP Configurations
