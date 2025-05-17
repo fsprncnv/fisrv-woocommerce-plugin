@@ -16,7 +16,7 @@ RUN /var/www/html/wp-cli.phar config create --allow-root --skip-check --dbhost=f
 # Copy Plugins
 # ---------------------------------------------------
 WORKDIR /var/www/html/wp-content/plugins/
-ADD https://downloads.wordpress.org/plugin/woocommerce.8.9.3.zip woocommerce.zip
+ADD https://downloads.wordpress.org/plugin/woocommerce.9.8.5.zip woocommerce.zip
 RUN unzip -qq woocommerce.zip
 RUN rm -f woocommerce.zip
 
