@@ -9,8 +9,8 @@ FROM registry.gitlab.mherrm.de/default/docker/apache:latest
 WORKDIR /var/www/html/
 ADD https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar wp-cli.phar
 RUN chmod +x wp-cli.phar
-RUN wp-cli.phar core download --allow-root --path=. --locale=en_US
-RUN wp-cli.phar config create --allow-root --skip-check --dbhost=fisv-woocommerce-db --dbname=wordpress --dbuser=wordpress --dbpass=wordpress
+RUN /var/www/html/wp-cli.phar core download --allow-root --path=. --locale=en_US
+RUN /var/www/html/wp-cli.phar config create --allow-root --skip-check --dbhost=fisv-woocommerce-db --dbname=wordpress --dbuser=wordpress --dbpass=wordpress
 
 # ---------------------------------------------------
 # Copy Plugins
