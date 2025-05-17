@@ -6,13 +6,10 @@ FROM registry.gitlab.mherrm.de/default/docker/apache:latest
 # ---------------------------------------------------
 # Install Wordpress CLI
 # ---------------------------------------------------
-ADD https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar wp-cli.phar
-RUN chmod +x wp-cli.phar
-RUN mv wp-cli.phar /usr/local/bin/wp
-
 WORKDIR /var/www/html/
-RUN wp core download --allow-root --path=. --locale=en_US
-RUN wp config create --allow-root --skip-check --dbhost=fisv-woocommerce-db --dbname=wordpress --dbuser=wordpress --dbpass=wordpress
+ADD https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar wp-cli.phar
+RUN wp-cli.phar core download --allow-root --path=. --locale=en_US
+RUN wp-cli.phar config create --allow-root --skip-check --dbhost=fisv-woocommerce-db --dbname=wordpress --dbuser=wordpress --dbpass=wordpress
 
 # ---------------------------------------------------
 # Copy Plugins
