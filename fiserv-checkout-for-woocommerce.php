@@ -2,7 +2,7 @@
 
 /**
  * Plugin Name: Fiserv Checkout for WooCommerce
- * Version: 1.1.2
+ * Version: 1.1.3
  * Description: Official Fiserv Checkout WooCommerce plugin
  * Author: Fiserv
  * Author URI: https://www.fiserv.com/en-em.html
@@ -18,7 +18,7 @@ defined('ABSPATH') || exit;
 
 require_once plugin_dir_path(__FILE__) . '/vendor/autoload.php';
 
-const FISRV_PLUGIN_VERSION = '1.1.2';
+const FISRV_PLUGIN_VERSION = '1.1.3';
 
 /**
  * WooCommerce fallback notice.

@@ -1,10 +1,10 @@
 === Fiserv Checkout for WooCommerce === 
 Tags: WooCommerce, payment 
 Requires at least: 5.4
-Tested up to: 6.7
+Tested up to: 6.8
 License: GNU General Public License v3.0 
 License URI: http://www.gnu.org/licenses/gpl-3.0.html 
-Stable tag: 1.1.2
+Stable tag: 1.1.3
 Requires PHP: 8.1
 Contributors: ipgpluginsupportfiserv
 
@@ -57,6 +57,8 @@ A detailed description of each task can be found on the [Fiserv Developer Portal
 * Try switching Permalink type in WordPress admin settings to 'Post name'
 
 == Changelog ==
+** 1.1.3 **
+* Add currency support for MUR, AED and AUD
 ** 1.1.2 **
 * Change wording from credit/debit to credit / debit card and remove option to edit gateway payment method name
 * Fix description hints in settings
