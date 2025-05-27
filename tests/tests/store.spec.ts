@@ -1,53 +1,6 @@
 import { test, expect, Page } from "@playwright/test";
 import dotenv from "dotenv";
 
-async function restartWoocommercePlugin(page: Page) {
-  if (await page.locator("#activate-woocommerce").isVisible()) {
-    await page.locator("#activate-woocommerce").click();
-    return;
-  }
-  await page.goto("/wp-admin/plugins.php");
-  await page.locator("#deactivate-woocommerce").click();
-  await page.waitForLoadState("load");
-  await page.locator("#activate-woocommerce").click();
-}
-
-async function activatePlugins(page: Page) {
-	await page.locator("#activate-fiserv-checkout-for-woocommerce").click();
-}
-
-test("Setup plugin and failed API health check due to bad API key (fail flow)", async ({
-  page,
-}) => {});
-
-test("Setup plugin and successful API health check (success flow)", async ({
-  page,
-}) => {});
-
-test("Copy color from WP theme data", async ({ page }) => {});
-
-test("Select redirect page on failed payment", async ({ page }) => {});
-
-test("Webhook event without valid signature (unauthenticated) gets rejected", async ({
-  page,
-}) => {});
-
-test("Webhook event updates order status", async ({ page }) => {});
-
-test("Payment success event without valid signature (unauthenticated) gets rejected", async ({
-  page,
-}) => {});
-
-// WP WEB SHOP
-
-test("Web shop data (localization based on WP-admin, cart items) are properly passed to redirect page", async ({
-  page,
-}) => {
-  // wp-admin set global language to german
-});
-
-test("Failed order due to payment validation failure", async ({ page }) => {});
-
 test.describe("Successful order and partial refund", () => {
   let page: Page;
   let orderNumber: string;
@@ -55,8 +8,8 @@ test.describe("Successful order and partial refund", () => {
   test.beforeAll(async ({ browser }) => {
     page = await browser.newPage();
     await authenticate(page);
-	await restartWoocommercePlugin(page);
-	await activatePlugins(page);
+	await activatePlugins("woocommerce", page);	
+	await activatePlugins("fiserv-checkout-for-woocommerce", page);
   });
 
   test("01. Setup guest session shopping cart", async () => {
@@ -86,6 +39,19 @@ test.describe("Successful order and partial refund", () => {
 // test("Checkout details report box on order page", async ({ page }) => {});
 
 // test("Change generic payment icon and revert back", async ({ page }) => {});
+
+async function activatePlugins(pluginName: String, page: Page) {
+	const activateLink = page.locator(`a#activate-${pluginName}`);
+	const deactiveLink = page.locator(`a#deactivate-${pluginName}`);
+	if( await deactiveLink.count() > 0) {
+		await deactiveLink.click();
+		await page.waitForLoadState("load");
+	}
+	if (await activateLink.count() > 0) {
+		await activateLink.click();
+	    await page.waitForLoadState("load");
+	}
+}
 
 async function fillOutBillingFormOnStore(page: Page) {
   await page.locator("#billing_first_name").fill("Frodo");
