@@ -13,7 +13,7 @@ test.describe("Successful order and partial refund", () => {
   });
 
   test("01. Setup guest session shopping cart", async () => {
-    await page.goto("/?add-to-cart=13");
+    await page.goto("/?add-to-cart=15");
     await page.goto("/checkout");
     await fillOutBillingFormOnStore(page);
   });
@@ -83,7 +83,7 @@ async function createSuccessfulOrder(page: Page): Promise<any> {
   }
   await page.locator("#place_order").click();
   await page.waitForURL("https://ci.checkout-lane.com/#/?checkoutId=**");
-  await fillOutPaymentFormOnHostedPaymentPage(page, "5424180279791732");
+  await fillOutPaymentFormOnHostedPaymentPage(page, "4265880000000007");
   await page.locator("[appdataautomationid='payment_button']").click();
   await page.waitForURL("/checkout/order-received/**");
   //await expect(
