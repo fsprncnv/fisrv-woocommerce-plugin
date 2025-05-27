@@ -1,6 +1,8 @@
 import { test, expect, Page } from "@playwright/test";
 import dotenv from "dotenv";
 
+test.describe.configure({ mode: 'serial' });
+
 test.describe("Successful order and partial refund", () => {
   let page: Page;
   let orderNumber: string;
@@ -94,9 +96,6 @@ async function createSuccessfulOrder(page: Page): Promise<any> {
 }
 
 async function authenticate(page: Page) {
-  console.log(process.env.WP_URL);
-  console.log(process.env.WP_PASSWORD);
-  
   await page.goto("/wp-admin");
   await expect(page).toHaveURL(/.*wp-login.*$/);
   await page.locator("#user_login").fill("admin");
