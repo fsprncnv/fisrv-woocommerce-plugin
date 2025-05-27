@@ -1,8 +1,6 @@
 import { test, expect, Page } from "@playwright/test";
 import dotenv from "dotenv";
 
-test.describe.configure({ mode: 'serial' });
-
 test.describe("Successful order and partial refund", () => {
   let page: Page;
   let orderNumber: string;
@@ -10,8 +8,8 @@ test.describe("Successful order and partial refund", () => {
   test.beforeAll(async ({ browser }) => {
     page = await browser.newPage();
     await authenticate(page);
-	await activatePlugins("woocommerce", page);	
-	await activatePlugins("fiserv-checkout-for-woocommerce", page);
+	await activatePlugin("woocommerce", page);	
+	await activatePlugin("fiserv-checkout-for-woocommerce", page);
   });
 
   test("01. Setup guest session shopping cart", async () => {
@@ -42,7 +40,9 @@ test.describe("Successful order and partial refund", () => {
 
 // test("Change generic payment icon and revert back", async ({ page }) => {});
 
-async function activatePlugins(pluginName: String, page: Page) {
+async function activatePlugin(pluginName: String, page: Page) {
+	await page.locator('a[href*="plugins.php"]').first().click();
+	await page.waitForURL(/.*plugins.*$/);	
 	const activateLink = page.locator(`a#activate-${pluginName}`);
 	const deactiveLink = page.locator(`a#deactivate-${pluginName}`);
 	if( await deactiveLink.count() > 0) {
