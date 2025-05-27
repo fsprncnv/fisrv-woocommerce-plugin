@@ -94,6 +94,9 @@ async function createSuccessfulOrder(page: Page): Promise<any> {
 }
 
 async function authenticate(page: Page) {
+  console.log(process.env.WP_URL);
+  console.log(process.env.WP_PASSWORD);
+  
   await page.goto("/wp-admin");
   await expect(page).toHaveURL(/.*wp-login.*$/);
   await page.locator("#user_login").fill("admin");
