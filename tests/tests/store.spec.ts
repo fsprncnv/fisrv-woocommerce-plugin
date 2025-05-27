@@ -1,8 +1,5 @@
 import { test, expect, Page } from "@playwright/test";
 import dotenv from "dotenv";
-// ADMIN ENV CONFIG
-
-// how do i get the plugin (marketplace, zip file)
 
 async function restartWoocommercePlugin(page: Page) {
   if (await page.locator("#activate-woocommerce").isVisible()) {
@@ -13,6 +10,10 @@ async function restartWoocommercePlugin(page: Page) {
   await page.locator("#deactivate-woocommerce").click();
   await page.waitForLoadState("load");
   await page.locator("#activate-woocommerce").click();
+}
+
+async function activatePlugins(page: Page) {
+	await page.locator("#activate-fiserv-checkout-for-woocommerce").click();
 }
 
 test("Setup plugin and failed API health check due to bad API key (fail flow)", async ({
@@ -54,6 +55,8 @@ test.describe("Successful order and partial refund", () => {
   test.beforeAll(async ({ browser }) => {
     page = await browser.newPage();
     await authenticate(page);
+	await restartWoocommercePlugin(page);
+	await activatePlugins(page);
   });
 
   test("01. Setup guest session shopping cart", async () => {
