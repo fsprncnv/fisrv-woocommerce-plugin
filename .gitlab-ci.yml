@@ -29,5 +29,8 @@ test:
 docker:
   extends: .base_docker
 
+portainer:
+  extends: .base_portainer
+
 release:
   extends: .base_release
