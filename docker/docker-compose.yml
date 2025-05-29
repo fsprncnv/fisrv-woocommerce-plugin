@@ -26,11 +26,10 @@ services:
       - 'traefik.http.routers.fisv-woocommerce-secure.tls=true'
       - 'traefik.http.routers.fisv-woocommerce-secure.tls.certresolver=letsencrypt'
       - 'traefik.http.routers.fisv-woocommerce-secure.service=fiwoo'
-      - 'traefik.http.routers.fisv-woocommerce-secure.middlewares=serverHeader@file,gitlab'
+      - 'traefik.http.routers.fisv-woocommerce-secure.middlewares=gitlab'
       - 'traefik.http.services.fiwoo.loadbalancer.server.scheme=https'
       - 'traefik.http.services.fiwoo.loadbalancer.server.port=443'
-      - 'traefik.http.middlewares.gitlab.headers.customrequestheaders.X-Script-Name=test'
-      - 'traefik.http.middlewares.gitlab.headers.customresponseheaders.X-Custom-Response-Header=value'
+      - 'traefik.http.middlewares.gitlab.headers.customresponseheaders.X-Commit-Id=$COMMIT_ID'
       - 'traefik.docker.network=traefik'
     logging:
       driver: 'json-file'
