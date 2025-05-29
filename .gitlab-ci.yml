@@ -14,6 +14,7 @@ variables:
   MYSQL_HOST: fisrv_mysql
   WP_URL: https://woocommerce.fisv.mherrm.de/
   WP_PASSWORD: 4f#nITC63S07cRcnF(vdT0ox
+  PORTAINER_STACK: 'fisrv-woocommerce'
 
 validate:
   extends: .base_validate
