@@ -28,6 +28,7 @@ services:
       - 'traefik.http.routers.fisv-woocommerce-secure.service=fiwoo'
       - 'traefik.http.services.fiwoo.loadbalancer.server.scheme=https'
       - 'traefik.http.services.fiwoo.loadbalancer.server.port=443'
+      - 'traefik.http.middlewares.fisv-woocommerce-secure.headers.customresponseheaders.X-Custom-Response-Header=value'
       - 'traefik.docker.network=traefik'
     logging:
       driver: 'json-file'
