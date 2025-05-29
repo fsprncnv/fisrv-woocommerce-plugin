@@ -6,7 +6,7 @@ test.describe("Sucessful Deployment", () => {
 	  await expect(async () => {
 		  const response = await page.request.get(process.env.WP_URL);
 		  expect(response.status()).toBe(200);
-		  expect(response.headers()["x-commit"]).toContain(process.env.CI_COMMIT_SHORT_SHA ?? "test");
+		  expect(response.headers()["x-commit-id"]).toContain(process.env.CI_COMMIT_SHORT_SHA ?? "test");
 	  }).toPass({
           timeout: 120_000
 	  });
