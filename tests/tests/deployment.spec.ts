@@ -9,7 +9,8 @@ test.describe("Sucessful Deployment", () => {
 		  expect(response.status()).toBe(200);
 		  expect(response.headers()["x-commit-id"]).toContain(process.env.CI_COMMIT_SHORT_SHA ?? "test");
 	  }).toPass({
-          timeout: 120_000
+		  intervals: [2_000, 5_000, 10_000],
+		  timeout: 120_000
 	  });
   });
 });
