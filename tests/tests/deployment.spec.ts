@@ -3,6 +3,7 @@ import { test, expect } from "@playwright/test";
 test.describe("Sucessful Deployment", () => {
 
   test("Verify Latest Deployment", async ({ page }) => {
+	  test.setTimeout(120_000);
 	  await expect(async () => {
 		  const response = await page.request.get(process.env.WP_URL);
 		  console.log(response.headers()["x-commit-id"]);
