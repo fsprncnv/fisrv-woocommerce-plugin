@@ -139,10 +139,10 @@ final class WC_Fiserv_Checkout_Handler
     {
         $paymentsClient = new PaymentsClient($credentials);
         if (!($paymentsClient instanceof PaymentsClient)) {
-            return array(
+            return [
                 'status' => 500,
                 'message' => 'Failed to create client',
-            );
+            ];
         }
         $report = $paymentsClient->reportHealthCheck(true);
         if ($report->httpCode != 200) {
@@ -150,12 +150,12 @@ final class WC_Fiserv_Checkout_Handler
                 $message = $report->error->message;
                 WC_Fiserv_Logger::generic_log('API health check reported following error response: ' . $message);
             } else {
-                $message = 'Store is not set up';
+                $message = __('Store is likely not set up correctly.', 'fiserv-checkout-for-woocommerce');
                 WC_Fiserv_Logger::generic_log('Verbose report log: ' . json_decode($report->requestLog, true));
             }
             return [
                 'status' => $report->httpCode,
-                'message' => $message ?? "You're all set!",
+                'message' => $message,
             ];
         }
         return [
