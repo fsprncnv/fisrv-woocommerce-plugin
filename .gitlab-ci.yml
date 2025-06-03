@@ -4,8 +4,6 @@ include:
     file: ".php.gitlab-ci.yml"
 
 variables:
-  IMAGE_TAG: $CI_REGISTRY_IMAGE:latest
-  DOCKERFILE: "docker/Dockerfile"
   SKIP_PHPUNIT: "true"
   MYSQL_DATABASE: "wordpress"
   MYSQL_ROOT_PASSWORD: "wordpress"
@@ -29,6 +27,10 @@ test:
 
 docker:
   extends: .base_docker
+  needs: ["build"]
+  variables:
+    IMAGE_TAG: $CI_REGISTRY_IMAGE:latest
+    IMAGE_FILE: "docker/Dockerfile"
 
 portainer:
   extends: .base_portainer
