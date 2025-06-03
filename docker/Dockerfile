@@ -1,7 +1,7 @@
 # ---------------------------------------------------
 # Global Arguments
 # ---------------------------------------------------
-FROM registry.gitlab.mherrm.de/default/docker/apache:latest
+FROM registry.gitlab.mherrm.de/default/docker/apache/apache:latest AS main
 
 # ---------------------------------------------------
 # Install Wordpress CLI
@@ -16,15 +16,13 @@ RUN /var/www/html/wp-cli.phar config create --allow-root --skip-check --dbhost=f
 # Copy Plugins
 # ---------------------------------------------------
 WORKDIR /var/www/html/wp-content/plugins/
-ADD https://downloads.wordpress.org/plugin/woocommerce.9.8.5.zip woocommerce.zip
-RUN unzip -qq woocommerce.zip
-RUN rm -f woocommerce.zip
-
 ADD *.zip plugin.zip
-RUN unzip -qq plugin.zip -d fiserv/
-RUN rm -f plugin.zip
-
-RUN chown -R www-data:www-data /var/www
+ADD https://downloads.wordpress.org/plugin/woocommerce.9.8.5.zip woocommerce.zip
+RUN unzip -qq woocommerce.zip &&\
+    rm -f woocommerce.zip &&\
+    unzip -qq plugin.zip -d fiserv/ &&\
+    rm -f plugin.zip &&\
+    chown -R www-data:www-data /var/www
 
 USER www-data
 
