@@ -57,6 +57,8 @@ A detailed description of each task can be found on the [Fiserv Developer Portal
 * Try switching Permalink type in WordPress admin settings to 'Post name'
 
 == Changelog ==
+** 1.1.4 **
+* Fix issues with order info meta box
 ** 1.1.3 **
 * Add currency support for MUR, AED and AUD
 ** 1.1.2 **

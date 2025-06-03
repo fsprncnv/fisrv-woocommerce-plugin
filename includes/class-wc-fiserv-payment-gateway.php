@@ -57,9 +57,13 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Fiserv_Payment_Settings
      */
     public function custom_order_meta_box($id, $order)
     {
+        $screen = get_current_screen();
+        if ($screen && $order && $screen->base !== 'woocommerce_page_wc-orders') {
+            return;
+        }
         add_meta_box(
             'fiserv-checkout-order-meta-box',
-            'Fiserv Checkout Info ',
+            'Fiserv Checkout Info',
             function () use ($order) {
                 echo wp_kses($this->custom_order_meta_box_callback($order), [
                     'div' => [
