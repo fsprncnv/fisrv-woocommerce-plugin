@@ -38,12 +38,14 @@ final class WC_Fiserv_Logger
      * @param string $message
      * @return void
      */
-    public static function generic_log(string $message): void
+    public static function generic_log(object|string $message): void
     {
         if (!WC_Fiserv_Payment_Settings::isLoggingEnabled()) {
             return;
         }
-
+        if (is_object($message)) {
+            $message = json_encode($message, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        }
         wc_get_logger()->notice($message, array('source' => self::SOURCE));
     }
 

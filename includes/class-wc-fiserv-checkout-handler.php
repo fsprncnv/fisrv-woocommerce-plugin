@@ -78,7 +78,8 @@ final class WC_Fiserv_Checkout_Handler
             // $request = self::pass_transaction_type($generic_gateway, $request);
             // $request = self::handle_token_transaction($generic_gateway, $request, $order);
 
-            WC_Fiserv_Logger::generic_log((string) $request);
+            WC_Fiserv_Logger::generic_log('Creating checkout page request...');
+            WC_Fiserv_Logger::generic_log($request);
             $response = self::$client->createCheckout($request);
 
             $checkout_id = $response->checkout->checkoutId;
@@ -137,26 +138,30 @@ final class WC_Fiserv_Checkout_Handler
     public static function get_health_report(array $credentials): array
     {
         $paymentsClient = new PaymentsClient($credentials);
-
         if (!($paymentsClient instanceof PaymentsClient)) {
             return array(
                 'status' => 500,
                 'message' => 'Failed to create client',
             );
         }
-
         $report = $paymentsClient->reportHealthCheck(true);
-
         if ($report->httpCode != 200) {
-            $message = $report->error->message;
-            WC_Fiserv_Logger::generic_log('API health check reported following error response: ' . $message);
-            WC_Fiserv_Logger::generic_log('Verbose report log: ' . $report->requestLog);
+            if (isset($report->error->message)) {
+                $message = $report->error->message;
+                WC_Fiserv_Logger::generic_log('API health check reported following error response: ' . $message);
+            } else {
+                $message = 'Store is not set up';
+                WC_Fiserv_Logger::generic_log('Verbose report log: ' . json_decode($report->requestLog, true));
+            }
+            return [
+                'status' => $report->httpCode,
+                'message' => $message ?? "You're all set!",
+            ];
         }
-
-        return array(
-            'status' => $report->error->code ?? 'ok',
-            'message' => $message ?? "You're all set!",
-        );
+        return [
+            'status' => 'ok',
+            'message' => "You're all set!",
+        ];
     }
 
     public static function get_checkout_details($checkout_id): WP_REST_Response

@@ -18,6 +18,10 @@ const checkoutInquiryInclusions = [
     'cardNumber'
 ];
 
+function buildError(scope, error) {
+    console.error(`Fiserv Plugin for Woocommerce: ${scope}`, error);
+}
+
 async function fsAddImage(button) {
     const input = document.getElementById("fs-icons-data").value;
     const gateway_id = button.getAttribute("gateway-id");
@@ -52,17 +56,24 @@ async function fsFetchHealth(is_prod) {
     const fetchHealthBtn = document.getElementById("fs-health-btn");
     const readField = (key) => document.getElementById(`woocommerce_fiserv-gateway-generic_${key}`).value;
     fetchHealthBtn.innerHTML = "<span class='fs-loader-status'></span>";
-    const data = await wp.apiFetch({
-        method: "GET",
-        path: `${restBasePath}/health?is_prod=${is_prod}&api_key=${readField('api_key')}&api_secret=${readField('api_secret')}&store_id=${readField('store_id')}`
-    });
-    text.innerHTML = data["message"];
-    if (data["status"] !== "ok") {
+    try {
+        const data = await wp.apiFetch({
+            method: "GET",
+            path: `${restBasePath}/health?is_prod=${is_prod}&api_key=${readField('api_key')}&api_secret=${readField('api_secret')}&store_id=${readField('store_id')}`
+        });
+        text.innerHTML = data.message;
+        if (data["status"] !== "ok") {
+            indicator.style.background = "OrangeRed";
+            fetchHealthBtn.innerHTML = "🞭";
+        } else {
+            indicator.style.background = "LightGreen";
+            fetchHealthBtn.innerHTML = "✓";
+        }
+    } catch (error) {
+        buildError("Failed health fetch", error);
+        text.innerHTML = 'Could not retrieve API health';
         indicator.style.background = "OrangeRed";
         fetchHealthBtn.innerHTML = "🞭";
-    } else {
-        indicator.style.background = "LightGreen";
-        fetchHealthBtn.innerHTML = "✓";
     }
 }
 
@@ -98,6 +109,7 @@ async function fetchCheckoutReport(checkout_id, button) {
             renderObjectFields(report, container, '');
         }
     } catch (error) {
+        buildError("Failed order info", error);
         button.innerHTML = "🞭 Sorry, couldn't retrieve order";
     }
 }
