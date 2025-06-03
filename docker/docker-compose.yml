@@ -15,7 +15,7 @@ services:
     volumes:
       - db:/var/lib/mysql
   apache:
-    image: registry.gitlab.mherrm.de/cgi/fisrv-woocommerce-plugin:latest
+    image: registry.gitlab.mherrm.de/cgi/fisrv-woocommerce-plugin/fisrv-woocommerce:latest
     container_name: fisv-woocommerce-apache
     mem_limit: '512M'
     restart: always
