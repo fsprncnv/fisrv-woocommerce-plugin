@@ -159,25 +159,28 @@ final class WC_Fiserv_Checkout_Handler
         );
     }
 
-    public static function get_checkout_details($checkout_id): array
+    public static function get_checkout_details($checkout_id): WP_REST_Response
     {
         if (is_null(self::$client)) {
             $gateway = WC()->payment_gateways()->payment_gateways()[Fisrv_Identifiers::GATEWAY_GENERIC->value];
             self::$client = new CheckoutClient(self::init_api_credentials($gateway));
         }
-
+        ob_start();
+        $response = ['status' => 'no data'];
         try {
             $report = self::$client->getCheckoutById($checkout_id);
-            return [
+            $response = [
                 'status' => 'ok',
                 'message' => wp_json_encode($report)
             ];
         } catch (\Throwable $th) {
-            return [
+            $response = [
                 'status' => 'error',
                 'message' => $th->getMessage(),
             ];
         }
+        ob_end_clean();
+        return rest_ensure_response($response);
     }
 
     /**

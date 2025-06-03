@@ -198,7 +198,7 @@ final class WC_Fiserv_Rest_Routes
                 'methods' => WP_REST_Server::READABLE,
                 'callback' => function (WP_REST_Request $request) {
                     $checkout_id = (string) $request->get_param('checkout-id');
-                    return new WP_REST_Response(WC_Fiserv_Checkout_Handler::get_checkout_details($checkout_id));
+                    return WC_Fiserv_Checkout_Handler::get_checkout_details($checkout_id);
                 },
                 'permission_callback' => function () {
                     return current_user_can('administrator');
