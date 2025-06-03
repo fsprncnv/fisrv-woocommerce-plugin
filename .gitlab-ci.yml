@@ -29,7 +29,7 @@ docker:
   extends: .base_docker
   needs: ["build"]
   variables:
-    IMAGE_TAG: $CI_REGISTRY_IMAGE:latest
+    IMAGE_TAG: 'fisrv-woocommerce'
     IMAGE_FILE: "docker/Dockerfile"
 
 portainer:
