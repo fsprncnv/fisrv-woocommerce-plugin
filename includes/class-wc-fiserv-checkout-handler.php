@@ -28,12 +28,14 @@ final class WC_Fiserv_Checkout_Handler
 {
     /**
      * HTTP client used by Fiserv PHP Client
+     *
      * @var CheckoutClient | null
      */
     private static ?CheckoutClient $client = null;
 
     /**
      * Inititalize configuraiton parameters of fiserv SDK.
+     *
      * @param WC_Fiserv_Payment_Gateway $generic_gateway WC payment gateway object to retrieve stored credentials
      */
     public static function init_api_credentials(WC_Fiserv_Payment_Gateway $generic_gateway): array
@@ -106,8 +108,9 @@ final class WC_Fiserv_Checkout_Handler
 
     /**
      * Refund checkout via IPG Rest API. Retrieve order by checkout ID.
-     * @param WC_Order $order WooCommerce order object
-     * @param mixed $amount Amount to refund
+     *
+     * @param  WC_Order $order  WooCommerce order object
+     * @param  mixed    $amount Amount to refund
      * @return Fisrv\Models\PaymentsClientResponse Fiserv client response object
      */
     public static function refund_checkout(WC_Order $order, $amount): PaymentsClientResponse
@@ -131,7 +134,8 @@ final class WC_Fiserv_Checkout_Handler
 
     /**
      * Get health report for API health status checker
-     * @param array $credentials API key, secret and store ID
+     *
+     * @param  array $credentials API key, secret and store ID
      * @return array JSON parsable response as array
      */
     public static function get_health_report(array $credentials): array
@@ -298,9 +302,10 @@ final class WC_Fiserv_Checkout_Handler
 
     /**
      * Handle token transactions. This feature is on hold currently.
-     * @param WC_Fiserv_Payment_Generic $generic_gateway
-     * @param Fisrv\Models\CheckoutClientRequest $req
-     * @param WC_Order $order
+     *
+     * @param  WC_Fiserv_Payment_Generic          $generic_gateway
+     * @param  Fisrv\Models\CheckoutClientRequest $req
+     * @param  WC_Order                           $order
      * @return CheckoutClientRequest
      */
     private static function handle_token_transaction(WC_Fiserv_Payment_Generic $generic_gateway, CheckoutClientRequest $req, WC_Order $order)

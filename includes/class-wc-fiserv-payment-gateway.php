@@ -51,8 +51,8 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Fiserv_Payment_Settings
     /**
      * UI component used for detailed checkout response report
      * 
-     * @param mixed $id
-     * @param mixed $order
+     * @param  mixed $id
+     * @param  mixed $order
      * @return void
      */
     public function custom_order_meta_box($id, $order)
@@ -65,7 +65,8 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Fiserv_Payment_Settings
             'fiserv-checkout-order-meta-box',
             'Fiserv Checkout Info',
             function () use ($order) {
-                echo wp_kses($this->custom_order_meta_box_callback($order), [
+                echo wp_kses(
+                    $this->custom_order_meta_box_callback($order), [
                     'div' => [
                         'class' => true,
                         'id' => true,
@@ -79,7 +80,8 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Fiserv_Payment_Settings
                         'class' => true
                     ],
                     'h4' => true,
-                ]);
+                    ]
+                );
             },
             $id,
             'side',
@@ -90,7 +92,7 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Fiserv_Payment_Settings
     /**
      * Callback used for custom_order_meta_box. Contains UI markup.
      * 
-     * @param mixed $order
+     * @param  mixed $order
      * @return string
      */
     public function custom_order_meta_box_callback($order): string
@@ -145,8 +147,8 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Fiserv_Payment_Settings
      * Auto-toggle generic payment gateway to disabled if any of the specific (pre-selection) gateways 
      * have been enabled and vice versa.
      * 
-     * @param mixed $key
-     * @param mixed $value
+     * @param  mixed $key
+     * @param  mixed $value
      * @return void
      */
     private function toggle_exclusive_payment_methods($key, $value)
@@ -166,7 +168,8 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Fiserv_Payment_Settings
 
     /**
      * Shorthand to disable a given gateway
-     * @param WC_Payment_Gateway $gateway
+     *
+     * @param  WC_Payment_Gateway $gateway
      * @return void
      */
     private function disable_gateway(WC_Payment_Gateway $gateway): void
@@ -196,8 +199,9 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Fiserv_Payment_Settings
 
     /**
      * Render custom icons on payment selection page
-     * @param mixed $icon
-     * @param mixed $gateway_id
+     *
+     * @param  mixed $icon
+     * @param  mixed $gateway_id
      * @return mixed
      */
     public static function custom_payment_gateway_icons($icon, $gateway_id)
@@ -212,9 +216,9 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Fiserv_Payment_Settings
     /**
      * Inject payment method template to adjust layout on selection box
      * 
-     * @param mixed $template
-     * @param mixed $template_name
-     * @param mixed $template_path
+     * @param  mixed $template
+     * @param  mixed $template_name
+     * @param  mixed $template_path
      * @return mixed
      */
     public function custom_woocommerce_locate_template($template, $template_name, $template_path)
@@ -262,9 +266,9 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Fiserv_Payment_Settings
     /**
      * {@inheritDoc}
      * 
-     * @param mixed $order_id
-     * @param mixed $amount
-     * @param mixed $reason
+     * @param  mixed $order_id
+     * @param  mixed $amount
+     * @param  mixed $reason
      * @throws \Exception
      * @return bool|WP_Error
      */
@@ -298,8 +302,7 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Fiserv_Payment_Settings
      */
     public function can_refund_order(mixed $order)
     {
-        if (
-            !($order instanceof WC_Order)
+        if (!($order instanceof WC_Order)
             || !(str_starts_with($order->get_payment_method(), 'fiserv'))
             || is_null($order->get_date_completed())
             || !($order->is_paid())

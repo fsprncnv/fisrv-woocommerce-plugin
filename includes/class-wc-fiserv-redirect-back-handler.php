@@ -43,10 +43,9 @@ final class WC_Fiserv_Redirect_Back_Handler
             return;
         }
 
-        if (
-            !isset($_GET['transaction_approved']) ||
-            sanitize_text_field(wp_unslash($_GET['transaction_approved'])) !== 'false' ||
-            !isset($_GET['wc_order_id'])
+        if (!isset($_GET['transaction_approved']) 
+            || sanitize_text_field(wp_unslash($_GET['transaction_approved'])) !== 'false' 
+            || !isset($_GET['wc_order_id'])
         ) {
             return;
         }
@@ -77,10 +76,12 @@ final class WC_Fiserv_Redirect_Back_Handler
         }
 
         /* translators: %s: Fisrv error message */
-        wc_add_notice(sprintf(
-            esc_html__('Payment has failed: %s', 'fiserv-checkout-for-woocommerce'),
-            $fiserv_error_message ?? __('Something went wrong on our end')
-        ), 'error');
+        wc_add_notice(
+            sprintf(
+                esc_html__('Payment has failed: %s', 'fiserv-checkout-for-woocommerce'),
+                $fiserv_error_message ?? __('Something went wrong on our end')
+            ), 'error'
+        );
         wc_print_notices();
         /* translators: %1$s: Fisrv error message %2$s: Fisrv error message */
         WC_Fiserv_Logger::error($order, sprintf('Payment failed of checkout %s, retrying on checkout page: (%s - %s)', $order->get_meta('_fiserv_plugin_checkout_id') ?? 'No checkout ID created', $fiserv_error_message ?? 'No error message provided', $fiserv_error_code ?? 'No code provided'));

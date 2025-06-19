@@ -35,7 +35,7 @@ final class WC_Fiserv_Logger
     /**
      * Generic log without order reference
      * 
-     * @param string $message
+     * @param  string $message
      * @return void
      */
     public static function generic_log(object|string $message): void

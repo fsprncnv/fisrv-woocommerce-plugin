@@ -6,6 +6,7 @@ if (!defined('ABSPATH')) {
 
 /**
  * Enum for payment gateway IDs used on WC Gateways.
+ *
  * @since 1.1.0
  */
 enum Fisrv_Identifiers: string

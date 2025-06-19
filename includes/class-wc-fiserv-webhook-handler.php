@@ -108,40 +108,40 @@ final class WC_Fiserv_Webhook_Handler
         $is_autocomplete = $generic_gateway->get_option('autocomplete') === 'yes';
 
         switch ($ipgTransactionStatus) {
-            case TransactionStatus::WAITING:
-                $wc_status = 'wc-on-hold';
+        case TransactionStatus::WAITING:
+            $wc_status = 'wc-on-hold';
 
-                break;
-            case TransactionStatus::PARTIAL:
-                $wc_status = 'wc-on-hold';
+            break;
+        case TransactionStatus::PARTIAL:
+            $wc_status = 'wc-on-hold';
 
-                break;
-            case TransactionStatus::APPROVED:
-                if ($is_autocomplete) {
-                    $wc_status = 'wc-processing';
-                } else {
-                    $wc_status = 'wc-completed';
-                    WC_Fiserv_Logger::log($order, 'Order completed via auto-complete');
-                    $order->payment_complete();
-                }
+            break;
+        case TransactionStatus::APPROVED:
+            if ($is_autocomplete) {
+                $wc_status = 'wc-processing';
+            } else {
+                $wc_status = 'wc-completed';
+                WC_Fiserv_Logger::log($order, 'Order completed via auto-complete');
+                $order->payment_complete();
+            }
 
-                break;
-            case TransactionStatus::PROCESSING_FAILED:
-                $wc_status = 'wc-failed';
+            break;
+        case TransactionStatus::PROCESSING_FAILED:
+            $wc_status = 'wc-failed';
 
-                break;
-            case TransactionStatus::VALIDATION_FAILED:
-                $wc_status = 'wc-failed';
+            break;
+        case TransactionStatus::VALIDATION_FAILED:
+            $wc_status = 'wc-failed';
 
-                break;
-            case TransactionStatus::DECLINED:
-                $wc_status = 'wc-cancelled';
+            break;
+        case TransactionStatus::DECLINED:
+            $wc_status = 'wc-cancelled';
 
-                break;
-            default:
-                $wc_status = 'wc-pending';
+            break;
+        default:
+            $wc_status = 'wc-pending';
 
-                break;
+            break;
         }
 
         $wc_status_unprefixed = substr($wc_status, 3);

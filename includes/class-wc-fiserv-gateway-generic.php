@@ -28,6 +28,7 @@ class WC_Fiserv_Payment_Generic extends WC_Fiserv_Payment_Gateway
 
     /**
      * Settings form fields exclusive for generic payment method
+     *
      * @return void
      */
     public function init_form_fields(): void

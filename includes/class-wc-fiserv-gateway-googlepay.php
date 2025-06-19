@@ -26,7 +26,8 @@ class WC_Fiserv_Gateway_Googlepay extends WC_Fiserv_Payment_Gateway
     /**
      * Callback hook to replace default place order button to custom. This is used when
      * injecting native Google Pay button.
-     * @param mixed $order_button
+     *
+     * @param  mixed $order_button
      * @return string
      */
     public static function replace_order_button_html($order_button): string
