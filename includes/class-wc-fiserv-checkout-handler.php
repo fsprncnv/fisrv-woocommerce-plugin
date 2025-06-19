@@ -75,7 +75,6 @@ final class WC_Fiserv_Checkout_Handler
             $request = self::pass_checkout_data($request, $order, $method);
             $request = self::pass_billing_data($request, $order);
             $request = self::pass_basket($request, $order);
-            // $request = self::pass_transaction_type($generic_gateway, $request);
             // $request = self::handle_token_transaction($generic_gateway, $request, $order);
 
             WC_Fiserv_Logger::generic_log('Creating checkout page request...');
@@ -232,24 +231,19 @@ final class WC_Fiserv_Checkout_Handler
          */
         $wp_language = str_replace('-', '_', get_bloginfo('language'));
         $locale = Locale::tryFrom($wp_language);
-
         if (substr($wp_language, 0, 2) == 'de') {
             $locale = Locale::de_DE;
         }
-
         $req->checkoutSettings->locale = $locale ?? Locale::en_GB;
-
         /**
          * Currency 
          */
         $wp_currency = get_woocommerce_currency();
         $req->transactionAmount->currency = Currency::tryFrom($wp_currency) ?? Currency::EUR;
-
         /**
          * WC order numbers, IDs 
          */
         $req->order->orderDetails->purchaseOrderNumber = strval($order->get_id());
-
         /**
          * Order totals 
          */
@@ -257,19 +251,14 @@ final class WC_Fiserv_Checkout_Handler
         $req->transactionAmount->components->subtotal = $order->get_subtotal();
         $req->transactionAmount->components->vatAmount = $order->get_total_tax();
         $req->transactionAmount->components->shipping = floatval($order->get_shipping_total());
-
         WC_Fiserv_Logger::log(
             $order,
             'Requesting transaction in the amount of : ' . $req->transactionAmount->currency->value . ' ' . $req->transactionAmount->total
         );
-
-        WC_Fiserv_Logger::log($order, (string) $req);
-
         /**
          * Redirect URLs 
          */
         $nonce = wp_create_nonce(Fisrv_Identifiers::FISRV_NONCE->value);
-
         $req->checkoutSettings->redirectBackUrls->successUrl = add_query_arg(
             array(
                 '_wpnonce' => $nonce,
@@ -277,14 +266,11 @@ final class WC_Fiserv_Checkout_Handler
             ),
             $order->get_checkout_order_received_url()
         );
-
         $selectedFailurePage = $order->get_checkout_payment_url();
         $gateway = WC()->payment_gateways()->payment_gateways()[Fisrv_Identifiers::GATEWAY_GENERIC->value];
-
         if ($gateway instanceof WC_Fiserv_Payment_Gateway && $gateway->get_option('fail_page') === 'cart') {
             $selectedFailurePage = wc_get_cart_url();
         }
-
         $req->checkoutSettings->redirectBackUrls->failureUrl = add_query_arg(
             array(
                 '_wpnonce' => $nonce,
@@ -293,12 +279,8 @@ final class WC_Fiserv_Checkout_Handler
             ),
             $selectedFailurePage
         );
-
-        /**
-         * Append ampersand to allow checkout solution to append query params 
-         */
+        // Append ampersand to allow checkout solution to append query params 
         $req->checkoutSettings->redirectBackUrls->failureUrl .= '&';
-
         $req->checkoutSettings->webHooksUrl = add_query_arg(
             array(
                 '_sign' => base64_encode($order->get_id()),
@@ -306,11 +288,11 @@ final class WC_Fiserv_Checkout_Handler
             ),
             get_rest_url(null, WC_Fiserv_Rest_Routes::$plugin_rest_path . '/events')
         );
-
         if ($order->get_payment_method() !== Fisrv_Identifiers::GATEWAY_GENERIC->value) {
             $req->checkoutSettings->preSelectedPaymentMethod = $method;
         }
-
+        // Remove create token object since plugin doesnt intend support for tokens
+        unset($req->paymentMethodDetails->cards->createToken);
         return $req;
     }
 
