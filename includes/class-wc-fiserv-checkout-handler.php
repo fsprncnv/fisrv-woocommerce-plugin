@@ -71,13 +71,18 @@ final class WC_Fiserv_Checkout_Handler
     {
         try {
             $generic_gateway = new WC_Fiserv_Payment_Generic();
-            self::$client = new CheckoutClient(self::init_api_credentials($generic_gateway));
+            $credentials = self::init_api_credentials($generic_gateway);
+            self::$client = new CheckoutClient($credentials);
 
             $request = self::$client->createBasicCheckoutRequest(0, '', '');
             $request = self::pass_checkout_data($request, $order, $method);
             $request = self::pass_billing_data($request, $order);
             $request = self::pass_basket($request, $order);
             // $request = self::handle_token_transaction($generic_gateway, $request, $order);
+
+            if (isset($credentials['store_id'])) {
+                $request->storeId = $credentials['store_id'];
+            }
 
             WC_Fiserv_Logger::generic_log('Creating checkout page request...');
             WC_Fiserv_Logger::generic_log($request);
@@ -100,7 +105,6 @@ final class WC_Fiserv_Checkout_Handler
                 /* translators: %s: Method value */
                 throw new Exception(esc_html__('Payment method failed. Please check on settings page if API credentials are set correctly.', 'fiserv-checkout-for-woocommerce'));
             }
-
             throw $th;
         }
     }
@@ -254,7 +258,7 @@ final class WC_Fiserv_Checkout_Handler
         $req->transactionAmount->total = $order->get_total();
         $req->transactionAmount->components->subtotal = $order->get_subtotal();
         $req->transactionAmount->components->vatAmount = $order->get_total_tax();
-        $req->transactionAmount->components->shipping = floatval($order->get_shipping_total());
+        $req->transactionAmount->components->shipping = (float) wc_format_decimal($order->get_shipping_total(), 2);
         WC_Fiserv_Logger::log(
             $order,
             'Requesting transaction in the amount of : ' . $req->transactionAmount->currency->value . ' ' . $req->transactionAmount->total
