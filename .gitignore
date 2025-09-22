@@ -68,3 +68,6 @@ composer.lock
 
 auth.json
 wp-cli.phar
+
+# docker_data
+docker_data
