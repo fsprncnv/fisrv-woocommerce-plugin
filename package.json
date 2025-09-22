@@ -1,0 +1,35 @@
+{
+  "name": "fisrv-woocommerce-plugin",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "start": "wp-env start --update",
+    "stop": "wp-env stop",
+    "setup": "wp-env run cli wp plugin install woocommerce --activate",
+    "clean": "wp-env clean all",
+    "wp-env": "wp-env",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fsprncnv/fisrv-woocommerce-plugin.git"
+  },
+  "keywords": [
+    "woocommerce",
+    "plugin",
+    "payment"
+  ],
+  "author": "Martin Karry (martin.karry@cgi.com)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fsprncnv/fisrv-woocommerce-plugin/issues"
+  },
+  "homepage": "https://github.com/fsprncnv/fisrv-woocommerce-plugin#readme",
+  "devDependencies": {
+    "@wordpress/env": "^10.31.0"
+  }
+}
