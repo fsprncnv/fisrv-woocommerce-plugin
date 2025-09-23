@@ -96,10 +96,7 @@ if (!class_exists('fiserv_checkout_for_woocommerce')) {
             add_action('rest_api_init', [WC_Fiserv_Rest_Routes::class, 'register_checkout_report']);
 
             /** Safely inject style sheet */
-            wp_enqueue_style('fiserv-custom-style', plugins_url('assets\styles\fiserv-custom-style.css', __FILE__), [], FISRV_PLUGIN_VERSION);
-
             /** Safely inject scripts */
-            wp_register_script('fiserv-custom-script', plugins_url('assets\scripts\fiserv-custom-script.js', __FILE__), [], FISRV_PLUGIN_VERSION, ['in_footer' => 'true']);
         }
 
         /**
@@ -174,3 +171,15 @@ function fiserv_checkout_for_woocommerce_init(): void
 
     fiserv_checkout_for_woocommerce::instance();
 }
+
+/**
+ * Load scripts and styles at proper hook
+ */
+function load_scripts_and_styles() {
+    /** Safely inject style sheet */
+    wp_enqueue_style('fiserv-custom-style', plugins_url('assets\styles\fiserv-custom-style.css', __FILE__), [], FISRV_PLUGIN_VERSION);
+    /** Safely inject scripts */
+    wp_register_script('fiserv-custom-script', plugins_url('assets\scripts\fiserv-custom-script.js', __FILE__), [], FISRV_PLUGIN_VERSION, ['in_footer' => 'true']);
+}
+
+add_action('wp_enqueue_scripts', 'load_scripts_and_styles');
