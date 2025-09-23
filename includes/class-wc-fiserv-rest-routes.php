@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
  */
 final class WC_Fiserv_Rest_Routes
 {
-    public static string $plugin_rest_path = '/fiserv_woocommerce_plugin/v1';
+    public static string $plugin_rest_path = 'fiserv_woocommerce_plugin/v1';
 
     /**
      * Register endpoint for health check
