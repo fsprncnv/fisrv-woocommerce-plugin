@@ -17,9 +17,10 @@ class WC_Fiserv_Payment_Generic extends WC_Fiserv_Payment_Gateway
     {
         $this->id = Fisrv_Identifiers::GATEWAY_GENERIC->value;
 
-        $this->method_title = 'Fiserv Checkout';
+        $this->method_title = 'Generic Checkout';
         $this->method_description = esc_html__('Generic option shows all supported methods on redirect page.', 'fiserv-checkout-for-woocommerce');
-        $this->title = 'Fiserv Checkout';
+        $this->description = esc_html__('You will be redirected to an external checkout page where you will be able to select a payment method.', 'fiserv-checkout-for-woocommerce');
+        $this->title = 'Generic Checkout';
 
         wp_enqueue_script('fiserv-custom-script');
 

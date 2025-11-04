@@ -32,8 +32,8 @@ msgstr "Réessai de paiement en cours"
 msgid "Payment has failed: %s"
 msgstr "Le paiement a échoué : %s"
 
-msgid "Payment successful via Fiserv Checkout."
-msgstr "Paiement réussi via Fiserv Checkout."
+msgid "Payment successful  Checkout."
+msgstr "Paiement réussi  Checkout."
 
 msgid "Order was paid successfully."
 msgstr "La commande a été payée avec succès."
@@ -47,11 +47,11 @@ msgstr "Commande auto-complétée."
 msgid "Payment method failed. Please check on settings page if API credentials are set correctly."
 msgstr "Le mode de paiement a échoué. Veuillez vérifier sur la page des paramètres si les identifiants API sont correctement configurés."
 
-msgid "Pay with Apple Pay via Fiserv"
-msgstr "Payer avec Apple Pay via Fiserv"
+msgid "Pay with Apple Pay "
+msgstr "Payer avec Apple Pay "
 
-msgid "Pay with Credit / Debit Card via Fiserv"
-msgstr "Payer par carte de crédit/débit via Fiserv"
+msgid "Pay with Credit / Debit Card "
+msgstr "Payer par carte de crédit/débit "
 
 msgid "Credit / Debit Card"
 msgstr "Carte de crédit/débit"
@@ -59,14 +59,18 @@ msgstr "Carte de crédit/débit"
 msgid "Generic option shows all supported methods on redirect page."
 msgstr "L'option générique affiche toutes les méthodes prises en charge sur la page de redirection."
 
-msgid "Pay with Google Pay via Fiserv"
-msgstr "Payer avec Google Pay via Fiserv"
+msgid "Pay with Google Pay "
+msgstr "Payer avec Google Pay "
 
 msgid "Processing payment failed. Order is invalid."
 msgstr "Le traitement du paiement a échoué. La commande est invalide."
 
-msgid "Payment will be processed by Fiserv. You will be redirected to an external checkout page."
-msgstr "Le paiement sera traité par Fiserv. Vous serez redirigé vers une page de paiement externe."
+msgid "You will be redirected to an external checkout page."
+msgstr "Vous serez redirigé vers une page de paiement externe."
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-settings.php
+msgid "You will be redirected to an external checkout page where you will be able to select a payment method."
+msgstr "Vous serez redirigé vers une page de paiement externe où vous pourrez choisir un mode de paiement."
 
 msgid "Restore default settings"
 msgstr "Restaurer les paramètres par défaut"

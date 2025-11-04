@@ -16,8 +16,8 @@ class WC_Fiserv_Gateway_Googlepay extends WC_Fiserv_Payment_Gateway
         $this->selected_method = PreSelectedPaymentMethod::GOOGLEPAY;
         $this->id = Fisrv_Identifiers::GATEWAY_GOOGLEPAY->value;
 
-        $this->method_title = 'Google Pay - Fiserv Checkout';
-        $this->method_description = esc_html__('Pay with Google Pay via Fiserv', 'fiserv-checkout-for-woocommerce');
+        $this->method_title = 'Google Pay ';
+        $this->method_description = esc_html__('Pay with Google Pay ', 'fiserv-checkout-for-woocommerce');
         $this->title = 'Google Pay';
 
         parent::__construct();

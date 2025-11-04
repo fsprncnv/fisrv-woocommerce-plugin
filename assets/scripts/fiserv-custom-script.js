@@ -40,12 +40,11 @@ async function fsAddImage(button) {
 }
 
 async function removeImage(index, node) {
-    const gateway_id = node.getAttribute("gateway-id");
     const overlay = document.getElementById(`fs-icon-overlay-${index}`);
     overlay.innerHTML = "<span class='fs-loader-status'></span>";
     await wp.apiFetch({
         method: "DELETE",
-        path: `${restBasePath}/image?gateway-id=${gateway_id}&icon-id=${index}`
+        path: `${restBasePath}/image?gateway-id=fiserv-gateway-generic&icon-id=${index}`
     });
     node.innerHTML = '';
 }

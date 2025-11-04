@@ -86,7 +86,7 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
     public function __construct()
     {
         self::$WP_KSES_ALLOWED = array_merge(wp_kses_allowed_html('post'), self::$WP_KSES_ALLOWED);
-        $this->description = esc_html__('Payment will be processed by Fiserv. You will be redirected to an external checkout page.', 'fiserv-checkout-for-woocommerce');
+        $this->description = esc_html__('You will be redirected to an external checkout page.', 'fiserv-checkout-for-woocommerce');
     }
 
     public static function custom_save_icon_value($settings)
@@ -390,7 +390,7 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
         ob_start();
 
         ?>
-        <img style="height: <?php echo esc_attr($small ? '2em' : '4em') ?>; border-radius: 10%; margin-right: 5px"
+        <img style="height: <?php echo esc_attr($small ? '2.5em' : '8em') ?>; border-radius: 10%; margin-right: 5px"
             src=" <?php echo esc_url(WC_HTTPS::force_https_url($image_src)) ?>"
             alt=" <?php esc_attr('Fisrv gateway icon') ?>" />
         <?php
@@ -412,12 +412,14 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
 
         ?>
         <div gateway-id="<?php echo esc_attr(Fisrv_Identifiers::GATEWAY_GENERIC->value) ?>"
-            id="fs-icon-container-<?php echo esc_attr($index) ?>" class="fs-icon-container"
-            onclick="removeImage(<?php echo esc_attr($index) ?>, this)">
-            <div id="fs-icon-overlay-<?php echo esc_attr($index) ?>" class="fs-icon-overlay">🞭 <?php echo esc_html__(
-                   'Remove Icon',
-                   'fiserv-checkout-for-woocommerce'
-               ) ?></div>
+            id="fs-icon-container-<?php echo esc_attr($index) ?>" class="fs-icon-container">
+            <?php if (is_admin()) { ?>
+                <div onclick="removeImage(<?php echo esc_attr($index) ?>, this)" id="fs-icon-overlay-<?php echo esc_attr($index) ?>"
+                    class="fs-icon-overlay">🞭 <?php echo esc_html__(
+                        'Remove Icon',
+                        'fiserv-checkout-for-woocommerce'
+                    ) ?></div>
+            <?php } ?>
             <?php echo wp_kses(self::render_icon($image_src, $small), self::$WP_KSES_ALLOWED) ?>
         </div>
         <?php

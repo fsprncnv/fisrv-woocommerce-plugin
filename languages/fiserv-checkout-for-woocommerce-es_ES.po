@@ -32,7 +32,7 @@ msgstr "Reintentando pago"
 msgid "Payment has failed: %s"
 msgstr "El pago ha fallado: %s"
 
-msgid "Payment successful via Fiserv Checkout."
+msgid "Payment successful  Checkout."
 msgstr "Pago exitoso a través de Fiserv Checkout."
 
 msgid "Order was paid successfully."
@@ -47,10 +47,10 @@ msgstr "Pedido auto-completado."
 msgid "Payment method failed. Please check on settings page if API credentials are set correctly."
 msgstr "El método de pago falló. Por favor, verifique en la página de configuración si las credenciales API están configuradas correctamente."
 
-msgid "Pay with Apple Pay via Fiserv"
+msgid "Pay with Apple Pay "
 msgstr "Pagar con Apple Pay a través de Fiserv"
 
-msgid "Pay with Credit / Debit Card via Fiserv"
+msgid "Pay with Credit / Debit Card "
 msgstr "Pagar con tarjeta de crédito/débito a través de Fiserv"
 
 msgid "Credit / Debit Card"
@@ -59,14 +59,18 @@ msgstr "Tarjeta de crédito/débito"
 msgid "Generic option shows all supported methods on redirect page."
 msgstr "La opción genérica muestra todos los métodos compatibles en la página de redirección."
 
-msgid "Pay with Google Pay via Fiserv"
+msgid "Pay with Google Pay "
 msgstr "Pagar con Google Pay a través de Fiserv"
 
 msgid "Processing payment failed. Order is invalid."
 msgstr "El procesamiento del pago falló. El pedido es inválido."
 
-msgid "Payment will be processed by Fiserv. You will be redirected to an external checkout page."
-msgstr "El pago será procesado por Fiserv. Serás redirigido a una página de pago externa."
+msgid "You will be redirected to an external checkout page."
+msgstr "Serás redirigido a una página de pago externa."
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-settings.php
+msgid "You will be redirected to an external checkout page where you will be able to select a payment method."
+msgstr "Serás redirigido a una página de pago externa donde podrá seleccionar un método de pago."
 
 msgid "Restore default settings"
 msgstr "Restaurar configuración predeterminada"

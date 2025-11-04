@@ -214,9 +214,8 @@ final class WC_Fiserv_Checkout_Handler
                     'price' => $order->get_item_total($item),
                     'total' => $order->get_line_total($item),
                     'quantity' => $item->get_quantity(),
-                    'shippingCost' => 0,
-                    'valueAddedTax' => 0,
-                    'miscellaneousFee' => 0,
+                    'shippingCost' => $order->get_total_shipping(),
+                    'valueAddedTax' => $order->get_taxes(),
                 )
             );
         }

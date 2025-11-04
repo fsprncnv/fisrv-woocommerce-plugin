@@ -37,7 +37,7 @@ msgid "Payment has failed: %s"
 msgstr "Die Zahlung ist fehlgeschlagen: %s"
 
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-checkout-handler.php
-msgid "Payment successful via Fiserv Checkout."
+msgid "Payment successful  Checkout."
 msgstr "Zahlung erfolgreich über Fiserv Checkout."
 
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-checkout-handler.php
@@ -58,11 +58,11 @@ msgstr "Zahlungsmethode fehlgeschlagen. Bitte überprüfen Sie auf der "
 "Einstellungsseite, ob die API-Anmeldeinformationen korrekt eingestellt sind."
 
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-applepay.php
-msgid "Pay with Apple Pay via Fiserv"
+msgid "Pay with Apple Pay "
 msgstr "Bezahlen mit Apple Pay über Fiserv"
 
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-cards.php
-msgid "Pay with Credit / Debit Card via Fiserv"
+msgid "Pay with Credit / Debit Card "
 msgstr "Bezahlen mit Kredit/Debitkarte über Fiserv"
 
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-cards.php
@@ -74,7 +74,7 @@ msgid "Generic option shows all supported methods on redirect page."
 msgstr "Die generische Option zeigt alle unterstützten Methoden auf der Redirect-Seite an."
 
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-googlepay.php
-msgid "Pay with Google Pay via Fiserv"
+msgid "Pay with Google Pay "
 msgstr "Bezahlen mit Google Pay über Fiserv"
 
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-gateway.php
@@ -82,8 +82,12 @@ msgid "Processing payment failed. Order is invalid."
 msgstr "Zahlung ist fehlgeschlagen. Bestellung ist ungültig."
 
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-settings.php
-msgid "Payment will be processed by Fiserv. You will be redirected to an external checkout page."
-msgstr "Die Zahlung wird von Fiserv verarbeitet. Sie werden auf eine externe Kassenseite weitergeleitet."
+msgid "You will be redirected to an external checkout page."
+msgstr "Sie werden auf eine externe Kassenseite weitergeleitet."
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-settings.php
+msgid "You will be redirected to an external checkout page where you will be able to select a payment method."
+msgstr "Sie werden auf eine externe Checkout-Seite weitergeleitet, auf der Sie eine Zahlungsmethode auswählen können."
 
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-settings.php
 msgid "Restore default settings"

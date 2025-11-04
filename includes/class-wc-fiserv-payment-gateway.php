@@ -66,20 +66,21 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Fiserv_Payment_Settings
             'Fiserv Checkout Info',
             function () use ($order) {
                 echo wp_kses(
-                    $this->custom_order_meta_box_callback($order), [
-                    'div' => [
-                        'class' => true,
-                        'id' => true,
-                        'onclick' => true,
-                        'reported' => true,
-                    ],
-                    'a' => [
-                        'href' => true
-                    ],
-                    'span' => [
-                        'class' => true
-                    ],
-                    'h4' => true,
+                    $this->custom_order_meta_box_callback($order),
+                    [
+                        'div' => [
+                            'class' => true,
+                            'id' => true,
+                            'onclick' => true,
+                            'reported' => true,
+                        ],
+                        'a' => [
+                            'href' => true
+                        ],
+                        'span' => [
+                            'class' => true
+                        ],
+                        'h4' => true,
                     ]
                 );
             },
@@ -284,7 +285,7 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Fiserv_Payment_Settings
                 $order->add_order_note("Refund failed due to {($response->error->title ?? 'server error')}. Check debug logs for detailed report." . (($reason !== '') ? (" Refund reason given: $reason") : ''));
                 return false;
             }
-            $order->add_order_note("Order refunded via Fiserv Gateway. Refunded amount: {$response->approvedAmount->total} {$response->approvedAmount->currency->value} Transaction ID: {$response->ipgTransactionId}" . (($reason !== '') ? (" Refund reason given: $reason") : ''));
+            $order->add_order_note("Order refunded  Gateway. Refunded amount: {$response->approvedAmount->total} {$response->approvedAmount->currency->value} Transaction ID: {$response->ipgTransactionId}" . (($reason !== '') ? (" Refund reason given: $reason") : ''));
             return true;
         } catch (ErrorResponse $e) {
             WC_Fiserv_Logger::log($order, 'Refund has failed on API client (or server) level: ' . $e->getMessage());
@@ -302,7 +303,8 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Fiserv_Payment_Settings
      */
     public function can_refund_order(mixed $order)
     {
-        if (!($order instanceof WC_Order)
+        if (
+            !($order instanceof WC_Order)
             || !(str_starts_with($order->get_payment_method(), 'fiserv'))
             || is_null($order->get_date_completed())
             || !($order->is_paid())
