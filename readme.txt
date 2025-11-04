@@ -58,10 +58,10 @@ A detailed description of each task can be found on the [Fiserv Developer Portal
 
 == Changelog ==
 ** 1.1.7 **
-* Fix issue with amount parsing 
+* Improve icon upload
 * Use updated Fiserv checkout library
 * Log cloud security support case number in case of blocked requests
-* Change wording
+* Remove brand references from copy
 ** 1.1.6 **
 * Fix issues with parsing shipping totals 
 ** 1.1.5 **
