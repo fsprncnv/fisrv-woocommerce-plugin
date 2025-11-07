@@ -54,16 +54,27 @@ msgstr "Die Bestellung wurde automatisch abgeschlossen."
 
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-checkout-handler.php
 msgid "Payment method failed. Please check on settings page if API credentials are set correctly."
-msgstr "Zahlungsmethode fehlgeschlagen. Bitte überprüfen Sie auf der "
-"Einstellungsseite, ob die API-Anmeldeinformationen korrekt eingestellt sind."
+msgstr "Zahlungsmethode fehlgeschlagen. Bitte überprüfen Sie auf der Einstellungsseite, ob die API-Anmeldeinformationen korrekt eingestellt sind."
 
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-applepay.php
-msgid "Pay with Apple Pay "
-msgstr "Bezahlen mit Apple Pay über Fiserv"
+msgid "Pay with Apple Pay"
+msgstr "Bezahlen mit Apple Pay"
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-bizum.php
+msgid "Pay with Bizum"
+msgstr "Bezahlen mit Bizum"
 
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-cards.php
-msgid "Pay with Credit / Debit Card "
-msgstr "Bezahlen mit Kredit/Debitkarte über Fiserv"
+msgid "Pay with Credit / Debit Card"
+msgstr "Bezahlen mit Kredit/Debitkarte"
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-cards.php
+msgid "Generic Checkout"
+msgstr "Allgemeiner Checkout"
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-cards.php
+msgid "Credit / Debit Card"
+msgstr "Kredit-/Debitkarte"
 
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-cards.php
 msgid "Credit / Debit Card"
@@ -74,8 +85,8 @@ msgid "Generic option shows all supported methods on redirect page."
 msgstr "Die generische Option zeigt alle unterstützten Methoden auf der Redirect-Seite an."
 
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-googlepay.php
-msgid "Pay with Google Pay "
-msgstr "Bezahlen mit Google Pay über Fiserv"
+msgid "Pay with Google Pay"
+msgstr "Bezahlen mit Google Pay"
 
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-gateway.php
 msgid "Processing payment failed. Order is invalid."

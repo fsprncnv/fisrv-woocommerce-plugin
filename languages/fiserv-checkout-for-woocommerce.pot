@@ -57,15 +57,23 @@ msgid "Payment method failed. Please check on settings page if API credentials a
 msgstr ""
 
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-applepay.php
-msgid "Pay with Apple Pay "
+msgid "Pay with Apple Pay"
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-bizum.php
+msgid "Pay with Bizum"
 msgstr ""
 
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-cards.php
-msgid "Pay with Credit / Debit Card "
-msgstr "Pay with Credit / Debit Card "
+msgid "Pay with Credit / Debit Card"
+msgstr ""
 
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-cards.php
 msgid "Credit / Debit Card"
+msgstr ""
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-cards.php
+msgid "Generic Checkout"
 msgstr ""
 
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-generic.php

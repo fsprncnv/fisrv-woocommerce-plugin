@@ -47,20 +47,28 @@ msgstr "Pedido auto-completado."
 msgid "Payment method failed. Please check on settings page if API credentials are set correctly."
 msgstr "El método de pago falló. Por favor, verifique en la página de configuración si las credenciales API están configuradas correctamente."
 
-msgid "Pay with Apple Pay "
-msgstr "Pagar con Apple Pay a través de Fiserv"
+msgid "Pay with Apple Pay"
+msgstr "Pagar con Apple Pay"
 
-msgid "Pay with Credit / Debit Card "
-msgstr "Pagar con tarjeta de crédito/débito a través de Fiserv"
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-bizum.php
+msgid "Pay with Bizum"
+msgstr "Pagar con Bizum"
+
+msgid "Pay with Credit / Debit Card"
+msgstr "Pagar con tarjeta de crédito/débito"
 
 msgid "Credit / Debit Card"
 msgstr "Tarjeta de crédito/débito"
 
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-cards.php
+msgid "Generic Checkout"
+msgstr "Pago genérico or Caja genérica"
+
 msgid "Generic option shows all supported methods on redirect page."
 msgstr "La opción genérica muestra todos los métodos compatibles en la página de redirección."
 
-msgid "Pay with Google Pay "
-msgstr "Pagar con Google Pay a través de Fiserv"
+msgid "Pay with Google Pay"
+msgstr "Pagar con Google Pay"
 
 msgid "Processing payment failed. Order is invalid."
 msgstr "El procesamiento del pago falló. El pedido es inválido."

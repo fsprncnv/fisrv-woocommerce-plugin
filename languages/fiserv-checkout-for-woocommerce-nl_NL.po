@@ -61,24 +61,32 @@ msgid "Payment method failed. Please check on settings page if API credentials a
 msgstr "Betalingsmethode mislukt. Controleer op de instellingenpagina of de API-referenties correct zijn ingesteld."
 
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-applepay.php
-msgid "Pay with Apple Pay "
-msgstr "Betaal met Apple Pay "
+msgid "Pay with Apple Pay"
+msgstr "Betaal met Apple Pay"
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-bizum.php
+msgid "Pay with Bizum"
+msgstr "Betaal met Bizum"
 
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-cards.php
-msgid "Pay with Credit / Debit Card "
-msgstr "Betalen met creditcard/debetkaart "
+msgid "Pay with Credit / Debit Card"
+msgstr "Betalen met creditcard/debetkaart"
 
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-cards.php
 msgid "Credit / Debit Card"
 msgstr "Creditcard/Debetaalpas"
+
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-cards.php
+msgid "Generic Checkout"
+msgstr "Generieke kassa or Algemene checkout"
 
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-generic.php
 msgid "Generic option shows all supported methods on redirect page."
 msgstr "De algemene optie toont alle ondersteunde methoden op de omleidingspagina."
 
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-googlepay.php
-msgid "Pay with Google Pay "
-msgstr "Pay with Google Pay "
+msgid "Pay with Google Pay"
+msgstr "Pay with Google Pay"
 
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-gateway.php
 msgid "Processing payment failed. Order is invalid."

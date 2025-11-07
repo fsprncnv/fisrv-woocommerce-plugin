@@ -16,8 +16,8 @@ class WC_Fiserv_Gateway_Cards extends WC_Fiserv_Payment_Gateway
         $this->selected_method = PreSelectedPaymentMethod::CARDS;
         $this->id = Fisrv_Identifiers::GATEWAY_CREDITCARD->value;
 
-        $this->method_title = 'Credit / Debit Card ';
-        $this->method_description = __('Pay with Credit / Debit Card ', 'fiserv-checkout-for-woocommerce');
+        $this->method_title = __('Credit / Debit Card', 'fiserv-checkout-for-woocommerce');
+        $this->method_description = __('Pay with Credit / Debit Card', 'fiserv-checkout-for-woocommerce');
         $this->title = __('Credit / Debit Card', 'fiserv-checkout-for-woocommerce');
 
         parent::__construct();

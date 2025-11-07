@@ -16,8 +16,8 @@ class WC_Fiserv_Gateway_Applepay extends WC_Fiserv_Payment_Gateway
         $this->selected_method = PreSelectedPaymentMethod::APPLE;
         $this->id = Fisrv_Identifiers::GATEWAY_APPLEPAY->value;
 
-        $this->method_title = 'Apple Pay ';
-        $this->method_description = __('Pay with Apple Pay ', 'fiserv-checkout-for-woocommerce');
+        $this->method_title = 'Apple Pay';
+        $this->method_description = esc_html__('Pay with Apple Pay', 'fiserv-checkout-for-woocommerce');
         $this->title = 'Apple Pay';
 
         parent::__construct();

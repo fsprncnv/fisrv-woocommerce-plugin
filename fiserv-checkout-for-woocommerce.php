@@ -2,7 +2,7 @@
 
 /**
  * Plugin Name: Fiserv Checkout for WooCommerce
- * Version: 1.1.7
+ * Version: 1.1.8
  * Description: Official Fiserv Checkout WooCommerce plugin
  * Author: Fiserv
  * Author URI: https://www.fiserv.com/en-em.html
@@ -18,7 +18,7 @@ defined('ABSPATH') || exit;
 
 require_once plugin_dir_path(__FILE__) . '/vendor/autoload.php';
 
-const FISRV_PLUGIN_VERSION = '1.1.7';
+const FISRV_PLUGIN_VERSION = '1.1.8';
 
 /**
  * WooCommerce fallback notice.
@@ -145,9 +145,10 @@ if (!class_exists('fiserv_checkout_for_woocommerce')) {
             array_push(
                 $methods,
                 WC_Fiserv_Gateway_Applepay::class,
+                WC_Fiserv_Gateway_Bizum::class,
                 WC_Fiserv_Gateway_Googlepay::class,
                 WC_Fiserv_Gateway_Cards::class,
-                WC_Fiserv_Payment_Generic::class
+                WC_Fiserv_Payment_Generic::class,
             );
 
             return $methods;

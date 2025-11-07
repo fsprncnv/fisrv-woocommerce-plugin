@@ -44,8 +44,6 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Fiserv_Payment_Settings
         add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array(WC_Fiserv_Payment_Settings::class, 'custom_save_icon_value'), 10, 1);
         add_filter('woocommerce_locate_template', array($this, 'custom_woocommerce_locate_template'), 10, 3);
         // add_filter('woocommerce_generate_text_html', array(WC_Fiserv_Payment_Settings::class, 'render_text_field'), 1, 4);
-
-        add_filter('woocommerce_order_button_html', array(WC_Fiserv_Gateway_Googlepay::class, 'replace_order_button_html'), 10, 2);
     }
 
     /**
@@ -145,47 +143,11 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Fiserv_Payment_Settings
     }
 
     /**
-     * Auto-toggle generic payment gateway to disabled if any of the specific (pre-selection) gateways 
-     * have been enabled and vice versa.
-     * 
-     * @param  mixed $key
-     * @param  mixed $value
-     * @return void
-     */
-    private function toggle_exclusive_payment_methods($key, $value)
-    {
-        if ($key === 'enabled' && $value === 'yes') {
-            if ($this->id === Fisrv_Identifiers::GATEWAY_GENERIC->value) {
-                $this->disable_gateway(new WC_Fiserv_Gateway_Applepay());
-                $this->disable_gateway(new WC_Fiserv_Gateway_Googlepay());
-                $this->disable_gateway(new WC_Fiserv_Gateway_Cards());
-                WC_Fiserv_Logger::generic_log('Disabled specific gateways since generic gateway was enabled');
-            } else {
-                $this->disable_gateway(new WC_Fiserv_Payment_Generic());
-                WC_Fiserv_Logger::generic_log('Disabled generic gateway since specific gateways were enabled');
-            }
-        }
-    }
-
-    /**
-     * Shorthand to disable a given gateway
-     *
-     * @param  WC_Payment_Gateway $gateway
-     * @return void
-     */
-    private function disable_gateway(WC_Payment_Gateway $gateway): void
-    {
-        if ($gateway->get_option('enabled') === 'yes') {
-            $gateway->update_option('enabled', 'no');
-        }
-    }
-
-    /**
      * Initialize properties from options
      */
     protected function init_properties(): void
     {
-        $credit_title = 'Credit / Debit Card';
+        $credit_title = __('Credit / Debit Card', 'fiserv-checkout-for-woocommerce');
         if ($this->id === Fisrv_Identifiers::GATEWAY_CREDITCARD->value) {
             if ($this->title !== $credit_title) {
                 $this->title = $credit_title;
