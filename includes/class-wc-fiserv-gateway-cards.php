@@ -22,7 +22,7 @@ class WC_Fiserv_Gateway_Cards extends WC_Fiserv_Payment_Gateway
 
         parent::__construct();
 
-        // Remove name customization from card page as Credit / Debit Card name is required
+        // Removes name customization from card page as Credit / Debit Card name is required
         unset($this->form_fields['title']);
     }
 }

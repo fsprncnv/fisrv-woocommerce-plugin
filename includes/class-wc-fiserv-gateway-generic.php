@@ -82,18 +82,6 @@ class WC_Fiserv_Payment_Generic extends WC_Fiserv_Payment_Gateway
                 'description' => esc_html__('Skip processing order status and set to complete status directly', 'fiserv-checkout-for-woocommerce'),
                 'desc_tip' => true,
             ),
-            // 'enable_browser_lang' => array(
-            //     'title' => esc_html__('Checkout Page Language', 'fiserv-checkout-for-woocommerce'),
-            //     'type' => 'select',
-            //     'css' => 'padding: 8px 10px; border: none;',
-            //     'default' => 'admin',
-            //     'description' => esc_html__('Should language of checkout page be inferred from customer\'s browser or set to admin language', 'fiserv-checkout-for-woocommerce'),
-            //     'desc_tip' => true,
-            //     'options' => array(
-            //         'browser' => esc_html__('Customer browser\'s preferred language', 'fiserv-checkout-for-woocommerce'),
-            //         'admin' => esc_html__('Apply WordPress language', 'fiserv-checkout-for-woocommerce'),
-            //     ),
-            // ),
             'fail_page' => array(
                 'title' => esc_html__('Redirect after payment failure', 'fiserv-checkout-for-woocommerce'),
                 'type' => 'select',
