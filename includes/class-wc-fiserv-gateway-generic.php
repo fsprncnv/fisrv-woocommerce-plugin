@@ -40,24 +40,28 @@ class WC_Fiserv_Payment_Generic extends WC_Fiserv_Payment_Gateway
                 'type' => 'text',
                 'description' => esc_html__('Acquire API Key from Developer Portal', 'fiserv-checkout-for-woocommerce'),
                 'desc_tip' => true,
+                'no_reset' => true,
             ),
             'api_secret' => array(
                 'title' => 'API Secret',
                 'type' => 'password',
                 'description' => esc_html__('Acquire API Secret from Developer Portal', 'fiserv-checkout-for-woocommerce'),
                 'desc_tip' => true,
+                'no_reset' => true,
             ),
             'store_id' => array(
                 'title' => 'Store ID',
                 'type' => 'text',
                 'description' => esc_html__('Your Store ID for Checkout', 'fiserv-checkout-for-woocommerce'),
                 'desc_tip' => true,
+                'no_reset' => true,
             ),
             'is_prod' => array(
                 'title' => esc_html__('Production Mode', 'fiserv-checkout-for-woocommerce'),
                 'type' => 'checkbox',
                 'description' => esc_html__('Use Live (Production) Mode or Test (Sandbox) Mode', 'fiserv-checkout-for-woocommerce'),
                 'desc_tip' => true,
+                'no_reset' => true,
             ),
             'healthcheck' => array(
                 'title' => esc_html__('API Health', 'fiserv-checkout-for-woocommerce'),

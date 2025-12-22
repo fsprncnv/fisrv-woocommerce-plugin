@@ -539,29 +539,30 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
         parent::process_admin_options();
     }
 
-
     protected function reset_settings_to_defaults()
     {
         if (empty($this->form_fields)) {
             $this->init_form_fields();
         }
-        $defaults = [];
+        $current = get_option($this->get_option_key(), []);
+        $new = is_array($current) ? $current : [];
         foreach ((array) $this->form_fields as $key => $field) {
-            $field_default = isset($field['default']) ? $field['default'] : '';
-            if (isset($field['type']) && 'checkbox' === $field['type'] && !isset($field['default'])) {
-                $field_default = 'no';
+            if (!empty($field['no_reset'])) {
+                continue;
             }
-            if (isset($field['type']) && 'custom_icon' === $field['type'] && !isset($field['default'])) {
-                $field_default = '';
+            if (array_key_exists('default', $field)) {
+                $value = $field['default'];
+                if (isset($field['type']) && 'checkbox' === $field['type']) {
+                    $value = isset($field['default']) ? $field['default'] : 'no';
+                }
+                $new[$key] = $value;
             }
-            $defaults[$key] = $field_default;
         }
-        update_option($this->get_option_key(), $defaults);
-        $this->settings = $defaults;
-        $this->title = isset($defaults['title']) ? $defaults['title'] : $this->method_title;
-        $this->description = isset($defaults['description']) ? $defaults['description'] : '';
+        update_option($this->get_option_key(), $new);
+        $this->settings = $new;
+        $this->title = isset($new['title']) ? $new['title'] : $this->method_title;
+        $this->description = isset($new['description']) ? $new['description'] : '';
     }
-
 
     /**
      * Initialize form text fields on gateway options page
