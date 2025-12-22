@@ -15,8 +15,8 @@ class WC_Fiserv_Payment_Generic extends WC_Fiserv_Payment_Gateway
 
         $this->method_title = __('Generic Checkout', 'fiserv-checkout-for-woocommerce');
         $this->method_description = __('Generic option shows all supported methods on redirect page.', 'fiserv-checkout-for-woocommerce');
-        $this->description = __('You will be redirected to an external checkout page where you will be able to select a payment method.', 'fiserv-checkout-for-woocommerce');
         $this->title = __('Generic Checkout', 'fiserv-checkout-for-woocommerce');
+        $this->description = __('You will be redirected to an external checkout page where you will be able to select a payment method.', 'fiserv-checkout-for-woocommerce');
 
         wp_enqueue_script('fiserv-custom-script');
 

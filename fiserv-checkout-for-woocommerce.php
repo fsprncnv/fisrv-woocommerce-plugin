@@ -75,7 +75,7 @@ if (!class_exists('fiserv_checkout_for_woocommerce')) {
             add_action('before_woocommerce_pay_form', [WC_Fiserv_Redirect_Back_Handler::class, 'retry_payment_on_checkout'], 1, 3);
 
             /** Callback on failed payment, retry flow on shopping cart */
-            add_action('woocommerce_before_cart_table', [WC_Fiserv_Redirect_Back_Handler::class, 'retry_payment_on_cart'], 1);
+            add_action('woocommerce_before_cart', [WC_Fiserv_Redirect_Back_Handler::class, 'retry_payment_on_cart'], 1);
 
             /** Callback on completed order */
             add_action('woocommerce_thankyou', [WC_Fiserv_Redirect_Back_Handler::class, 'order_complete_callback'], 1, 1);

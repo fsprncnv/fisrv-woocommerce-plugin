@@ -20,16 +20,12 @@ final class WC_Fiserv_Redirect_Back_Handler
         if (!check_admin_referer(Fisrv_Identifiers::FISRV_NONCE->value)) {
             return false;
         }
-
         if (!isset($_GET['transaction_approved']) || sanitize_text_field(wp_unslash($_GET['transaction_approved'])) !== 'false') {
             return false;
         }
-
         $order_button_text = esc_html__('Retry payment', 'fiserv-checkout-for-woocommerce');
         $order->update_status('wc-pending', esc_html__('Retrying payment', 'fiserv-checkout-for-woocommerce'));
-
         self::display_error_message($order);
-
         return array(
             'order' => $order,
             'available_gateways' => $available_gateways,
@@ -42,21 +38,14 @@ final class WC_Fiserv_Redirect_Back_Handler
         if (!isset($_REQUEST['_wpnonce']) && !wp_verify_nonce(sanitize_text_field(wp_unslash($_REQUEST['_wpnonce'])), Fisrv_Identifiers::FISRV_NONCE->value)) {
             return;
         }
-
-        if (
-            !isset($_GET['transaction_approved'])
-            || sanitize_text_field(wp_unslash($_GET['transaction_approved'])) !== 'false'
-            || !isset($_GET['wc_order_id'])
-        ) {
+        $isRequestInvalid = !isset($_GET['transaction_approved']) || sanitize_text_field(wp_unslash($_GET['transaction_approved'])) !== 'false' || !isset($_GET['wc_order_id']);
+        if ($isRequestInvalid) {
             return;
         }
-
         $order = wc_get_order(sanitize_text_field(wp_unslash($_GET['wc_order_id'])));
-
         if (!($order instanceof WC_Order)) {
             return;
         }
-
         $order->update_status('wc-pending', esc_html__('Retrying payment', 'fiserv-checkout-for-woocommerce'));
         self::display_error_message($order);
     }

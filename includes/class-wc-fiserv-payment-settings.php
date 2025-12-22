@@ -86,7 +86,6 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
     public function __construct()
     {
         self::$WP_KSES_ALLOWED = array_merge(wp_kses_allowed_html('post'), self::$WP_KSES_ALLOWED);
-        $this->description = esc_html__('You will be redirected to an external checkout page.', 'fiserv-checkout-for-woocommerce');
     }
 
     public static function custom_save_icon_value($settings)
@@ -427,7 +426,6 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
         return ob_get_clean();
     }
 
-
     /**
      * Render API health check section
      * @param string $field_html
@@ -461,12 +459,109 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
     {
         ob_start();
         ?>
-        <div class="button-primary">
-            <?php echo esc_html__('Restore to default', 'fiserv-checkout-for-woocommerce') ?>
+        <div>
+            <input type="hidden" name="wc_fiserv_reset_settings" id="wc_fiserv_reset_settings" value="0" />
+            <?php wp_nonce_field('wc_fiserv_reset_settings_action', 'wc_fiserv_reset_settings_nonce'); ?>
+
+            <button type="button" class="button button-secondary js-fiserv-reset-settings" aria-disabled="true" disabled>
+                <?php echo esc_html__('Restore to default', 'fiserv-checkout-for-woocommerce'); ?>
+            </button>
+
+            <script>
+                (function () {
+                    function q(sel) { return document.querySelector(sel); }
+                    document.addEventListener('DOMContentLoaded', function () {
+                        var form = q('#mainform');
+                        var saveBtn = q('#mainform .woocommerce-save-button');
+                        var resetBtn = q('.js-fiserv-reset-settings');
+                        if (!form || !saveBtn || !resetBtn) return;
+
+                        // Mirror function: copy disabled state & class from Save to Reset
+                        function mirrorState() {
+                            var isDisabled = saveBtn.hasAttribute('disabled') || saveBtn.classList.contains('disabled');
+                            resetBtn.disabled = isDisabled;
+                            resetBtn.classList.toggle('disabled', isDisabled);
+                            resetBtn.setAttribute('aria-disabled', String(isDisabled));
+                        }
+
+                        mirrorState();
+
+                        // Observe attribute/class changes on Save button
+                        var obs = new MutationObserver(mirrorState);
+                        obs.observe(saveBtn, { attributes: true, attributeFilter: ['class', 'disabled'] });
+
+                        // Also resync when inputs change (Woo toggles Save based on "dirty" form)
+                        form.addEventListener('input', mirrorState, true);
+                        form.addEventListener('change', mirrorState, true);
+
+                        // Your existing click handler (optional): prompt, set flag, submit
+                        resetBtn.addEventListener('click', function (ev) {
+                            ev.preventDefault();
+                            if (resetBtn.disabled) return; // respect mirrored state
+                            if (!confirm('<?php echo esc_js(__('Are you sure you want to restore all settings to their defaults?', 'fiserv-checkout-for-woocommerce')); ?>')) {
+                                return;
+                            }
+                            var flag = q('#wc_fiserv_reset_settings');
+                            if (flag) flag.value = '1';
+                            // Submit via Woo's native Save button (ensures POST goes through expected pipeline)
+                            if (!saveBtn.disabled) {
+                                saveBtn.click();
+                            } else {
+                                form.submit();
+                            }
+                        });
+                    });
+                })();
+            </script>
         </div>
         <?php
         return self::render_option_tablerow($key, $data, $this, ob_get_clean());
     }
+
+    public function process_admin_options()
+    {
+        if (isset($_POST['wc_fiserv_reset_settings']) && '1' === $_POST['wc_fiserv_reset_settings']) {
+            if (
+                empty($_POST['wc_fiserv_reset_settings_nonce']) ||
+                !wp_verify_nonce(
+                    sanitize_text_field(wp_unslash($_POST['wc_fiserv_reset_settings_nonce'])),
+                    'wc_fiserv_reset_settings_action'
+                )
+            ) {
+                WC_Admin_Settings::add_error(__('Security check failed. Settings were not reset.', 'fiserv-checkout-for-woocommerce'));
+                return parent::process_admin_options();
+            }
+            $this->reset_settings_to_defaults();
+            WC_Admin_Settings::add_message(__('Settings have been restored to defaults.', 'fiserv-checkout-for-woocommerce'));
+            $this->init_settings();
+            return;
+        }
+        parent::process_admin_options();
+    }
+
+
+    protected function reset_settings_to_defaults()
+    {
+        if (empty($this->form_fields)) {
+            $this->init_form_fields();
+        }
+        $defaults = [];
+        foreach ((array) $this->form_fields as $key => $field) {
+            $field_default = isset($field['default']) ? $field['default'] : '';
+            if (isset($field['type']) && 'checkbox' === $field['type'] && !isset($field['default'])) {
+                $field_default = 'no';
+            }
+            if (isset($field['type']) && 'custom_icon' === $field['type'] && !isset($field['default'])) {
+                $field_default = '';
+            }
+            $defaults[$key] = $field_default;
+        }
+        update_option($this->get_option_key(), $defaults);
+        $this->settings = $defaults;
+        $this->title = isset($defaults['title']) ? $defaults['title'] : $this->method_title;
+        $this->description = isset($defaults['description']) ? $defaults['description'] : '';
+    }
+
 
     /**
      * Initialize form text fields on gateway options page

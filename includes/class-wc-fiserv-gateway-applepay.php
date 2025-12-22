@@ -19,6 +19,7 @@ class WC_Fiserv_Gateway_Applepay extends WC_Fiserv_Payment_Gateway
         $this->method_title = 'Apple Pay';
         $this->method_description = esc_html__('Pay with Apple Pay', 'fiserv-checkout-for-woocommerce');
         $this->title = 'Apple Pay';
+        $this->description = esc_html__('You will be redirected to an external checkout page.', 'fiserv-checkout-for-woocommerce');
 
         parent::__construct();
     }

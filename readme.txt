@@ -58,8 +58,8 @@ A detailed description of each task can be found on the [Fiserv Developer Portal
 
 == Changelog ==
 ** 1.1.9 **
-* Improve failure flow
-* Improve settings screen
+* Fix failure page redirect option 
+* Improve settings reset flow
 * Update Readme
 ** 1.1.8 **
 * Add support for Bizum
