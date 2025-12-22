@@ -23,30 +23,39 @@ function buildError(scope, error) {
 }
 
 async function fsAddImage(button) {
-    const input = document.getElementById("fs-icons-data").value;
-    const gateway_id = button.getAttribute("gateway-id");
+    const inputForm = document.getElementById("fs-icons-data");
+    let inputValue = inputForm.value;
+    const gatewayId = button.getAttribute("gateway-id");
     button.innerHTML = "<span class='fs-loader-status'></span>";
     const data = await wp.apiFetch({
         method: "POST",
-        path: `${restBasePath}/image?gateway-id=${gateway_id}&data=${input}`,
+        path: `${restBasePath}/image?gateway-id=${gatewayId}&data=${inputValue}`,
     });
+    inputValue = '';
+    inputForm.placeholder = data['message'];
     if (data["status"] === "ok") {
-        button.innerHTML = "✓";
-    } else {
-        button.innerHTML = "🞭";
+        submitFormSave();
     }
-    document.getElementById("fs-icons-data").value = '';
-    document.getElementById("fs-icons-data").placeholder = data['message'];
 }
 
-async function removeImage(index, node) {
+async function removeImage(index) {
+    const container = document.getElementById(`fs-icon-container-${index}`);
     const overlay = document.getElementById(`fs-icon-overlay-${index}`);
     overlay.innerHTML = "<span class='fs-loader-status'></span>";
-    await wp.apiFetch({
+    const data = await wp.apiFetch({
         method: "DELETE",
         path: `${restBasePath}/image?gateway-id=fiserv-gateway-generic&icon-id=${index}`
     });
-    node.innerHTML = '';
+    document.getElementById("fs-icons-data").value = ' ';
+    if (data["status"] === "ok") {
+        container.innerHTML = '';
+        submitFormSave();
+    }
+}
+
+function submitFormSave() {
+    const saveBtn = document.querySelector('#mainform .woocommerce-save-button');
+    saveBtn.click();
 }
 
 async function fsFetchHealth(is_prod) {

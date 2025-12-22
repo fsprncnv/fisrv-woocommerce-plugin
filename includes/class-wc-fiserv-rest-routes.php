@@ -57,7 +57,7 @@ final class WC_Fiserv_Rest_Routes
     {
         try {
             $gateway_id = $request->get_param('gateway-id');
-            $data = $request->get_param('data');
+            $img_url = $request->get_param('data');
 
             $gateway = WC()->payment_gateways()->payment_gateways()[$gateway_id] ?? false;
 
@@ -75,22 +75,24 @@ final class WC_Fiserv_Rest_Routes
             $list_json = $gateway->get_option('custom_icon');
             $decoded_list = json_decode($list_json, true) ?? array();
 
-            if (!preg_match("/(http)?s?:?(\/\/[^\"']*\.(?:png|jpg|jpeg|gif|png|svg))/i", $data)) {
+            if (self::is_image_url($img_url)) {
                 throw new Exception("Image URL is invalid");
             }
 
-            if (in_array($data, $decoded_list)) {
+            if (in_array($img_url, $decoded_list)) {
                 throw new Exception("Image is already in list");
             }
 
-            array_push($decoded_list, $data);
-            $gateway->update_option('custom_icon', wp_json_encode($decoded_list));
+            array_push($decoded_list, $img_url);
+            $encoded_list = wp_json_encode($decoded_list);
+            $gateway->update_option('custom_icon', $encoded_list);
 
         } catch (\Throwable $th) {
             return new WP_REST_Response(
                 array(
                     'status' => 'error',
                     'message' => $th->getMessage(),
+                    'icons' => $encoded_list
                 )
             );
         }
@@ -102,6 +104,43 @@ final class WC_Fiserv_Rest_Routes
             )
         );
     }
+
+
+    /**
+     * Validate that a URL points to an image (server-side).
+     * Returns array: [ 'ok' => bool, 'content_type' => string|null, 'status' => int|null, 'reason' => string|null ]
+     */
+    private static function is_image_url($url): bool
+    {
+        if (!filter_var($url, FILTER_VALIDATE_URL)) {
+            return false;
+        }
+        $args = [
+            'timeout' => 8,
+            'redirection' => 5,
+            'headers' => [
+                'Range' => 'bytes=0-0',
+                'Accept' => 'image/*,*/*;q=0.8',
+            ],
+        ];
+        $res = wp_remote_head($url, $args);
+        if (is_wp_error($res) || wp_remote_retrieve_response_code($res) < 200) {
+            $res = wp_remote_get($url, $args);
+        }
+        if (is_wp_error($res)) {
+            return false;
+        }
+        $status = wp_remote_retrieve_response_code($res);
+        $ct = wp_remote_retrieve_header($res, 'content-type');
+        $is_image_ct = false;
+        if (is_string($ct)) {
+            $ct = strtolower(trim($ct));
+            $is_image_ct = str_starts_with($ct, 'image/')
+                || in_array($ct, ['text/xml', 'application/xml'], true); // some servers misreport SVG
+        }
+        return ($status >= 200 && $status < 300) && $is_image_ct;
+    }
+
 
     /**
      * Register endpoint for payment icon addition

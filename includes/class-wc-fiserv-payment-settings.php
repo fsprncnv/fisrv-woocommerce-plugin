@@ -360,16 +360,18 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
         ?>
         <div class="fs-row">
             <?php
-            if ($gateway_id === Fisrv_Identifiers::GATEWAY_GENERIC->value) {
-                $icons = json_decode($gateway->get_option('custom_icon'), true);
-                if (is_null($icons) || count($icons) === 0) {
-                    $icons = array(self::get_method_icon($gateway_id));
-                }
-                foreach ($icons as $index => $icon) {
-                    echo wp_kses(self::render_icon_with_overlay($icon, $index, $small), self::$WP_KSES_ALLOWED);
-                }
+            $method_icon = self::get_method_icon($gateway_id);
+            if ($gateway_id !== Fisrv_Identifiers::GATEWAY_GENERIC->value) {
+                echo wp_kses(self::render_icon($method_icon, $small), self::$WP_KSES_ALLOWED);
             } else {
-                echo wp_kses(self::render_icon(self::get_method_icon($gateway_id), $small), self::$WP_KSES_ALLOWED);
+                $icons = json_decode($gateway->get_option('custom_icon'), true);
+                if (empty($icons)) {
+                    echo wp_kses(self::render_icon($method_icon, $small), self::$WP_KSES_ALLOWED);
+                } else {
+                    foreach ($icons as $index => $icon) {
+                        echo wp_kses(self::render_icon_with_overlay($icon, $index, $small), self::$WP_KSES_ALLOWED);
+                    }
+                }
             }
             ?>
         </div>
@@ -413,7 +415,7 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
         <div gateway-id="<?php echo esc_attr(Fisrv_Identifiers::GATEWAY_GENERIC->value) ?>"
             id="fs-icon-container-<?php echo esc_attr($index) ?>" class="fs-icon-container">
             <?php if (is_admin()) { ?>
-                <div onclick="removeImage(<?php echo esc_attr($index) ?>, this)" id="fs-icon-overlay-<?php echo esc_attr($index) ?>"
+                <div onclick="removeImage(<?php echo esc_attr($index) ?>)" id="fs-icon-overlay-<?php echo esc_attr($index) ?>"
                     class="fs-icon-overlay">🞭 <?php echo esc_html__(
                         'Remove Icon',
                         'fiserv-checkout-for-woocommerce'
@@ -471,9 +473,9 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
                 (function () {
                     function q(sel) { return document.querySelector(sel); }
                     document.addEventListener('DOMContentLoaded', function () {
-                        var form = q('#mainform');
-                        var saveBtn = q('#mainform .woocommerce-save-button');
-                        var resetBtn = q('.js-fiserv-reset-settings');
+                        const form = q('#mainform');
+                        const saveBtn = q('#mainform .woocommerce-save-button');
+                        const resetBtn = q('.js-fiserv-reset-settings');
                         if (!form || !saveBtn || !resetBtn) return;
 
                         // Mirror function: copy disabled state & class from Save to Reset
@@ -487,7 +489,7 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
                         mirrorState();
 
                         // Observe attribute/class changes on Save button
-                        var obs = new MutationObserver(mirrorState);
+                        const obs = new MutationObserver(mirrorState);
                         obs.observe(saveBtn, { attributes: true, attributeFilter: ['class', 'disabled'] });
 
                         // Also resync when inputs change (Woo toggles Save based on "dirty" form)
