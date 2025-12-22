@@ -18,13 +18,13 @@ Fiserv provides leading payment processing solutions on a global scale. These so
 The Fiserv WooCommerce plugin has been developed in collaboration with IPG's Checkout solution. This plugin allows you to efficiently and securely start accepting a wide range of payment methods through your WordPress checkout web shop.
  
 ## Key features
--             Accept payments using the IPG's Checkout solution 
--             Offer a variety of payment options, including credit cards, digital wallets (such as Google Pay and Apple Pay), and more
--             Allow customers to choose their preferred payment method directly during checkout on your web shop
--             Benefit from regular updates and enhancements provided by Fiserv for the checkout solution
--             Customize the appearance of the payment selection field in your web shop's checkout
--             Ensure a secure payment process that complies with the latest Payment Card Industry Data Security Standard
--   Display Fiserv's checkout page in your preferred language (currently supported: English, German, French, Dutch, Spanish)
+- Accept payments using the IPG's Checkout solution 
+- Offer a variety of payment options, including credit cards, digital wallets (such as Google Pay and Apple Pay), and more
+- Allow customers to choose their preferred payment method directly during checkout on your web shop
+- Benefit from regular updates and enhancements provided by Fiserv for the checkout solution
+- Customize the appearance of the payment selection field in your web shop's checkout
+- Ensure a secure payment process that complies with the latest Payment Card Industry Data Security Standard
+- Display Fiserv's checkout page in your preferred language (currently supported: English, German, French, Dutch, Spanish)
  
  
 == Installation ==
@@ -32,9 +32,9 @@ The Fiserv WooCommerce plugin has been developed in collaboration with IPG's Che
 You can install the plugin from the WordPress website. 
 Alternatively, you can manually install the plugin by uploading the ZIP file from the WordPress administration environment, or by uploading the plugin using (s)FTP.
 To make use of the plugins, please follow the following steps:
-â€¢       Revert to the classic WooCommerce checkout and disable WooCommerce Blocks
-â€¢       Activate the Payment Method in WooCommerce          
-â€¢       Get API Credentials
+1. Revert to the classic WooCommerce checkout and disable WooCommerce Blocks
+2. Activate the Payment Method in WooCommerce          
+3. Get API Credentials
 A detailed description of each task can be found on the [Fiserv Developer Portal](https://docs.fiserv.dev/public/docs/woocommerce).
  
  
