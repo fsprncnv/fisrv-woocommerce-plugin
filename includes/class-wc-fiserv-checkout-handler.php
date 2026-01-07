@@ -233,6 +233,12 @@ final class WC_Fiserv_Checkout_Handler
      */
     private static function pass_checkout_data(CheckoutClientRequest $req, WC_Order $order, ?PreSelectedPaymentMethod $method): CheckoutClientRequest
     {
+        $gateway = WC()->payment_gateways()->payment_gateways()[Fisrv_Identifiers::GATEWAY_GENERIC->value];
+        $simplify_total = false;
+        if ($gateway instanceof WC_Fiserv_Payment_Gateway && $gateway->get_option('simplify_total') === 'yes') {
+            $simplify_total = true;
+        }
+
         /**
          * Locale 
          */
@@ -256,8 +262,10 @@ final class WC_Fiserv_Checkout_Handler
          */
         $req->transactionAmount->total = $order->get_total();
         $req->transactionAmount->components->subtotal = $order->get_subtotal();
-        $req->transactionAmount->components->vatAmount = $order->get_total_tax();
-        $req->transactionAmount->components->shipping = (float) wc_format_decimal($order->get_shipping_total(), 2);
+        if (!$simplify_total) {
+            $req->transactionAmount->components->vatAmount = $order->get_total_tax();
+            $req->transactionAmount->components->shipping = (float) wc_format_decimal($order->get_shipping_total(), 2);
+        }
         WC_Fiserv_Logger::log(
             $order,
             'Requesting transaction in the amount of : ' . $req->transactionAmount->currency->value . ' ' . $req->transactionAmount->total
@@ -274,7 +282,6 @@ final class WC_Fiserv_Checkout_Handler
             $order->get_checkout_order_received_url()
         );
         $selectedFailurePage = $order->get_checkout_payment_url();
-        $gateway = WC()->payment_gateways()->payment_gateways()[Fisrv_Identifiers::GATEWAY_GENERIC->value];
         if ($gateway instanceof WC_Fiserv_Payment_Gateway && $gateway->get_option('fail_page') === 'cart') {
             $selectedFailurePage = wc_get_cart_url();
         }
