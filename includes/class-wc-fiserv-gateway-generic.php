@@ -104,6 +104,13 @@ class WC_Fiserv_Payment_Generic extends WC_Fiserv_Payment_Gateway
                 'default' => 'Sale',
                 'css' => 'disabled; pointer-events: none;',
             ),
+            'simplify_total' => array(
+                'title' => esc_html__('Use Total Amount Only', 'fiserv-checkout-for-woocommerce'),
+                'type' => 'checkbox',
+                'description' => esc_html__('Send Only Final Total to Payment Processor', 'fiserv-checkout-for-woocommerce'),
+                'desc_tip' => esc_html__('When enabled, the plugin will send only the final order total to the payment processor. Detailed line items (products, VAT, shipping, discounts, etc.) will not be included. Useful for avoiding parsing or validation issues.', 'fiserv-checkout-for-woocommerce'),
+                'default' => 'no',
+            ),
             'section-3' => [
                 'title' => esc_html__('Customization', 'fiserv-checkout-for-woocommerce'),
                 'type' => 'section_heading'
