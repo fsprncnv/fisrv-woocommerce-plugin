@@ -48,7 +48,9 @@ final class WC_Fiserv_Checkout_Handler
         $plugin_version = $plugin_data['Version'] ?? FISRV_PLUGIN_VERSION;
 
         return array(
-            'user' => 'WooCommercePlugin/' . $plugin_version,
+            'pluginversion' => $plugin_version,
+            'shopsystem' => 'WooCommerce',
+            'shopversion' => wp_get_wp_version(),
             'is_prod' => ($generic_gateway->get_option('is_prod') === 'yes') ? true : false,
             'api_key' => $generic_gateway->get_option('api_key'),
             'api_secret' => $generic_gateway->get_option('api_secret'),

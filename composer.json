@@ -9,7 +9,7 @@
     ]
   },
   "require": {
-    "fiserv-ipg/php-client": "1.0.3"
+    "fiserv-ipg/php-client": "1.0.5"
   },
   "require-dev": {
     "automattic/jetpack-autoloader": "@stable",
