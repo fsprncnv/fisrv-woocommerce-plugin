@@ -121,7 +121,6 @@ class WC_Fiserv_Payment_Generic extends WC_Fiserv_Payment_Gateway
                 'desc_tip' => true,
                 'description' => esc_html__('Info about current WordPress theme data which you can use to customize your checkout page on our Virtual Terminal', 'fiserv-checkout-for-woocommerce'),
             ),
-
         ];
 
         parent::init_form_fields();

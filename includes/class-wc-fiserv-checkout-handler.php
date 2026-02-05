@@ -49,7 +49,7 @@ final class WC_Fiserv_Checkout_Handler
 
         return array(
             'pluginversion' => $plugin_version,
-            'shopsystem' => 'WooCommerce',
+            'shopsystem' => 'woocommerce',
             'shopversion' => wp_get_wp_version(),
             'is_prod' => ($generic_gateway->get_option('is_prod') === 'yes') ? true : false,
             'api_key' => $generic_gateway->get_option('api_key'),
@@ -77,9 +77,13 @@ final class WC_Fiserv_Checkout_Handler
             self::$client = new CheckoutClient($credentials);
 
             $request = self::$client->createBasicCheckoutRequest(0, '', '');
-            $request = self::pass_checkout_data($request, $order, $method);
+            $gateway = WC()->payment_gateways()->payment_gateways()[Fisrv_Identifiers::GATEWAY_GENERIC->value];
+            $simplify_total = $gateway->get_option('simplify_total') === 'yes';
+            $request = self::pass_checkout_data($request, $order, $method, $simplify_total, $gateway);
             $request = self::pass_billing_data($request, $order);
-            $request = self::pass_basket($request, $order);
+            if (!$simplify_total) {
+                $request = self::pass_basket($request, $order);
+            }
             // $request = self::handle_token_transaction($generic_gateway, $request, $order);
 
             if (isset($credentials['store_id'])) {
@@ -173,7 +177,7 @@ final class WC_Fiserv_Checkout_Handler
         ];
     }
 
-    public static function get_checkout_details($checkout_id): WP_REST_Response
+    public static function get_checkout_details(string $checkout_id): WP_REST_Response
     {
         if (is_null(self::$client)) {
             $gateway = WC()->payment_gateways()->payment_gateways()[Fisrv_Identifiers::GATEWAY_GENERIC->value];
@@ -233,38 +237,28 @@ final class WC_Fiserv_Checkout_Handler
      * @param  PreSelectedPaymentMethod<null $method Selected payment method
      * @return CheckoutClientRequest        Modified request object
      */
-    private static function pass_checkout_data(CheckoutClientRequest $req, WC_Order $order, ?PreSelectedPaymentMethod $method): CheckoutClientRequest
+    private static function pass_checkout_data(CheckoutClientRequest $req, WC_Order $order, ?PreSelectedPaymentMethod $method, bool $simplify_total, WC_Payment_Gateway $gateway): CheckoutClientRequest
     {
-        $gateway = WC()->payment_gateways()->payment_gateways()[Fisrv_Identifiers::GATEWAY_GENERIC->value];
-        $simplify_total = false;
-        if ($gateway instanceof WC_Fiserv_Payment_Gateway && $gateway->get_option('simplify_total') === 'yes') {
-            $simplify_total = true;
-        }
-
-        /**
-         * Locale 
-         */
+        // Locale 
         $wp_language = str_replace('-', '_', get_bloginfo('language'));
         $locale = Locale::tryFrom($wp_language);
         if (substr($wp_language, 0, 2) == 'de') {
             $locale = Locale::de_DE;
         }
         $req->checkoutSettings->locale = $locale ?? Locale::en_GB;
-        /**
-         * Currency 
-         */
+        // Currency 
         $wp_currency = get_woocommerce_currency();
         $req->transactionAmount->currency = Currency::tryFrom($wp_currency) ?? Currency::EUR;
-        /**
-         * WC order numbers, IDs 
-         */
+        // WC order numbers, IDs 
         $req->order->orderDetails->purchaseOrderNumber = strval($order->get_id());
-        /**
-         * Order totals 
-         */
+        // Order totals
         $req->transactionAmount->total = $order->get_total();
-        $req->transactionAmount->components->subtotal = $order->get_subtotal();
-        if (!$simplify_total) {
+        if ($simplify_total) {
+            $req->transactionAmount->components->subtotal = $order->get_total();
+            $req->transactionAmount->components->vatAmount = 0;
+            $req->transactionAmount->components->shipping = 0;
+        } else {
+            $req->transactionAmount->components->subtotal = $order->get_subtotal();
             $req->transactionAmount->components->vatAmount = $order->get_total_tax();
             $req->transactionAmount->components->shipping = (float) wc_format_decimal($order->get_shipping_total(), 2);
         }
@@ -272,9 +266,7 @@ final class WC_Fiserv_Checkout_Handler
             $order,
             'Requesting transaction in the amount of : ' . $req->transactionAmount->currency->value . ' ' . $req->transactionAmount->total
         );
-        /**
-         * Redirect URLs 
-         */
+        // Redirect URLs  
         $nonce = wp_create_nonce(Fisrv_Identifiers::FISRV_NONCE->value);
         $req->checkoutSettings->redirectBackUrls->successUrl = add_query_arg(
             array(

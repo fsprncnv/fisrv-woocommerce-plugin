@@ -4,7 +4,7 @@ Requires at least: 5.4
 Tested up to: 6.8
 License: GNU General Public License v3.0 
 License URI: http://www.gnu.org/licenses/gpl-3.0.html 
-Stable tag: 1.1.9
+Stable tag: 1.1.10
 Requires PHP: 8.1
 Contributors: ipgpluginsupportfiserv
 
@@ -39,9 +39,9 @@ A detailed description of each task can be found on the [Fiserv Developer Portal
  
  
 == Screenshots ==
-1. Activate the Fiserv Checkout plugin in â€˜Pluginsâ€™ > Installed Plugins.
-2. Select â€˜WooCommerceâ€™ > â€˜Settingsâ€™ > Payments and click on Fiserv Checkout for WooCommerce (Enabled)   
-3. Configure the Fiserv Checkout module (â€˜Manageâ€™ button)
+1. Activate the Fiserv Checkout plugin in Plugins > Installed Plugins.
+2. Select WooCommerce > Settings > Payments and click on Fiserv Checkout for WooCommerce (Enabled)   
+3. Configure the Fiserv Checkout module (Manage button)
  
 == Pre-requisites to install the plug-ins ==
 - PHP v8.1 or higher
@@ -57,6 +57,9 @@ A detailed description of each task can be found on the [Fiserv Developer Portal
 * Try switching Permalink type in WordPress admin settings to 'Post name'
 
 == Changelog ==
+** 1.1.10 **
+* Update meta data header
+* Add simplified order total option 
 ** 1.1.9 **
 * Fix failure page redirect option 
 * Improve settings reset flow
