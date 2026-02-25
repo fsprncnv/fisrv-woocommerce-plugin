@@ -220,8 +220,8 @@ final class WC_Fiserv_Checkout_Handler
                     'price' => $order->get_item_total($item),
                     'total' => $order->get_line_total($item),
                     'quantity' => $item->get_quantity(),
-                    'shippingCost' => $order->get_shipping_total(),
-                    'valueAddedTax' => $order->get_taxes(),
+                    'shippingCost' => 0,
+                    'valueAddedTax' => 0,
                 )
             );
         }

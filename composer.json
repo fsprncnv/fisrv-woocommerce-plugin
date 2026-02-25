@@ -1,7 +1,7 @@
 {
   "name": "extension/fiserv-checkout-for-woocommerce",
   "description": "Fiserv payment plugin for WooCommerce",
-  "version": "1.1.10",
+  "version": "1.2.0",
   "license": "GNU General Public License v3.0",
   "autoload": {
     "classmap": [
