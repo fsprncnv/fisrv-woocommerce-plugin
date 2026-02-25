@@ -4,7 +4,7 @@ Requires at least: 5.4
 Tested up to: 6.8
 License: GNU General Public License v3.0 
 License URI: http://www.gnu.org/licenses/gpl-3.0.html 
-Stable tag: 1.2.0
+Stable tag: 1.2.1
 Requires PHP: 8.1
 Contributors: ipgpluginsupportfiserv
 
@@ -57,6 +57,8 @@ A detailed description of each task can be found on the [Fiserv Developer Portal
 * Try switching Permalink type in WordPress admin settings to 'Post name'
 
 == Changelog ==
+** 1.2.1 **
+* Remove line item tax calculation
 ** 1.2.0 **
 * Update meta data header
 * Add simplified order total option 
