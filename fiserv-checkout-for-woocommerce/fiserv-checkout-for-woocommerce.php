@@ -149,6 +149,7 @@ if (!class_exists('fiserv_checkout_for_woocommerce')) {
                 WC_Fiserv_Gateway_Googlepay::class,
                 WC_Fiserv_Gateway_Cards::class,
                 WC_Fiserv_Payment_Generic::class,
+                WC_Fiserv_Gateway_Ideal::class,
             );
 
             return $methods;

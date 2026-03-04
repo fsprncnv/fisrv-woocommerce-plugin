@@ -54,6 +54,10 @@ msgstr "Payer avec Apple Pay"
 msgid "Pay with Bizum"
 msgstr "Payer avec Bizum"
 
+#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-ideal.php
+msgid "Pay with iDEAL"
+msgstr "Payer avec iDEAL"
+
 msgid "Pay with Credit / Debit Card"
 msgstr "Payer par carte de crédit/débit"
 
