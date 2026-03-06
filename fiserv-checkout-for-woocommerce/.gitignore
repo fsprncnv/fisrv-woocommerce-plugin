@@ -1,0 +1,83 @@
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.idea
+.vscode/
+project.xml
+project.properties
+.project
+.settings*
+*.sublime-project
+*.sublime-workspace
+.sublimelinterrc
+
+# Sass
+.sass-cache/
+
+# Logs
+logs/
+
+# Environment files
+wp-cli.local.yml
+yarn-error.log
+npm-debug.log
+.pnpm-debug.log
+
+# Build files
+*.sql
+*.swp
+*.zip
+*.tar
+
+# Built packages
+build/
+build-module/
+build-style/
+build-types/
+dist/
+
+# Project files
+node_modules/
+vendor/
+.php-cs-fixer.cache
+
+# TypeScript files
+tsconfig.tsbuildinfo
+
+# Node Package Dependencies
+package-lock.json
+
+# wp-env config
+.wp-env.override.json
+
+# Unit tests
+tmp/
+.phpunit.result.cache
+phpunit.xml
+
+# Composer
+vendor/
+bin/composer/**/vendor/
+lib/vendor/
+contributors.md
+contributors.html
+composer.lock
+
+auth.json
+wp-cli.phar
+
+# Ignore everything in the docker folder except the Fiserv plugin used for local testing
+docker/plugins/woocommerce
+docker/plugins/akismet
+docker/plugins/index.php
+docker/plugins/hello.php
+docker/plugins/fiserv-checkout-for-woocommerce/assets
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
