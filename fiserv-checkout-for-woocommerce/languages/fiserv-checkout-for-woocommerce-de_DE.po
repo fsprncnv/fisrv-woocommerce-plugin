@@ -1,8 +1,7 @@
 # Copyright (C) 2024 fiserv
 # This file is distributed under the GNU General Public License v3.0.
 "Project-Id-Version: Fiserv Checkout for WooCommerce 1.0.0\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/fiserv-checkout-"
-"for-woocommerce\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/fiserv-checkout-for-woocommerce\n"
 "POT-Creation-Date: 2024-06-26T08:43:20+00:00\n"
 "PO-Revision-Date: 2024-09-17 10:26+0200\n"
 "Last-Translator: \n"
@@ -76,10 +75,6 @@ msgstr "Allgemeiner Checkout"
 msgid "Credit / Debit Card"
 msgstr "Kredit-/Debitkarte"
 
-#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-cards.php
-msgid "Credit / Debit Card"
-msgstr "Kredit-/Debitkarte"
-
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-generic.php
 msgid "Generic option shows all supported methods on redirect page."
 msgstr "Die generische Option zeigt alle unterstützten Methoden auf der Redirect-Seite an."
@@ -87,10 +82,6 @@ msgstr "Die generische Option zeigt alle unterstützten Methoden auf der Redirec
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-googlepay.php
 msgid "Pay with Google Pay"
 msgstr "Bezahlen mit Google Pay"
-
-#: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-gateway-googlepay.php
-msgid "Pay with Google Pay"
-msgstr "Bezahlen mit iDEAL"
 
 #: fiserv-checkout-for-woocommerce\includes\class-wc-fiserv-payment-gateway.php
 msgid "Processing payment failed. Order is invalid."

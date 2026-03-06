@@ -71,3 +71,5 @@ wp-cli.phar
 wordpress_data/
 playwright-report/
 test-results/
+
+tools/

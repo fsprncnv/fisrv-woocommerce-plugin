@@ -1,8 +1,7 @@
 # Copyright (C) 2024 fiserv
 # This file is distributed under the GNU General Public License v3.0.
 "Project-Id-Version: Fiserv Checkout for WooCommerce 1.0.0\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/fiserv-checkout-"
-"for-woocommerce\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/fiserv-checkout-for-woocommerce\n"
 "POT-Creation-Date: 2024-06-26T08:43:20+00:00\n"
 "PO-Revision-Date: 2024-09-17 10:35+0200\n"
 "Last-Translator: \n"
