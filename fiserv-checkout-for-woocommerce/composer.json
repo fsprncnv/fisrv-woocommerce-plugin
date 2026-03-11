@@ -1,0 +1,55 @@
+{
+  "name": "extension/fiserv-checkout-for-woocommerce",
+  "description": "Fiserv payment plugin for WooCommerce",
+  "version": "1.2.1",
+  "license": "GNU General Public License v3.0",
+  "autoload": {
+    "classmap": [
+      "includes/"
+    ]
+  },
+  "require": {
+    "fiserv-ipg/php-client": "1.0.5"
+  },
+  "require-dev": {
+    "automattic/jetpack-autoloader": "@stable",
+    "php-stubs/wordpress-stubs": "@stable",
+    "php-stubs/woocommerce-stubs": "@stable"
+  },
+  "config": {
+    "allow-plugins": {
+      "automattic/jetpack-autoloader": true,
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
+  },
+  "archive": {
+    "name": "fiserv-checkout-for-woocommerce",
+    "exclude": [
+      ".gitlab-ci.yml",
+      ".gitignore",
+      "/*.*",
+      "/.*",
+      "!/*.php",
+      "!/readme.txt",
+      ".idea",
+      "tests",
+      "docker"
+    ]
+  },
+  "scripts": {
+    "build": [
+      "composer install --ignore-platform-reqs --no-dev --optimize-autoloader --no-ansi --no-interaction --no-progress",
+      "composer archive --format=zip"
+    ],
+    "analyse": [
+      "vendor/bin/phpstan analyse includes"
+    ],
+    "fix-format": [
+      "vendor/bin/phpcbf includes"
+    ],
+    "format": []
+  },
+  "scripts-descriptions": {
+    "build": "Build project artifact."
+  }
+}

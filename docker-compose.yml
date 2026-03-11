@@ -1,0 +1,32 @@
+services:
+  wordpress:
+    image: harbor-emea.1dc.com/library/wordpress@sha256:ff7ee5e0ba89bb19fbaec39b2db8a2d797f96d20805e50d9641bf92dd0988b24
+    container_name: wordpress
+    ports:
+      - "8080:80"
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+    volumes:
+      - wordpress_data:/var/www/html
+      - ./fiserv-checkout-for-woocommerce:/var/www/html/wp-content/plugins/fiserv-checkout-for-woocommerce
+      - ./wordpress_data/woocommerce/woocommerce:/var/www/html/wp-content/plugins/woocommerce
+    depends_on:
+      - db
+
+  db:
+    image: harbor-emea.1dc.com/library/mysql@sha256:dab0a802b44617303694fb17d166501de279c3031ddeb28c56ecf7fcab5ef0da
+    container_name: wordpress_db
+    restart: always
+    environment:
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - db_data:/var/lib/mysql
+volumes:
+  wordpress_data:
+  db_data:

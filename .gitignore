@@ -67,17 +67,8 @@ composer.lock
 
 auth.json
 wp-cli.phar
+wordpress_data/
+playwright-report/
+test-results/
 
-# Ignore everything in the docker folder except the Fiserv plugin used for local testing
-docker/plugins/woocommerce
-docker/plugins/akismet
-docker/plugins/index.php
-docker/plugins/hello.php
-docker/plugins/fiserv-checkout-for-woocommerce/assets
-
-# Playwright
-/test-results/
-/playwright-report/
-/blob-report/
-/playwright/.cache/
-/playwright/.auth/
+tools/

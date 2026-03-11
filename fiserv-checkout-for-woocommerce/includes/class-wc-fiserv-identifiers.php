@@ -16,5 +16,6 @@ enum Fisrv_Identifiers: string
     case GATEWAY_CREDITCARD = 'fiserv-credit-card';
     case GATEWAY_APPLEPAY = 'fiserv-apple-pay';
     case GATEWAY_BIZUM = 'fiserv-bizum';
+    case GATEWAY_IDEAL = 'fiserv-ideal';
     case FISRV_NONCE = 'fiserv-nonce';
 }
