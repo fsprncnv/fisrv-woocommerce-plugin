@@ -358,7 +358,7 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
 
         ob_start();
         ?>
-        <div class="fs-row">
+        <div class="fs-icon-row">
             <?php
             $method_icon = self::get_method_icon($gateway_id);
             if ($gateway_id !== Fisrv_Identifiers::GATEWAY_GENERIC->value) {

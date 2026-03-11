@@ -143,13 +143,13 @@ if (!class_exists('fiserv_checkout_for_woocommerce')) {
         public function payment_gateways_callback(array $methods): array
         {
             array_push(
-                $methods,
-                WC_Fiserv_Gateway_Applepay::class,
-                WC_Fiserv_Gateway_Bizum::class,
-                WC_Fiserv_Gateway_Googlepay::class,
-                WC_Fiserv_Gateway_Cards::class,
+                $methods,        
                 WC_Fiserv_Payment_Generic::class,
+                WC_Fiserv_Gateway_Cards::class,
+                WC_Fiserv_Gateway_Applepay::class,
+                WC_Fiserv_Gateway_Googlepay::class,
                 WC_Fiserv_Gateway_Ideal::class,
+                WC_Fiserv_Gateway_Bizum::class,
             );
 
             return $methods;
