@@ -1,0 +1,12 @@
+{
+  "name": "fiserv-woocommerce-devtools",
+  "version": "1.0.0",
+  "description": "Dev scripts for WooCommerce Fiserv plugin Docker environment.",
+  "scripts": {
+    "docker:down": "docker compose down",
+    "docker:up": "docker compose up -d",
+    "docker:reset": "docker compose down && docker volume rm fisrv-woocommerce-plugin_wordpress_data fisrv-woocommerce-plugin_db_data && docker compose up -d"
+  },
+  "author": "",
+  "license": "MIT"
+}

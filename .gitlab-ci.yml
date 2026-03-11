@@ -1,0 +1,10 @@
+stages:
+  - test
+
+always-pass-job:
+  stage: test
+  script:
+    - echo "This job always passes."
+    - exit 0
+  tags:
+    - windows
