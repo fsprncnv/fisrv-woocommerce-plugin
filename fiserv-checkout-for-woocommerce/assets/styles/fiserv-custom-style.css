@@ -101,7 +101,37 @@
 .fs-health-check-container {
     display: flex; flex-direction: row; margin-left: 1rem; align-items: center;
 }
-
 .fs-row {
-    display: flex; flex-direction: row;
+    display: flex;
+    flex-direction: row;
+}
+
+.fs-icon-row {
+    width: 9%;
+    box-sizing: border-box;
+    overflow: hidden;
+    min-width: 60px;
+    max-width: 120px;
+}
+
+.fs-icon-row > img{
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain;
+    margin: 0 !important; /* had to do this because could not assign class to img elements and WC rules are more specific than this class */
+}
+
+/* Media queries*/
+@media (max-width: 1200px) {
+    .fs-icon-row { width: 10%; }
+}
+@media (max-width: 992px) {
+    .fs-icon-row { width: 12%; }
+}
+@media (max-width: 768px) {
+    .fs-icon-row { width: 14%; }
+}
+@media (max-width: 576px) {
+    .fs-icon-row { width: 25%; }
 }
