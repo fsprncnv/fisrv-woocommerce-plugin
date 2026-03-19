@@ -21,12 +21,9 @@ class WC_Fiserv_Gateway_Ideal extends WC_Fiserv_Payment_Gateway
         $this->title = 'iDEAL | Wero';
         $this->description = esc_html__('You will be redirected to an external checkout page.', 'fiserv-checkout-for-woocommerce');
 
-            // Test if constructor runs (WooCommerce log)
-            if (function_exists('wc_get_logger')) {
-                $logger = wc_get_logger();
-                $logger->info('WC_Fiserv_Gateway_Ideal constructor executed', array('source' => 'fiserv-ideal-test'));
-            }
-
         parent::__construct();
+        // Removes name customization from card page as Credit / Debit Card name is required
+        unset($this->form_fields['title']);
     }
+
 }
