@@ -156,6 +156,18 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Fiserv_Payment_Settings
             $this->description = $this->get_option('description');
             return;
         }
+        
+        // Force iDEAL gateway to always use the correct title
+        $ideal_title = __('iDEAL | Wero', 'fiserv-checkout-for-woocommerce');
+        if ($this->id === Fisrv_Identifiers::GATEWAY_IDEAL->value) {
+            if ($this->title !== $ideal_title) {
+                $this->title = $ideal_title;
+                $this->update_option('title', $ideal_title);
+            }
+            $this->description = $this->get_option('description');
+            return;
+        }
+        
         $this->title = $this->get_option('title');
         $this->description = $this->get_option('description');
     }
