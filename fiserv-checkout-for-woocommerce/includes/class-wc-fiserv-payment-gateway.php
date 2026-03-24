@@ -234,7 +234,7 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Fiserv_Payment_Settings
             ];
         } catch (\Throwable $th) {
             WC_Fiserv_Logger::error($order, $th->getMessage());
- 
+
             return [
                 'result' => 'failure',
             ];

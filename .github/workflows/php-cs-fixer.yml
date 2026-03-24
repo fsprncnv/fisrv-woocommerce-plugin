@@ -1,9 +1,6 @@
 name: PHP CS Fixer
 
 on:
-  push:
-    # run on pushes to branches so you can observe the check before PRs
-    branches: ['**']
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
 
