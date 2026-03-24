@@ -17,10 +17,9 @@ use Fisrv\Models\PreSelectedPaymentMethod;
  */
 abstract class WC_Fiserv_Payment_Gateway extends WC_Fiserv_Payment_Settings
 {
-
     protected ?PreSelectedPaymentMethod $selected_method = null;
 
-    protected array $supported_methods = array();
+    protected array $supported_methods = [];
 
     public function __construct()
     {
@@ -29,26 +28,26 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Fiserv_Payment_Settings
         $this->has_fields = false;
         $this->init_form_fields();
         $this->init_properties();
-        $this->supports = array(
+        $this->supports = [
             'products',
             'refunds',
-        );
+        ];
 
         add_action('add_meta_boxes', [$this, 'custom_order_meta_box'], 10, 2);
-        add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
+        add_action('woocommerce_update_options_payment_gateways_' . $this->id, [$this, 'process_admin_options']);
 
-        add_filter('woocommerce_gateway_icon', array($this, 'custom_payment_gateway_icons'), 10, 2);
-        add_filter('woocommerce_generate_custom_icon_html', array(WC_Fiserv_Payment_Settings::class, 'render_icons_component'), 1, 4);
-        add_filter('woocommerce_generate_wp_theme_data_html', array(WC_Fiserv_Payment_Settings::class, 'render_wp_theme_data'), 1, 4);
-        add_filter('woocommerce_generate_healthcheck_html', array(WC_Fiserv_Payment_Settings::class, 'render_healthcheck'), 10, 4);
-        add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array(WC_Fiserv_Payment_Settings::class, 'custom_save_icon_value'), 10, 1);
-        add_filter('woocommerce_locate_template', array($this, 'custom_woocommerce_locate_template'), 10, 3);
-        // add_filter('woocommerce_generate_text_html', array(WC_Fiserv_Payment_Settings::class, 'render_text_field'), 1, 4);
+        add_filter('woocommerce_gateway_icon', [$this, 'custom_payment_gateway_icons'], 10, 2);
+        add_filter('woocommerce_generate_custom_icon_html', [WC_Fiserv_Payment_Settings::class, 'render_icons_component'], 1, 4);
+        add_filter('woocommerce_generate_wp_theme_data_html', [WC_Fiserv_Payment_Settings::class, 'render_wp_theme_data'], 1, 4);
+        add_filter('woocommerce_generate_healthcheck_html', [WC_Fiserv_Payment_Settings::class, 'render_healthcheck'], 10, 4);
+        add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, [WC_Fiserv_Payment_Settings::class, 'custom_save_icon_value'], 10, 1);
+        add_filter('woocommerce_locate_template', [$this, 'custom_woocommerce_locate_template'], 10, 3);
+        // add_filter('woocommerce_generate_text_html', [WC_Fiserv_Payment_Settings::class, 'render_text_field'], 1, 4);
     }
 
     /**
      * UI component used for detailed checkout response report
-     * 
+     *
      * @param  mixed $id
      * @param  mixed $order
      * @return void
@@ -90,7 +89,7 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Fiserv_Payment_Settings
 
     /**
      * Callback used for custom_order_meta_box. Contains UI markup.
-     * 
+     *
      * @param  mixed $order
      * @return string
      */
@@ -125,7 +124,7 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Fiserv_Payment_Settings
     /**
      * Check if payment method is available. Disable if API credentials are empty.
      * Does not validate set values.
-     * 
+     *
      * @return bool True if payment gateway available
      */
     public function is_available(): bool
@@ -134,11 +133,11 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Fiserv_Payment_Settings
 
         return !in_array(
             '',
-            array(
+            [
                 $generic_gateway->get_option('api_key'),
                 $generic_gateway->get_option('api_secret'),
                 $generic_gateway->get_option('store_id'),
-            )
+            ]
         ) && parent::is_available();
     }
 
@@ -165,9 +164,10 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Fiserv_Payment_Settings
                 $this->update_option('title', $ideal_title);
             }
             $this->description = $this->get_option('description');
+
             return;
         }
-        
+
         $this->title = $this->get_option('title');
         $this->description = $this->get_option('description');
     }
@@ -190,7 +190,7 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Fiserv_Payment_Settings
 
     /**
      * Inject payment method template to adjust layout on selection box
-     * 
+     *
      * @param  mixed $template
      * @param  mixed $template_name
      * @param  mixed $template_path
@@ -213,7 +213,7 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Fiserv_Payment_Settings
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @return array<string, string>
      */
     public function process_payment($order_id): array
@@ -226,21 +226,23 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Fiserv_Payment_Settings
 
         try {
             $checkout_link = WC_Fiserv_Checkout_Handler::create_checkout_link($order, $this->selected_method);
-            return array(
+
+            return [
                 'result' => 'success',
                 'redirect' => $checkout_link,
-            );
+            ];
         } catch (\Throwable $th) {
             WC_Fiserv_Logger::error($order, $th->getMessage());
-            return array(
+ 
+            return [
                 'result' => 'failure',
-            );
+            ];
         }
     }
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @param  mixed $order_id
      * @param  mixed $amount
      * @param  mixed $reason
@@ -257,15 +259,18 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Fiserv_Payment_Settings
             $response = WC_Fiserv_Checkout_Handler::refund_checkout($order, $amount);
             if (isset($response->error)) {
                 $order->add_order_note("Refund failed due to {($response->error->title ?? 'server error')}. Check debug logs for detailed report." . (($reason !== '') ? (" Refund reason given: $reason") : ''));
+
                 return false;
             }
             $order->add_order_note("Order refunded  Gateway. Refunded amount: {$response->approvedAmount->total} {$response->approvedAmount->currency->value} Transaction ID: {$response->ipgTransactionId}" . (($reason !== '') ? (" Refund reason given: $reason") : ''));
+
             return true;
         } catch (ErrorResponse $e) {
             WC_Fiserv_Logger::log($order, 'Refund has failed on API client (or server) level: ' . $e->getMessage());
         } catch (\Throwable $th) {
             WC_Fiserv_Logger::log($order, 'Refund has failed on backend level: ' . $th->getMessage());
         }
+        
         return false;
     }
 

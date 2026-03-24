@@ -25,7 +25,7 @@ final class WC_Fiserv_Rest_Routes
         register_rest_route(
             self::$plugin_rest_path,
             '/health',
-            array(
+            [
                 'methods' => WP_REST_Server::READABLE,
                 'callback' => function (WP_REST_Request $request) {
                     return new WP_REST_Response(
@@ -42,7 +42,7 @@ final class WC_Fiserv_Rest_Routes
                 'permission_callback' => function () {
                     return current_user_can('administrator');
                 }
-            )
+            ]
         );
     }
 
@@ -63,24 +63,24 @@ final class WC_Fiserv_Rest_Routes
 
             if (!$gateway) {
                 return new WP_REST_Response(
-                    array(
+                    [
                         'status' => 'error',
                         'gateway_id' => $gateway_id,
                         'error' => 'Gateway ID invalid',
                         'list' => wp_json_encode((new WC_Payment_Gateways())->payment_gateways()),
-                    )
+                    ]
                 );
             }
 
             $list_json = $gateway->get_option('custom_icon');
-            $decoded_list = json_decode($list_json, true) ?? array();
+            $decoded_list = json_decode($list_json, true) ?? [];
 
             if (self::is_image_url($img_url)) {
-                throw new Exception("Image URL is invalid");
+                throw new Exception('Image URL is invalid');
             }
 
             if (in_array($img_url, $decoded_list)) {
-                throw new Exception("Image is already in list");
+                throw new Exception('Image is already in list');
             }
 
             array_push($decoded_list, $img_url);
@@ -89,19 +89,19 @@ final class WC_Fiserv_Rest_Routes
 
         } catch (\Throwable $th) {
             return new WP_REST_Response(
-                array(
+                [
                     'status' => 'error',
                     'message' => $th->getMessage(),
                     'icons' => $encoded_list
-                )
+                ]
             );
         }
 
         return new WP_REST_Response(
-            array(
+            [
                 'status' => 'ok',
                 'message' => 'Icon added successfully!',
-            )
+            ]
         );
     }
 
@@ -138,9 +138,9 @@ final class WC_Fiserv_Rest_Routes
             $is_image_ct = str_starts_with($ct, 'image/')
                 || in_array($ct, ['text/xml', 'application/xml'], true); // some servers misreport SVG
         }
+
         return ($status >= 200 && $status < 300) && $is_image_ct;
     }
-
 
     /**
      * Register endpoint for payment icon addition
@@ -152,13 +152,13 @@ final class WC_Fiserv_Rest_Routes
         register_rest_route(
             self::$plugin_rest_path,
             '/image',
-            array(
+            [
                 'methods' => WP_REST_Server::CREATABLE,
                 'callback' => array(self::class, 'add_image'),
                 'permission_callback' => function () {
                     return current_user_can('administrator');
                 }
-            )
+            ]
         );
     }
 
@@ -177,34 +177,34 @@ final class WC_Fiserv_Rest_Routes
 
             if (!$gateway) {
                 return new WP_REST_Response(
-                    array(
+                    [
                         'status' => 'error',
                         'gateway_id' => $gateway_id,
                         'error' => 'Gateway ID invalid',
                         'list' => wp_json_encode((new WC_Payment_Gateways())->payment_gateways()),
-                    )
+                    ]
                 );
             }
 
             $list_json = $gateway->get_option('custom_icon');
-            $decoded_list = json_decode($list_json, true) ?? array();
+            $decoded_list = json_decode($list_json, true) ?? [];
             unset($decoded_list[$icon_id]);
 
             $gateway->update_option('custom_icon', wp_json_encode($decoded_list));
 
         } catch (\Throwable $th) {
             return new WP_REST_Response(
-                array(
+                [
                     'status' => 'error',
                     'error' => $th->getMessage(),
-                )
+                ]
             );
         }
 
         return new WP_REST_Response(
-            array(
+            [
                 'status' => 'ok',
-            )
+            ]
         );
     }
 
@@ -219,13 +219,13 @@ final class WC_Fiserv_Rest_Routes
         register_rest_route(
             self::$plugin_rest_path,
             '/image',
-            array(
+            [
                 'methods' => WP_REST_Server::DELETABLE,
-                'callback' => array(self::class, 'remove_image'),
+                'callback' => [self::class, 'remove_image'],
                 'permission_callback' => function () {
                     return current_user_can('administrator');
                 }
-            )
+            ]
         );
     }
 
@@ -239,7 +239,7 @@ final class WC_Fiserv_Rest_Routes
         register_rest_route(
             self::$plugin_rest_path,
             '/checkout-details',
-            array(
+            [
                 'methods' => WP_REST_Server::READABLE,
                 'callback' => function (WP_REST_Request $request) {
                     $checkout_id = (string) $request->get_param('checkout-id');
@@ -248,7 +248,7 @@ final class WC_Fiserv_Rest_Routes
                 'permission_callback' => function () {
                     return current_user_can('administrator');
                 }
-            )
+            ]
         );
     }
 }

@@ -47,7 +47,7 @@ final class WC_Fiserv_Checkout_Handler
         $plugin_data = get_plugin_data(__DIR__ . '/../fiserv-checkout-for-woocommerce.php');
         $plugin_version = $plugin_data['Version'] ?? FISRV_PLUGIN_VERSION;
 
-        return array(
+        return [
             'pluginversion' => $plugin_version,
             'shopsystem' => 'woocommerce',
             'shopversion' => wp_get_wp_version(),
@@ -55,7 +55,7 @@ final class WC_Fiserv_Checkout_Handler
             'api_key' => $generic_gateway->get_option('api_key'),
             'api_secret' => $generic_gateway->get_option('api_secret'),
             'store_id' => $generic_gateway->get_option('store_id'),
-        );
+        ];
     }
 
     /**
@@ -129,16 +129,17 @@ final class WC_Fiserv_Checkout_Handler
         self::$client = new CheckoutClient(self::init_api_credentials($generic_gateway));
         $response = self::$client->refundCheckout(
             new PaymentsClientRequest(
-                array(
-                    'transactionAmount' => array(
+                [
+                    'transactionAmount' => [
                         'total' => $amount,
                         'currency' => get_woocommerce_currency(),
-                    ),
-                )
+                    ],
+                ]
             ),
             $order->get_meta('_fiserv_plugin_checkout_id')
         );
         WC_Fiserv_Logger::generic_log('Refund response: ' . $response);
+
         return $response;
     }
 
@@ -166,11 +167,13 @@ final class WC_Fiserv_Checkout_Handler
                 $message = __('Store is likely not set up correctly.', 'fiserv-checkout-for-woocommerce');
                 WC_Fiserv_Logger::generic_log('Verbose report log: ' . json_decode($report->requestLog, true));
             }
+
             return [
                 'status' => $report->httpCode,
                 'message' => $message,
             ];
         }
+
         return [
             'status' => 'ok',
             'message' => "You're all set!",
@@ -198,6 +201,7 @@ final class WC_Fiserv_Checkout_Handler
             ];
         }
         ob_end_clean();
+
         return rest_ensure_response($response);
     }
 
@@ -214,7 +218,7 @@ final class WC_Fiserv_Checkout_Handler
 
         foreach ($wc_items as $item) {
             $req->order->basket->lineItems[] = new LineItem(
-                array(
+                [
                     'itemIdentifier' => $item->get_id(),
                     'name' => $item->get_name(),
                     'price' => $order->get_item_total($item),
@@ -222,7 +226,7 @@ final class WC_Fiserv_Checkout_Handler
                     'quantity' => $item->get_quantity(),
                     'shippingCost' => 0,
                     'valueAddedTax' => 0,
-                )
+                ]
             );
         }
 
@@ -239,17 +243,17 @@ final class WC_Fiserv_Checkout_Handler
      */
     private static function pass_checkout_data(CheckoutClientRequest $req, WC_Order $order, ?PreSelectedPaymentMethod $method, bool $simplify_total, WC_Payment_Gateway $gateway): CheckoutClientRequest
     {
-        // Locale 
+        // Locale
         $wp_language = str_replace('-', '_', get_bloginfo('language'));
         $locale = Locale::tryFrom($wp_language);
         if (substr($wp_language, 0, 2) == 'de') {
             $locale = Locale::de_DE;
         }
         $req->checkoutSettings->locale = $locale ?? Locale::en_GB;
-        // Currency 
+        // Currency
         $wp_currency = get_woocommerce_currency();
         $req->transactionAmount->currency = Currency::tryFrom($wp_currency) ?? Currency::EUR;
-        // WC order numbers, IDs 
+        // WC order numbers, IDs
         $req->order->orderDetails->purchaseOrderNumber = strval($order->get_id());
         // Order totals
         $req->transactionAmount->total = $order->get_total();
@@ -266,13 +270,13 @@ final class WC_Fiserv_Checkout_Handler
             $order,
             'Requesting transaction in the amount of : ' . $req->transactionAmount->currency->value . ' ' . $req->transactionAmount->total
         );
-        // Redirect URLs  
+        // Redirect URLs
         $nonce = wp_create_nonce(Fisrv_Identifiers::FISRV_NONCE->value);
         $req->checkoutSettings->redirectBackUrls->successUrl = add_query_arg(
-            array(
+            [
                 '_wpnonce' => $nonce,
                 'transaction_approved' => 'true',
-            ),
+            ],
             $order->get_checkout_order_received_url()
         );
         $selectedFailurePage = $order->get_checkout_payment_url();
@@ -280,20 +284,20 @@ final class WC_Fiserv_Checkout_Handler
             $selectedFailurePage = wc_get_cart_url();
         }
         $req->checkoutSettings->redirectBackUrls->failureUrl = add_query_arg(
-            array(
+            [
                 '_wpnonce' => $nonce,
                 'transaction_approved' => 'false',
                 'wc_order_id' => $order->get_id(),
-            ),
+            ],
             $selectedFailurePage
         );
         // Append ampersand to allow checkout solution to append query params 
         $req->checkoutSettings->redirectBackUrls->failureUrl .= '&';
         $req->checkoutSettings->webHooksUrl = add_query_arg(
-            array(
+            [
                 '_sign' => base64_encode($order->get_id()),
                 'wc_order_id' => $order->get_id(),
-            ),
+            ],
             get_rest_url(null, WC_Fiserv_Rest_Routes::$plugin_rest_path . '/events')
         );
         if ($order->get_payment_method() !== Fisrv_Identifiers::GATEWAY_GENERIC->value) {
@@ -301,6 +305,7 @@ final class WC_Fiserv_Checkout_Handler
         }
         // Remove create token object since plugin doesnt intend support for tokens
         unset($req->paymentMethodDetails->cards->createToken);
+
         return $req;
     }
 
@@ -326,6 +331,7 @@ final class WC_Fiserv_Checkout_Handler
 
         if ($wp_user_id === '' || is_null($wp_user_id)) {
             WC_Fiserv_Logger::generic_log('Token: No user logged in');
+            
             return $req;
         }
 
