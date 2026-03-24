@@ -53,7 +53,7 @@ final class WC_Fiserv_Webhook_Handler
         } catch (Exception $e) {
             WC_Fiserv_Logger::generic_log('Webhook call has failed: ' . $e->getMessage());
 
-            return new WP_Error('Webhook call has failed', $e->getMessage(), array('status' => 403));
+            return new WP_Error('Webhook call has failed', $e->getMessage(), ['status' => 403]);
         }
     }
 
@@ -142,7 +142,7 @@ final class WC_Fiserv_Webhook_Handler
             default:
                 $wc_status = 'wc-pending';
 
-            break;
+                break;
         }
 
         $wc_status_unprefixed = substr($wc_status, 3);

@@ -115,7 +115,6 @@ final class WC_Fiserv_Checkout_Handler
         }
     }
 
-
     /**
      * Refund checkout via IPG Rest API. Retrieve order by checkout ID.
      *
@@ -291,7 +290,7 @@ final class WC_Fiserv_Checkout_Handler
             ],
             $selectedFailurePage
         );
-        // Append ampersand to allow checkout solution to append query params 
+        // Append ampersand to allow checkout solution to append query params
         $req->checkoutSettings->redirectBackUrls->failureUrl .= '&';
         $req->checkoutSettings->webHooksUrl = add_query_arg(
             [
@@ -331,7 +330,7 @@ final class WC_Fiserv_Checkout_Handler
 
         if ($wp_user_id === '' || is_null($wp_user_id)) {
             WC_Fiserv_Logger::generic_log('Token: No user logged in');
-            
+
             return $req;
         }
 

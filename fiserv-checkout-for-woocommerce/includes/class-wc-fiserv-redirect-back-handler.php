@@ -104,7 +104,7 @@ final class WC_Fiserv_Redirect_Back_Handler
                 if ($generic_gateway->get_option('autocomplete') === 'no') {
                     $order->update_status('wc-processing', __('Order was paid sucessfully.', 'fiserv-checkout-for-woocommerce'));
                     WC_Fiserv_Logger::log($order, 'Payment complete. Order processing. (auto-complete off)');
-                    
+
                     return;
                 }
 

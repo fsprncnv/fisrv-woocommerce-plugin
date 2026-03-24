@@ -153,9 +153,10 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Fiserv_Payment_Settings
                 $this->update_option('title', $credit_title);
             }
             $this->description = $this->get_option('description');
+
             return;
         }
-        
+
         // Force iDEAL gateway to always use the correct title
         $ideal_title = __('iDEAL | Wero', 'fiserv-checkout-for-woocommerce');
         if ($this->id === Fisrv_Identifiers::GATEWAY_IDEAL->value) {
@@ -270,7 +271,7 @@ abstract class WC_Fiserv_Payment_Gateway extends WC_Fiserv_Payment_Settings
         } catch (\Throwable $th) {
             WC_Fiserv_Logger::log($order, 'Refund has failed on backend level: ' . $th->getMessage());
         }
-        
+
         return false;
     }
 

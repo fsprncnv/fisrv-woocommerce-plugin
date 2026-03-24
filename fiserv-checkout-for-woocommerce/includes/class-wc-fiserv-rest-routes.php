@@ -105,7 +105,6 @@ final class WC_Fiserv_Rest_Routes
         );
     }
 
-
     /**
      * Validate that a URL points to an image (server-side).
      * Returns array: [ 'ok' => bool, 'content_type' => string|null, 'status' => int|null, 'reason' => string|null ]
@@ -154,7 +153,7 @@ final class WC_Fiserv_Rest_Routes
             '/image',
             [
                 'methods' => WP_REST_Server::CREATABLE,
-                'callback' => array(self::class, 'add_image'),
+                'callback' => [self::class, 'add_image'],
                 'permission_callback' => function () {
                     return current_user_can('administrator');
                 }
@@ -208,7 +207,6 @@ final class WC_Fiserv_Rest_Routes
         );
     }
 
-
     /**
      * Register endpoint for payment icon removal
      *
@@ -243,6 +241,7 @@ final class WC_Fiserv_Rest_Routes
                 'methods' => WP_REST_Server::READABLE,
                 'callback' => function (WP_REST_Request $request) {
                     $checkout_id = (string) $request->get_param('checkout-id');
+
                     return WC_Fiserv_Checkout_Handler::get_checkout_details($checkout_id);
                 },
                 'permission_callback' => function () {
