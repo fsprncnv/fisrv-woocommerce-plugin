@@ -33,5 +33,30 @@ jobs:
         run: ./php-cs-fixer --version
 
       - name: Run php-cs-fixer (check only)
+        id: php_cs
+        continue-on-error: true
+        shell: bash
         run: |
-          ./php-cs-fixer fix --config=.php-cs-fixer.php --dry-run --diff --verbose --allow-risky=yes
+          set -o pipefail
+          ./php-cs-fixer fix --config=.php-cs-fixer.php --dry-run --diff --verbose --allow-risky=yes 2>&1 | tee php-cs-fixer-output.txt
+          echo "exitcode=${PIPESTATUS[0]}" >> $GITHUB_OUTPUT
+
+      - name: Upload php-cs-fixer diff
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: php-cs-fixer-diff
+          path: php-cs-fixer-output.txt
+
+      - name: Fail if php-cs-fixer found issues
+        if: always()
+        run: |
+          exit_code="${{ steps.php_cs.outputs.exitcode }}"
+          if [ -z "$exit_code" ]; then
+            echo "No exit code from php-cs-fixer step; assuming failure"
+            exit 1
+          fi
+          if [ "$exit_code" -ne 0 ]; then
+            echo "php-cs-fixer exit code: $exit_code - failing job"
+            exit $exit_code
+          fi
