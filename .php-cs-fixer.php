@@ -48,8 +48,8 @@ $config
     ])
     ->setFinder(
         PhpCsFixer\Finder::create()
-            ->in([
-                __DIR__ . '/fiserv-checkout-for-woocommerce/includes',
+            ->in(__DIR__ . '/fiserv-checkout-for-woocommerce/includes')
+            ->append([
                 __DIR__ . '/fiserv-checkout-for-woocommerce/fiserv-checkout-for-woocommerce.php',
             ])
     )
