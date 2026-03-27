@@ -26,11 +26,12 @@ final class WC_Fiserv_Redirect_Back_Handler
         $order_button_text = esc_html__('Retry payment', 'fiserv-checkout-for-woocommerce');
         $order->update_status('wc-pending', esc_html__('Retrying payment', 'fiserv-checkout-for-woocommerce'));
         self::display_error_message($order);
-        return array(
+
+        return [
             'order' => $order,
             'available_gateways' => $available_gateways,
             'order_button_text' => $order_button_text,
-        );
+        ];
     }
 
     public static function retry_payment_on_cart(): void
@@ -103,6 +104,7 @@ final class WC_Fiserv_Redirect_Back_Handler
                 if ($generic_gateway->get_option('autocomplete') === 'no') {
                     $order->update_status('wc-processing', __('Order was paid sucessfully.', 'fiserv-checkout-for-woocommerce'));
                     WC_Fiserv_Logger::log($order, 'Payment complete. Order processing. (auto-complete off)');
+
                     return;
                 }
 

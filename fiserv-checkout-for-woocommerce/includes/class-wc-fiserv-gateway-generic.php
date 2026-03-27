@@ -35,92 +35,92 @@ class WC_Fiserv_Payment_Generic extends WC_Fiserv_Payment_Gateway
                 'title' => esc_html__('Basic Settings', 'fiserv-checkout-for-woocommerce'),
                 'type' => 'section_heading'
             ],
-            'api_key' => array(
+            'api_key' => [
                 'title' => esc_html__('API Key', 'fiserv-checkout-for-woocommerce'),
                 'type' => 'text',
                 'description' => esc_html__('Acquire API Key from Developer Portal', 'fiserv-checkout-for-woocommerce'),
                 'desc_tip' => true,
                 'no_reset' => true,
-            ),
-            'api_secret' => array(
+            ],
+            'api_secret' => [
                 'title' => 'API Secret',
                 'type' => 'password',
                 'description' => esc_html__('Acquire API Secret from Developer Portal', 'fiserv-checkout-for-woocommerce'),
                 'desc_tip' => true,
                 'no_reset' => true,
-            ),
-            'store_id' => array(
+            ],
+            'store_id' => [
                 'title' => 'Store ID',
                 'type' => 'text',
                 'description' => esc_html__('Your Store ID for Checkout', 'fiserv-checkout-for-woocommerce'),
                 'desc_tip' => true,
                 'no_reset' => true,
-            ),
-            'is_prod' => array(
+            ],
+            'is_prod' => [
                 'title' => esc_html__('Production Mode', 'fiserv-checkout-for-woocommerce'),
                 'type' => 'checkbox',
                 'description' => esc_html__('Use Live (Production) Mode or Test (Sandbox) Mode', 'fiserv-checkout-for-woocommerce'),
                 'desc_tip' => true,
                 'no_reset' => true,
-            ),
-            'healthcheck' => array(
+            ],
+            'healthcheck' => [
                 'title' => esc_html__('API Health', 'fiserv-checkout-for-woocommerce'),
                 'type' => 'healthcheck',
                 'description' => esc_html__('Get current status of Fiserv API and your configuration', 'fiserv-checkout-for-woocommerce'),
                 'desc_tip' => true,
-            ),
-            'enable_log' => array(
+            ],
+            'enable_log' => [
                 'title' => esc_html__('Enable Developer Logs', 'fiserv-checkout-for-woocommerce'),
                 'type' => 'checkbox',
                 'default' => false,
                 'description' => esc_html__('Enable log messages on WooCommerce', 'fiserv-checkout-for-woocommerce'),
                 'desc_tip' => true,
-            ),
+            ],
             'section-2' => [
                 'title' => esc_html__('Order Settings', 'fiserv-checkout-for-woocommerce'),
                 'type' => 'section_heading'
             ],
-            'autocomplete' => array(
+            'autocomplete' => [
                 'title' => esc_html__('Auto-complete Orders', 'fiserv-checkout-for-woocommerce'),
                 'type' => 'checkbox',
                 'description' => esc_html__('Skip processing order status and set to complete status directly', 'fiserv-checkout-for-woocommerce'),
                 'desc_tip' => true,
-            ),
-            'fail_page' => array(
+            ],
+            'fail_page' => [
                 'title' => esc_html__('Redirect after payment failure', 'fiserv-checkout-for-woocommerce'),
                 'type' => 'select',
                 'description' => esc_html__('Where to redirect if payment failed', 'fiserv-checkout-for-woocommerce'),
                 'default' => 'checkout',
-                'options' => array(
+                'options' => [
                     'checkout' => esc_html__('Checkout page', 'fiserv-checkout-for-woocommerce'),
                     'cart' => esc_html__('Shopping cart', 'fiserv-checkout-for-woocommerce'),
-                ),
-            ),
-            'transaction_type' => array(
+                ],
+            ],
+            'transaction_type' => [
                 'title' => esc_html__('Transaction Type', 'fiserv-checkout-for-woocommerce'),
                 'type' => 'transaction_type',
                 'desc_tip' => true,
                 'description' => esc_html__('Set transaction type. Currently, only SALE transactions are available.', 'fiserv-checkout-for-woocommerce'),
                 'default' => 'Sale',
                 'css' => 'disabled; pointer-events: none;',
-            ),
-            'simplify_total' => array(
+            ],
+            'simplify_total' => [
                 'title' => esc_html__('Use Total Amount Only', 'fiserv-checkout-for-woocommerce'),
                 'type' => 'checkbox',
                 'description' => esc_html__('Send Only Final Total to Payment Processor', 'fiserv-checkout-for-woocommerce'),
                 'desc_tip' => esc_html__('When enabled, the plugin will send only the final order total to the payment processor. Detailed line items (products, VAT, shipping, discounts, etc.) will not be included. Useful for avoiding parsing or validation issues.', 'fiserv-checkout-for-woocommerce'),
                 'default' => 'no',
-            ),
+            ],
             'section-3' => [
                 'title' => esc_html__('Customization', 'fiserv-checkout-for-woocommerce'),
                 'type' => 'section_heading'
             ],
-            'wp_theme_data' => array(
+            'wp_theme_data' => [
                 'title' => esc_html__('Theme Colors', 'fiserv-checkout-for-woocommerce'),
                 'type' => 'wp_theme_data',
                 'desc_tip' => true,
                 'description' => esc_html__('Info about current WordPress theme data which you can use to customize your checkout page on our Virtual Terminal', 'fiserv-checkout-for-woocommerce'),
-            ),
+            ],
         ];
 
         parent::init_form_fields();

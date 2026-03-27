@@ -8,7 +8,7 @@ if (!defined('ABSPATH')) {
  * Abstract class that is inherited by WC_Fiserv_Payment_Gateway and inherits
  * WC_Payment_Gateway. This class contains all render methods (HTML markup) and
  * logic pertaining to payment gateway settings only.
- * 
+ *
  * @since 1.1.0
  */
 abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
@@ -123,7 +123,7 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
      * @param mixed $echo
      * @return string
      */
-    public function generate_settings_html($form_fields = array(), $echo = true): string
+    public function generate_settings_html($form_fields = [], $echo = true): string
     {
         if (empty($form_fields)) {
             $form_fields = $this->get_form_fields();
@@ -254,7 +254,7 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
                 </div>
                 <?php
             }
-            ?>
+        ?>
         </div>
         <?php
         return self::render_option_tablerow($key, $data, $wc_settings, ob_get_clean());
@@ -262,7 +262,7 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
 
     /**
      * Utiltiy method to check if given color is dark. If true, then color is dark enough to contrast
-     * better with white text (for readability). 
+     * better with white text (for readability).
 
      * @param string $hexColor
      * @return bool
@@ -277,6 +277,7 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
         $b = ($rgb >> 0) & 0xff;
 
         $luma = 0.2126 * $r + 0.7152 * $g + 0.0722 * $b;
+
         return $luma < 40;
     }
 
@@ -297,14 +298,14 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
             <th scope="row" class="titledesc">
                 <label
                     for="<?php echo esc_attr("woocommerce_{$wc_settings->id}_{$key}"); ?>"><?php echo wp_kses_post($data['title']); ?>
-                    <?php echo $wc_settings->get_tooltip_html($data); // WPCS: XSS ok. ?>
+                    <?php echo $wc_settings->get_tooltip_html($data); // WPCS: XSS ok.?>
                 </label>
             </th>
             <td class="forminp">
                 <fieldset class="fs-row" style="align-items: center;">
                     <legend class="screen-reader-text"><span><?php echo esc_html($data['title']) ?></span></legend>
                     <?php echo wp_kses($child_component, self::$WP_KSES_ALLOWED) ?>
-                    <?php echo $wc_settings->get_description_html($data); // WPCS: XSS ok. ?>
+                    <?php echo $wc_settings->get_description_html($data); // WPCS: XSS ok.?>
                 </fieldset>
             </td>
         </tr>
@@ -359,21 +360,21 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
         ob_start();
         ?>
         <div class="fs-icon-row">
-            <?php
-            $method_icon = self::get_method_icon($gateway_id);
-            if ($gateway_id !== Fisrv_Identifiers::GATEWAY_GENERIC->value) {
+        <?php
+        $method_icon = self::get_method_icon($gateway_id);
+        if ($gateway_id !== Fisrv_Identifiers::GATEWAY_GENERIC->value) {
+            echo wp_kses(self::render_icon($method_icon, $small), self::$WP_KSES_ALLOWED);
+        } else {
+            $icons = json_decode($gateway->get_option('custom_icon'), true);
+            if (empty($icons)) {
                 echo wp_kses(self::render_icon($method_icon, $small), self::$WP_KSES_ALLOWED);
             } else {
-                $icons = json_decode($gateway->get_option('custom_icon'), true);
-                if (empty($icons)) {
-                    echo wp_kses(self::render_icon($method_icon, $small), self::$WP_KSES_ALLOWED);
-                } else {
-                    foreach ($icons as $index => $icon) {
-                        echo wp_kses(self::render_icon_with_overlay($icon, $index, $small), self::$WP_KSES_ALLOWED);
-                    }
+                foreach ($icons as $index => $icon) {
+                    echo wp_kses(self::render_icon_with_overlay($icon, $index, $small), self::$WP_KSES_ALLOWED);
                 }
             }
-            ?>
+        }
+        ?>
         </div>
         <?php
 
@@ -531,11 +532,13 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
                 )
             ) {
                 WC_Admin_Settings::add_error(__('Security check failed. Settings were not reset.', 'fiserv-checkout-for-woocommerce'));
+
                 return parent::process_admin_options();
             }
             $this->reset_settings_to_defaults();
             WC_Admin_Settings::add_message(__('Settings have been restored to defaults.', 'fiserv-checkout-for-woocommerce'));
             $this->init_settings();
+
             return;
         }
         parent::process_admin_options();
@@ -571,38 +574,38 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
      */
     public function init_form_fields(): void
     {
-        $this->form_fields += array(
-            'icons' => array(
+        $this->form_fields += [
+            'icons' => [
                 'title' => esc_html__('Gateway Icon', 'fiserv-checkout-for-woocommerce'),
                 'description' => esc_html__('Image URL for asset', 'fiserv-checkout-for-woocommerce'),
                 'type' => 'custom_icon',
                 'desc_tip' => true,
-            ),
-            'title' => array(
+            ],
+            'title' => [
                 'title' => esc_html__('Gateway Name', 'fiserv-checkout-for-woocommerce'),
                 'type' => 'text',
                 'description' => esc_html__('Custom name of gateway', 'fiserv-checkout-for-woocommerce'),
                 'default' => $this->title,
                 'desc_tip' => true,
-            ),
-            'description' => array(
+            ],
+            'description' => [
                 'title' => esc_html__('Gateway Description', 'fiserv-checkout-for-woocommerce'),
                 'type' => 'text',
                 'description' => esc_html__('Custom description of gateway', 'fiserv-checkout-for-woocommerce'),
                 'default' => $this->description,
                 'desc_tip' => true,
-            ),
+            ],
             'section-4' => [
                 'title' => esc_html__('Restore or Save Settings', 'fiserv-checkout-for-woocommerce'),
                 'type' => 'section_heading'
             ],
-            'reset' => array(
+            'reset' => [
                 'title' => esc_html__('Restore default settings', 'fiserv-checkout-for-woocommerce'),
                 'description' => esc_html__('Restore to initial values', 'fiserv-checkout-for-woocommerce'),
                 'desc_tip' => true,
                 'type' => 'reset_settings',
-            ),
-        );
+            ],
+        ];
     }
 
     /**
@@ -612,6 +615,7 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
     public static function isLoggingEnabled(): bool
     {
         $gateway = WC()->payment_gateways()->payment_gateways()[Fisrv_Identifiers::GATEWAY_GENERIC->value];
+
         return $gateway->get_option('enable_log') === 'yes';
     }
 }

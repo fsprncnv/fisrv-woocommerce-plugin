@@ -34,7 +34,7 @@ final class WC_Fiserv_Logger
 
     /**
      * Generic log without order reference
-     * 
+     *
      * @param  string $message
      * @return void
      */
@@ -46,7 +46,7 @@ final class WC_Fiserv_Logger
         if (is_object($message)) {
             $message = json_encode($message, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         }
-        wc_get_logger()->notice($message, array('source' => self::SOURCE));
+        wc_get_logger()->notice($message, ['source' => self::SOURCE]);
     }
 
     /**
@@ -68,13 +68,13 @@ final class WC_Fiserv_Logger
      */
     private static function create_log_context(WC_Order $order): array
     {
-        return array(
+        return [
             'source' => self::SOURCE,
             'wc_order_id' => $order->get_id(),
             'wc_order_key' => $order->get_order_key(),
             'fiserv_link' => $order->get_meta('_fiserv_plugin_checkout_link'),
             'fiserv_checkout_id' => $order->get_meta('_fiserv_plugin_checkout_id'),
             'fiserv_trace_id' => $order->get_meta('_fiserv_plugin_trace_id'),
-        );
+        ];
     }
 }

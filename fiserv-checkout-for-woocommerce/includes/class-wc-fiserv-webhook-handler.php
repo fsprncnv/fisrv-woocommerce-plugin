@@ -42,17 +42,18 @@ final class WC_Fiserv_Webhook_Handler
             self::update_order($order_id, $webhook_event);
 
             $response = new WP_REST_Response(
-                array(
+                [
                     'wc_order_id' => $order_id,
                     'events' => $webhook_event,
-                )
+                ]
             );
             $response->set_status(200);
 
             return $response;
         } catch (Exception $e) {
             WC_Fiserv_Logger::generic_log('Webhook call has failed: ' . $e->getMessage());
-            return new WP_Error('Webhook call has failed', $e->getMessage(), array('status' => 403));
+
+            return new WP_Error('Webhook call has failed', $e->getMessage(), ['status' => 403]);
         }
     }
 
@@ -65,10 +66,10 @@ final class WC_Fiserv_Webhook_Handler
         register_rest_route(
             WC_Fiserv_Rest_Routes::$plugin_rest_path,
             '/events',
-            array(
+            [
                 'methods' => 'POST',
-                'callback' => array(self::class, 'consume_events')
-            ),
+                'callback' => [self::class, 'consume_events']
+            ]
         );
     }
 
@@ -90,7 +91,7 @@ final class WC_Fiserv_Webhook_Handler
         }
 
         $stored_events_list = json_decode(strval($order->get_meta('_fiserv_plugin_webhook_event')), true);
-        $events_list = array();
+        $events_list = [];
 
         if (is_array($stored_events_list)) {
             $events_list = $stored_events_list;
@@ -108,40 +109,40 @@ final class WC_Fiserv_Webhook_Handler
         $is_autocomplete = $generic_gateway->get_option('autocomplete') === 'yes';
 
         switch ($ipgTransactionStatus) {
-        case TransactionStatus::WAITING:
-            $wc_status = 'wc-on-hold';
+            case TransactionStatus::WAITING:
+                $wc_status = 'wc-on-hold';
 
-            break;
-        case TransactionStatus::PARTIAL:
-            $wc_status = 'wc-on-hold';
+                break;
+            case TransactionStatus::PARTIAL:
+                $wc_status = 'wc-on-hold';
 
-            break;
-        case TransactionStatus::APPROVED:
-            if ($is_autocomplete) {
-                $wc_status = 'wc-processing';
-            } else {
-                $wc_status = 'wc-completed';
-                WC_Fiserv_Logger::log($order, 'Order completed via auto-complete');
-                $order->payment_complete();
-            }
+                break;
+            case TransactionStatus::APPROVED:
+                if ($is_autocomplete) {
+                    $wc_status = 'wc-processing';
+                } else {
+                    $wc_status = 'wc-completed';
+                    WC_Fiserv_Logger::log($order, 'Order completed via auto-complete');
+                    $order->payment_complete();
+                }
 
-            break;
-        case TransactionStatus::PROCESSING_FAILED:
-            $wc_status = 'wc-failed';
+                break;
+            case TransactionStatus::PROCESSING_FAILED:
+                $wc_status = 'wc-failed';
 
-            break;
-        case TransactionStatus::VALIDATION_FAILED:
-            $wc_status = 'wc-failed';
+                break;
+            case TransactionStatus::VALIDATION_FAILED:
+                $wc_status = 'wc-failed';
 
-            break;
-        case TransactionStatus::DECLINED:
-            $wc_status = 'wc-cancelled';
+                break;
+            case TransactionStatus::DECLINED:
+                $wc_status = 'wc-cancelled';
 
-            break;
-        default:
-            $wc_status = 'wc-pending';
+                break;
+            default:
+                $wc_status = 'wc-pending';
 
-            break;
+                break;
         }
 
         $wc_status_unprefixed = substr($wc_status, 3);
