@@ -79,6 +79,11 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
             'for' => true,
             'class' => true,
         ],
+        'a' => [
+            'href' => true,
+            'target' => true,
+            'rel' => true,
+        ],
     ];
 
     private $uh = [];
@@ -332,10 +337,9 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
                     'fiserv-checkout-for-woocommerce'
                 ) ?>.
             </div>
-            <div><?php echo esc_html__(
-                'Visit developer.fiserv.com',
-                'fiserv-checkout-for-woocommerce'
-            ) ?></div>
+            <div>
+                <a href="https://docs.fiserv.dev/public/docs/guides" target="_blank" rel="noopener noreferrer"><?php echo esc_html__('Visit Fiserv developer guide', 'fiserv-checkout-for-woocommerce'); ?></a>
+            </div>
         </div>
         <?php
 
