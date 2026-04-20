@@ -338,7 +338,7 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
                 ) ?>.
             </div>
             <div><?php echo esc_html__(
-                'Visit https://docs.fiserv.dev/public/docs/guides',
+                'Visit docs.fiserv.dev/public/docs/guides',
                 'fiserv-checkout-for-woocommerce'
             ) ?></div>
             </div>
