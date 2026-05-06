@@ -1,0 +1,10 @@
+parameters:
+  level: 1
+  paths:
+    - fiserv-checkout-for-woocommerce/includes
+  phpVersion: 80100
+  bootstrapFiles:
+    - phpstan-bootstrap.php
+    - fiserv-checkout-for-woocommerce/vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
+    - fiserv-checkout-for-woocommerce/vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php
+    - fiserv-checkout-for-woocommerce/vendor/php-stubs/woocommerce-stubs/woocommerce-packages-stubs.php

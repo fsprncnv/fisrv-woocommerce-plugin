@@ -544,6 +544,7 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
 
             return;
         }
+
         return parent::process_admin_options();
     }
 

@@ -11,11 +11,11 @@
     "composer:update": "docker compose run --remove-orphans --build composer update",
     "composer:version": "docker compose run --remove-orphans --build composer --version",
     "php-cs-fix": "docker compose run --rm composer php vendor/bin/php-cs-fixer fix --config=/app/.php-cs-fixer.php --dry-run --diff -v --using-cache=no > php-cs-fixer-output.txt 2>&1",
-    "phpstan": "docker compose run --build --rm composer composer analyse",
-    "phpstan:debug": "docker compose run --build --rm composer php vendor/bin/phpstan analyse includes -vvv",
+    "phpstan": "docker compose run --build --rm composer php vendor/bin/phpstan analyse -c /app/phpstan.neon",
+    "phpstan:debug": "docker compose run --build --rm composer php vendor/bin/phpstan analyse -c /app/phpstan.neon /app/fiserv-checkout-for-woocommerce/includes -vvv",
     "phpcpd": "docker compose run --build --rm composer php vendor/bin/phpcpd --exclude vendor .",
     "phpmd": "docker compose run --build --rm composer php vendor/bin/phpmd . text /app/phpmd.xml --exclude vendor",
-    "phpcodesniffer": "docker compose run --build --rm composer php vendor/bin/phpcs --extensions=php --ignore=vendor ."
+    "phpcodesniffer": "docker compose run --build --rm composer php vendor/bin/phpcs --standard=/app/phpcs.xml.dist --extensions=php --ignore=vendor ."
   },
   "author": "",
   "license": "MIT"

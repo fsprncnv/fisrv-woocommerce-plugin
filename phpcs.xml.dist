@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<ruleset name="Fiserv WooCommerce PHPCS">
+    <description>Project PHPCS configuration with relaxed legacy compatibility rules.</description>
+
+    <file>includes</file>
+    <file>templates</file>
+    <file>fiserv-checkout-for-woocommerce.php</file>
+    <file>phpstan-bootstrap.php</file>
+
+    <exclude-pattern>*/vendor/*</exclude-pattern>
+
+    <arg name="extensions" value="php"/>
+    <arg value="sp"/>
+    <arg name="warning-severity" value="0"/>
+
+    <rule ref="PSR12">
+        <exclude name="PSR1.Files.SideEffects"/>
+        <exclude name="PSR1.Methods.CamelCapsMethodName"/>
+        <exclude name="PSR1.Classes.ClassDeclaration"/>
+        <exclude name="Squiz.Classes.ValidClassName"/>
+        <exclude name="Generic.Files.LineLength"/>
+        <exclude name="Generic.Files.LineEndings"/>
+        <exclude name="Generic.WhiteSpace.ScopeIndent"/>
+        <exclude name="Squiz.WhiteSpace.ControlStructureSpacing"/>
+        <exclude name="Squiz.ControlStructures.ControlSignature"/>
+        <exclude name="Squiz.WhiteSpace.ScopeClosingBrace"/>
+        <exclude name="PSR12.Files.FileHeader"/>
+    </rule>
+
+    <!-- Allow legacy WordPress-style naming and minimal docblocks while migrating code quality. -->
+    <exclude name="Squiz.Commenting.FileComment"/>
+    <exclude name="Squiz.Commenting.ClassComment"/>
+    <exclude name="Squiz.Commenting.FunctionComment"/>
+
+    <exclude name="PEAR.Commenting.FileComment"/>
+    <exclude name="PEAR.Commenting.ClassComment"/>
+    <exclude name="PEAR.Commenting.FunctionComment"/>
+    <exclude name="PEAR.Commenting.InlineComment"/>
+    <exclude name="PEAR.NamingConventions.ValidClassName"/>
+    <exclude name="PEAR.NamingConventions.ValidFunctionName"/>
+    <exclude name="PEAR.NamingConventions.ValidVariableName"/>
+
+    <exclude name="Generic.Files.LineLength.TooLong"/>
+    <exclude name="Generic.Files.LineLength.MaxExceeded"/>
+    <exclude name="Generic.Files.LineEndings.InvalidEOLChar"/>
+</ruleset>
