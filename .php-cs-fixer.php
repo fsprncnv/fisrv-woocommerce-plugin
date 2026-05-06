@@ -55,7 +55,6 @@ $config
                 __DIR__ . '/fiserv-checkout-for-woocommerce/fiserv-checkout-for-woocommerce.php',
             ])
     )
-    ->setLineEnding("\r\n")
 ;
 
 return $config;
