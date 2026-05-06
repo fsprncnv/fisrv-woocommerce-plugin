@@ -92,7 +92,7 @@ final class WC_Fiserv_Rest_Routes
                 [
                     'status' => 'error',
                     'message' => $th->getMessage(),
-                    'icons' => $encoded_list
+                    'icons' => $encoded_list ?? '[]',
                 ]
             );
         }

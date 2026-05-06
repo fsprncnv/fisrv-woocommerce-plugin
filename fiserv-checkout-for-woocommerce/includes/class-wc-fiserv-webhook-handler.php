@@ -80,6 +80,7 @@ final class WC_Fiserv_Webhook_Handler
      * @param  string       $order_id Identifier of corresponding order
      * @param  WebhookEvent $event    Webhook event sent from checkout solution
      * @throws Exception Order not found
+        * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
     private static function update_order(string $order_id, WebhookEvent $event): void
     {

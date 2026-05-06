@@ -39,6 +39,8 @@ $config
                 'return',
             ]
         ],
+        // Ignore OS-specific newline style to avoid full-file diffs on Windows.
+        'line_ending' => false,
         'class_attributes_separation' => [
             'elements' => ['const' => 'one', 'method' => 'one', 'property' => 'one', 'trait_import' => 'none', 'case' => 'none']
         ],
@@ -53,6 +55,7 @@ $config
                 __DIR__ . '/fiserv-checkout-for-woocommerce/fiserv-checkout-for-woocommerce.php',
             ])
     )
+    ->setLineEnding("\r\n")
 ;
 
 return $config;
