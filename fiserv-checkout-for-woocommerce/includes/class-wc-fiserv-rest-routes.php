@@ -147,7 +147,6 @@ final class WC_Fiserv_Rest_Routes
                 || in_array($ct, ['text/xml', 'application/xml'], true); // some servers misreport SVG
         }
 
-
         return ($status >= 200 && $status < 300) && $is_image_ct;
     }
 
@@ -164,7 +163,6 @@ final class WC_Fiserv_Rest_Routes
             [
             [
                 'methods' => WP_REST_Server::CREATABLE,
-                'callback' => [self::class, 'add_image'],
                 'callback' => [self::class, 'add_image'],
                 'permission_callback' => function () {
                     return current_user_can('administrator');
@@ -240,7 +238,6 @@ final class WC_Fiserv_Rest_Routes
             [
             [
                 'methods' => WP_REST_Server::DELETABLE,
-                'callback' => [self::class, 'remove_image'],
                 'callback' => [self::class, 'remove_image'],
                 'permission_callback' => function () {
                     return current_user_can('administrator');
