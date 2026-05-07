@@ -10,6 +10,7 @@ if (!defined('ABSPATH')) {
  * logic pertaining to payment gateway settings only.
  *
  * @since 1.1.0
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
  */
 abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
 {
@@ -117,7 +118,7 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
         echo wp_kses(ob_get_clean(), self::$WP_KSES_ALLOWED);
     }
 
-    public function generate_transaction_type_html(string $key, array $data): string
+    protected function generate_transaction_type_html(string $key, array $data): string
     {
         return self::render_option_tablerow('transaction_type', $data, $this, 'SALE');
     }
@@ -127,6 +128,7 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
      * @param mixed $form_fields
      * @param mixed $echo
      * @return string
+     * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
      */
     public function generate_settings_html($form_fields = [], $echo = true): string
     {
@@ -323,7 +325,7 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
      * Render branded header component (banner)
      * @return string
      */
-    public static function render_fiserv_header(): string
+    private static function render_fiserv_header(): string
     {
         ob_start();
 
@@ -412,6 +414,7 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
      * @param int $index
      * @param bool $small
      * @return string
+     * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
      */
     private static function render_icon_with_overlay(string $image_src, int $index = 0, bool $small = false): string
     {
@@ -463,7 +466,7 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
         return self::render_option_tablerow($key, $data, $wc_settings, ob_get_clean());
     }
 
-    public function generate_reset_settings_html($key, $data)
+    protected function generate_reset_settings_html($key, $data)
     {
         ob_start();
         ?>
@@ -546,9 +549,13 @@ abstract class WC_Fiserv_Payment_Settings extends WC_Payment_Gateway
 
             return;
         }
-        parent::process_admin_options();
+
+        return parent::process_admin_options();
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     */
     protected function reset_settings_to_defaults()
     {
         if (empty($this->form_fields)) {

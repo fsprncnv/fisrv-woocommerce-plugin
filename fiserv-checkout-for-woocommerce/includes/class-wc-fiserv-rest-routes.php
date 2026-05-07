@@ -26,6 +26,7 @@ final class WC_Fiserv_Rest_Routes
             self::$plugin_rest_path,
             '/health',
             [
+            [
                 'methods' => WP_REST_Server::READABLE,
                 'callback' => function (WP_REST_Request $request) {
                     return new WP_REST_Response(
@@ -43,6 +44,7 @@ final class WC_Fiserv_Rest_Routes
                     return current_user_can('administrator');
                 }
             ]
+            ]
         );
     }
 
@@ -58,16 +60,17 @@ final class WC_Fiserv_Rest_Routes
         try {
             $gateway_id = $request->get_param('gateway-id');
             $img_url = $request->get_param('data');
-
             $gateway = WC()->payment_gateways()->payment_gateways()[$gateway_id] ?? false;
 
             if (!$gateway) {
                 return new WP_REST_Response(
                     [
+                    [
                         'status' => 'error',
                         'gateway_id' => $gateway_id,
                         'error' => 'Gateway ID invalid',
                         'list' => wp_json_encode((new WC_Payment_Gateways())->payment_gateways()),
+                    ]
                     ]
                 );
             }
@@ -92,15 +95,17 @@ final class WC_Fiserv_Rest_Routes
                 [
                     'status' => 'error',
                     'message' => $th->getMessage(),
-                    'icons' => $encoded_list
+                    'icons' => $encoded_list ?? '[]',
                 ]
             );
         }
 
         return new WP_REST_Response(
             [
+            [
                 'status' => 'ok',
                 'message' => 'Icon added successfully!',
+            ]
             ]
         );
     }
@@ -152,11 +157,13 @@ final class WC_Fiserv_Rest_Routes
             self::$plugin_rest_path,
             '/image',
             [
+            [
                 'methods' => WP_REST_Server::CREATABLE,
                 'callback' => [self::class, 'add_image'],
                 'permission_callback' => function () {
                     return current_user_can('administrator');
                 }
+            ]
             ]
         );
     }
@@ -177,10 +184,12 @@ final class WC_Fiserv_Rest_Routes
             if (!$gateway) {
                 return new WP_REST_Response(
                     [
+                    [
                         'status' => 'error',
                         'gateway_id' => $gateway_id,
                         'error' => 'Gateway ID invalid',
                         'list' => wp_json_encode((new WC_Payment_Gateways())->payment_gateways()),
+                    ]
                     ]
                 );
             }
@@ -188,21 +197,24 @@ final class WC_Fiserv_Rest_Routes
             $list_json = $gateway->get_option('custom_icon');
             $decoded_list = json_decode($list_json, true) ?? [];
             unset($decoded_list[$icon_id]);
-
             $gateway->update_option('custom_icon', wp_json_encode($decoded_list));
 
         } catch (\Throwable $th) {
             return new WP_REST_Response(
                 [
+                [
                     'status' => 'error',
                     'error' => $th->getMessage(),
+                ]
                 ]
             );
         }
 
         return new WP_REST_Response(
             [
+            [
                 'status' => 'ok',
+            ]
             ]
         );
     }
@@ -218,11 +230,13 @@ final class WC_Fiserv_Rest_Routes
             self::$plugin_rest_path,
             '/image',
             [
+            [
                 'methods' => WP_REST_Server::DELETABLE,
                 'callback' => [self::class, 'remove_image'],
                 'permission_callback' => function () {
                     return current_user_can('administrator');
                 }
+            ]
             ]
         );
     }
@@ -238,6 +252,7 @@ final class WC_Fiserv_Rest_Routes
             self::$plugin_rest_path,
             '/checkout-details',
             [
+            [
                 'methods' => WP_REST_Server::READABLE,
                 'callback' => function (WP_REST_Request $request) {
                     $checkout_id = (string) $request->get_param('checkout-id');
@@ -247,6 +262,7 @@ final class WC_Fiserv_Rest_Routes
                 'permission_callback' => function () {
                     return current_user_can('administrator');
                 }
+            ]
             ]
         );
     }

@@ -23,6 +23,7 @@ use Fisrv\Payments\PaymentsClient;
  * @category Payment Gateways
  * @author   fiserv
  * @since    1.0.0
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 final class WC_Fiserv_Checkout_Handler
 {

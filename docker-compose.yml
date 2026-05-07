@@ -27,6 +27,18 @@ services:
       MYSQL_ROOT_PASSWORD: root
     volumes:
       - db_data:/var/lib/mysql
+  composer:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM ${COMPOSER_IMG:-composer:2.9.5}
+        COPY zscaler-root.crt /usr/local/share/ca-certificates/zscaler-root.crt
+        RUN update-ca-certificates
+        WORKDIR /app/fiserv-checkout-for-woocommerce
+      args:
+        COMPOSER_IMG: harbor-emea.1dc.com/library/composer@sha256:b826a7bc8842fea3f7af43fab86c1ebf4d67243b82be555b18f277a942c04eeb
+    volumes:
+      - .:/app
 volumes:
   wordpress_data:
   db_data:
