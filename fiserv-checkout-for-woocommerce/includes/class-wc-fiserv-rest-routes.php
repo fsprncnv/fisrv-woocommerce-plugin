@@ -97,7 +97,6 @@ final class WC_Fiserv_Rest_Routes
         } catch (\Throwable $th) {
             return new WP_REST_Response(
                 [
-                [
                     'status' => 'error',
                     'message' => $th->getMessage(),
                     'icons' => $encoded_list ?? '[]',
