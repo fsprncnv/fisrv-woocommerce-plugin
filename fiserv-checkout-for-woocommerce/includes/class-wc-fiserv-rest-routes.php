@@ -77,18 +77,15 @@ final class WC_Fiserv_Rest_Routes
 
             $list_json = $gateway->get_option('custom_icon');
             $decoded_list = json_decode($list_json, true) ?? [];
-            $decoded_list = json_decode($list_json, true) ?? [];
 
             if (self::is_image_url($img_url)) {
-                throw new Exception('Image URL is invalid');
                 throw new Exception('Image URL is invalid');
             }
 
             if (in_array($img_url, $decoded_list)) {
                 throw new Exception('Image is already in list');
-                throw new Exception('Image is already in list');
             }
-
+            
             array_push($decoded_list, $img_url);
             $encoded_list = wp_json_encode($decoded_list);
             $gateway->update_option('custom_icon', $encoded_list);
@@ -198,7 +195,6 @@ final class WC_Fiserv_Rest_Routes
             }
 
             $list_json = $gateway->get_option('custom_icon');
-            $decoded_list = json_decode($list_json, true) ?? [];
             $decoded_list = json_decode($list_json, true) ?? [];
             unset($decoded_list[$icon_id]);
             $gateway->update_option('custom_icon', wp_json_encode($decoded_list));
