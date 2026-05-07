@@ -85,7 +85,7 @@ final class WC_Fiserv_Rest_Routes
             if (in_array($img_url, $decoded_list)) {
                 throw new Exception('Image is already in list');
             }
-            
+
             array_push($decoded_list, $img_url);
             $encoded_list = wp_json_encode($decoded_list);
             $gateway->update_option('custom_icon', $encoded_list);
