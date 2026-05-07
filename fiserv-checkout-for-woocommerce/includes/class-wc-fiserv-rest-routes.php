@@ -60,7 +60,6 @@ final class WC_Fiserv_Rest_Routes
         try {
             $gateway_id = $request->get_param('gateway-id');
             $img_url = $request->get_param('data');
-
             $gateway = WC()->payment_gateways()->payment_gateways()[$gateway_id] ?? false;
 
             if (!$gateway) {
@@ -202,7 +201,6 @@ final class WC_Fiserv_Rest_Routes
             $decoded_list = json_decode($list_json, true) ?? [];
             $decoded_list = json_decode($list_json, true) ?? [];
             unset($decoded_list[$icon_id]);
-
             $gateway->update_option('custom_icon', wp_json_encode($decoded_list));
 
         } catch (\Throwable $th) {
@@ -262,7 +260,6 @@ final class WC_Fiserv_Rest_Routes
                 'methods' => WP_REST_Server::READABLE,
                 'callback' => function (WP_REST_Request $request) {
                     $checkout_id = (string) $request->get_param('checkout-id');
-
 
                     return WC_Fiserv_Checkout_Handler::get_checkout_details($checkout_id);
                 },
