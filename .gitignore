@@ -74,3 +74,4 @@ test-results/
 tools/
 php-cs-fixer-output.txt
 zscaler-root.crt
+.env
